@@ -75,6 +75,34 @@ The core of MonoRTM is the computation of the optical depths. It is designed as 
 for flexibility and could be easily plugged in a different radiative transfer model if needed.
 
 
+OUTPUTS OF MONORTM:
+-------------------
+The records stored in MONORTM.OUT are the following:
+NPR	: 	Profile index used (not necessarily in order).
+NR	: 	Record number 
+I	: 	Frequency index
+FREQ	: 	Frequency in GHz
+TB(I)	: 	Brightness temperature in Kelvin
+RAD(I)	: 	Radiance (W/(m^2 ster cm^-1))
+TRTOT(I): 	Total transmittance (no unit: between 0 and 1)
+WVCOLMN	: 	Integrated water vapor amount in cm
+CLWCOLMN: 	Integrated cloud liquid water in mm
+TMPSFC	: 	Surface/target temperature in K
+REFLC(I): 	Surface/target Reflectivity (no unit , between 0 and 1)
+EMISS(I): 	Surface/target emissivity (no unit, between 0 and 1)
+ANGLE	: 	Angle in degrees
+OTOT	: 	Total column-integrated optical depth due to all species (in Nepers)
+OTOT_WV	: 	Total column-integrated optical depth due to water vapor (in Nepers
+OTOT_O2	: 	Total column-integrated optical depth due to oxygen (in Nepers)
+OTOT_N2	:  	Total column-integrated optical depth due to N2 (in Nepers)
+OTOT_O3	: 	Total column-integrated optical depth due to ozone (in Nepers)
+OTOT_N2O: 	Total column-integrated optical depth due to N2O (in Nepers)
+OTOT_CO	: 	Total column-integrated optical depth due to CO (in Nepers)
+OTOT_SO2: 	Total column-integrated optical depth due to SO2 (in Nepers)
+OTOT_NO2: 	Total column-integrated optical depth due to NO2 (in Nepers)
+OTOT_OH	: 	Total column-integrated optical depth due to OH (in Nepers)
+
+
 
 QUESTIONS:
 ----------
