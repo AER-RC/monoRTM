@@ -647,7 +647,7 @@ C-------------------------------------------------------------------------------
       REAL DELTNU(NNM,IIM),E(NNM,IIM),ALPS(NNM,IIM),ALPF(NNM,IIM)
       REAL X(NNM,IIM),XG(NNM,IIM),S0(NNM,IIM)
       INTEGER MOL(NNM),NBLM(NNM),ISO(NNM,IIM)
-      Character Q1*9,Q2*9,HFILE*80,CXID*1,CXIDLINE*80
+      Character Q1*9,Q2*9,HFILE*80,CXID*1,CXIDLINE*100
       COMMON/HITR/MOL,NBLM,ISO,XNU0,DELTNU,S0,E,ALPS,ALPF,X,XG,NMOLEC
       COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,  
      $     NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
@@ -670,8 +670,8 @@ C-------------------------------------------------------------------------------
       WRITE(IPR,'(a80)') '--------------------------------'
       WRITE(IPR,'(a80)') 'SPECTROSCOPIC INFORMATION USED'
       WRITE(IPR,'(a80)') '--------------------------------'
- 23   READ (9,'(A80)',END=30,ERR=30) CXIDLINE
-      WRITE(IPR,'(a80)') CXIDLINE
+ 23   READ (9,'(A100)',END=30,ERR=30) CXIDLINE
+      WRITE(IPR,'(a100)') CXIDLINE
       IF (CXID.NE.'$') GO TO 23                            
 
       ILINE=0

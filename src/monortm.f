@@ -384,9 +384,9 @@ C**********************************************************************
  111	ENDDO			!Loop over the profiles
 
 	!---Write out tail of the output file
-	WRITE(IOT,'(a)') 
-	WRITE(IOT,'(a)') '--------------------------------------'
-	WRITE(IOT,1000) HVRMON,HVRMODM,HVRSUB,HVRATM  
+	WRITE(IPR,'(a)') 
+	WRITE(IPR,'(a)') '--------------------------------------'
+	WRITE(IPR,1000) HVRMON,HVRMODM,HVRSUB,HVRATM  
 
 	!---Different formats
  924	FORMAT (1X,I1,I3,I5,F10.6,3A8) 
@@ -402,10 +402,10 @@ C**********************************************************************
 
 	!---Close all files
         CLOSE(IPF)		!closes the MONORTM_PROF.IN file
-	CLOSE(IOT)		!closes the output file
-	CLOSE(IRD)		!closes the MONORTM.IN file
+	CLOSE(IOT)		!closes the OUTPUT file
+	CLOSE(IRD)		!closes the SONDE.IN file
 	CLOSE(IPR)		!closes the LBLATM.LOG file
-	CLOSE(IPU)		!closes TAPE7
+	CLOSE(IPU)		!closes the MONORTM.IN file
 	STOP
 
 	!---Error messages

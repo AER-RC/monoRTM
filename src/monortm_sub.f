@@ -1040,6 +1040,7 @@ C-------------------------------------------------------------------------------
 	   DO WHILE (.true.)
 	      read(530,'(a)',end=80,err=1000) filearm
 	      NPROF=NPROF+1
+	      IF (NPROF.GT.NPROFMX) STOP' ERROR: NPROF>NPROFMX'
 	      filearmTAB(NPROF)=filearm
 	   ENDDO
 	ENDIF
