@@ -83,7 +83,7 @@ NR	: 	Record number
 I	: 	Frequency index
 FREQ	: 	Frequency in GHz
 TB(I)	: 	Brightness temperature in Kelvin
-RAD(I)	: 	Radiance (W/(m^2 ster cm^-1))
+RAD(I)	: 	Radiance (W/(cm^2 ster cm^-1))
 TRTOT(I): 	Total transmittance (no unit: between 0 and 1)
 WVCOLMN	: 	Integrated water vapor amount in cm
 CLWCOLMN: 	Integrated cloud liquid water in mm
