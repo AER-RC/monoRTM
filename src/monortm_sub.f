@@ -1,4 +1,7 @@
-
+C     path:		$Source$
+C     author:		$Author $
+C     revision:	        $Revision$
+C     created:	        $Date$
 
 	SUBROUTINE RTM(IOUT,IRT,NWN,WN,NLAY,T,TZ,
      &    TMPSFC,O,RUP,TRTOT,RDN,REFLC,EMISS,RAD,TB,IDU)
@@ -64,15 +67,15 @@ C       The cosmic radiation is hard coded (2.75 Kelvin). But this should
 C       be read from the input file (to be updated in next version).
 C
 C-------------------------------------------------------------------------------
-	IMPLICIT NONE
 	include "declar.incl"
 	INTEGER NWN,NLAY,IRT,I,IOUT,IDU
 	REAL RADCN1,RADCN2
-	PARAMETER (RADCN2=1.438786314232,RADCN1=1.191061999E-12)
 	REAL*8 V
 	CHARACTER HVRSUB*15
 	REAL TMPSFC,ESFC,RSFC,SURFRAD,ALPH,COSMOS,TSKY
 	REAL fbeta,beta,bb_fn,X
+	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+	1    RADCN1,RADCN2 
 	COMMON /CVRSUB/ HVRSUB
 	BB_fn(V,fbeta)  = RADCN1*(V**3)/(EXP(V*fbeta)-1.)   
 	HVRSUB = '$Revision$' 
@@ -96,7 +99,7 @@ C-------------------------------------------------------------------------------
 	1	((trtot(i)**2)*COSMOS)
 	   IF (IOUT.EQ.1) THEN
 	      X=RADCN1*(WN(I)**3)/RAD(I)+1.
-	      TB(I)=RADCN2*WN(I)/alog(X)
+	      TB(I)=RADCN2*WN(I)/log(X)
 	   ENDIF
 	ENDDO
  	RETURN
@@ -106,36 +109,34 @@ C-------------------------------------------------------------------------------
 	SUBROUTINE RAD_UP_DN(T,nlayer,TZ,WN,rup,trtot,rdn,O,NWN,IDU)
 	IMPLICIT REAL*8 (V)      
 	include "declar.incl"
-	PARAMETER (RADCN2=1.438786314232,RADCN1=1.191061999E-12,
-	1    aa_inv=3.597122302)
+	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+	1    RADCN1,RADCN2 
 	INTEGER  layer,nlayer,NWN,IDU,lmin,lmax,nl
 	REAL          beta,beta_a,bb,bba
 	!---local variables
-	REAL          bbVEC(MXLAY),bbaVEC(MXLAY),ODTOT(NWNMX)
+	REAL          bbVEC(MXLAY),bbaVEC(0:MXLAY),ODTOT(NWNMX)
 	BB_fn(V,fbeta)  = RADCN1*(V**3)/(EXP(V*fbeta)-1.)
-	lmin=1
-	lmax=nlayer
-	nl=1
-	IF (IDU.EQ.1) then 
-	   lmin=nlayer
-	   lmax=1
-	   nl=-1
-	ENDIF
+	IF (IDU.NE.1) STOP 'ERROR IN IDU. OPTION NOT SUPPORTED YET'
+	lmin=nlayer
+	lmax=1
+	nl=-1
 	DO 60 I=1,NWN
 	   VV=WN(I)
 	   rup(I) = 0.
 	   rdn(I) = 0.
 	   trtot(I) = 1.
 	   ODTOT(I)=0.
-	   DO layer=lmax,lmin,-nl
+	   DO layer=1,nlayer
 	      ODTOT(I)=ODTOT(I)+O(I,layer)
 	      beta  = radcn2/t(layer)
 	      beta_a= radcn2/tz(layer)
 	      bbVEC(layer)  = bb_fn(VV,beta)
 	      bbaVEC(layer) = bb_fn(VV,beta_a)
+	      beta_a= radcn2/tz(layer-1)
+	      bbaVEC(layer-1) = bb_fn(VV,beta_a)
 	   ENDDO
 	   ODT=ODTOT(I)
-	   DO 70 layer = lmax,lmin,-nl
+	   DO 70 layer = 1,nlayer,1
 	      bb  = bbVEC(layer)
 	      bba = bbaVEC(layer)
 	      ODVI = O(I,layer)
@@ -146,7 +147,7 @@ C-------------------------------------------------------------------------------
 	      RUP(I)= RUP(I)+TRTOT(I)*(1.-TRI)*(bb+pade*bba)/(1.+pade)
  70	   ENDDO
 	   ODT=ODTOT(I)
-	   do 50 layer = lmin,lmax,nl
+	   do 50 layer = nlayer,1,-1
 	      bb  = bbVEC(layer)
 	      bba = bbaVEC(layer-1)
 	      ODVI = O(I,layer)
@@ -195,8 +196,9 @@ C-------------------------------------------------------------------------------
 
 
 
-	SUBROUTINE RDLBLINP(I4FREQONLY,IATM,IPLOT,IRT,NWN,WN,
-	1    FILEIN,ICNTNM,CLW,INP)
+	SUBROUTINE RDLBLINP(IATM,IPLOT,IRT,NWN,WN,
+	1    FILEIN,ICNTNM,CLW,INP,IBMAXOUT,ZBNDOUT,
+	2    H1fout,H2fout)
 C-------------------------------------------------------------------------------
 C
 C     SUBROUTINE:  RDLBLINP
@@ -209,10 +211,11 @@ C     AFFILIATION: ATMOSPHERIC AND ENVIRONMENTAL RESEARCH INC.
 C     -----------
 C
 C     DATE OF CREATION : April 2001 
+C     Modified on Jan 7th 2002.
 C
 C
 C     AIM: This subroutine reads the control parameters
-C     ---- from the input file LBLRTM.IN (former TAPE5) 
+C     ---- from the input file MONORTM.IN (former TAPE5) 
 C          and makes available some of them via common 
 C          blocks. This subroutine has been added to make 
 C          MONORTM compatible with LBLRTM inputs.
@@ -223,7 +226,7 @@ C	 			!=2->limb
 C	 			!=3->ground
 C     UPDATES:
 C     --------
-C	Extension of the LBLRTM.IN option for MonoRTM
+C	Extension of the MONORTM.IN option for MonoRTM
 C	If V1 or V2 is negative, then we expect a 
 C	finite number of wavenumbers to be included
 C	in the input file. These wavenumbers do not have 
@@ -235,16 +238,11 @@ C	and 31.4 GHz)
 C	
 C	 Sid Ahmed Boukabara, April 2001
 C	
-C	Addition on April 24th 2001. I4FREQONLY is a flag 
-C	to select either we want to leave the file 
-C	open FILEIN (if =1) or just close it (if =0)
-C       SAB.
 C-------------------------------------------------------------------------------
 	include "declar.incl"
-	INTEGER I4FREQONLY
 	REAL*8           V1,V2,SECANT,XALTZ 
 	character*4 ht1,ht2
-	CHARACTER*1 CMRG(2),CONE,CTWO,CTHREE,CFOUR
+	CHARACTER*1 CMRG(2),CONE,CTWO,CTHREE,CFOUR,CXIDLINE*80
 	CHARACTER CDOL*1,CPRCNT*1,CXID*1,CA*1,CB*1,CC*1
 	INTEGER IRD,IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,L,           
 	1    ISCAN,IFILTR,IPLOT,ITEST,IATM,ILAS,ILNFLG,      
@@ -256,10 +254,19 @@ C-------------------------------------------------------------------------------
 	CHARACTER HEAD20*20,HEAD7*7,HEAD5*5,HEAD4*4,CINP*3
 	CHARACTER*60 FILEOUT,FILEIN
 	REAL SECL(64),WDNSTY,WMXRAT,WDRAIR(MXLAY)
+	REAL ZBNDOUT(MXFSC)
 	INTEGER IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,        
 	1    NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
 	2    NLTEFL,LNFIL4,LNGTH4,IPTHRK,IPATHL,M
 	character*8 XID,HMOLID,YID      
+	COMMON /ADRIVE/ LOWFLG,IREAD,MODEL,ITYPE,NOZERO,NOP,H1F,H2F, 
+	1    ANGLEF,RANGEF,BETAF,LENF,AV1,AV2,RO,IPUNCH,        
+	2    XVBAR, HMINF,PHIF,IERRF,HSPACE                     
+ 	COMMON /BNDRY/ ZBND(MXFSC),PBND(MXFSC),TBND(MXFSC),
+	1    ALORNZ(MXFSC),ADOPP(MXFSC),AVOIGT(MXFSC)       
+	COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,
+	1    IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             
+	2    IPHMID,IPDIM,KDIM,KMXNOM,KMAX                      
 	COMMON /PATHD/ P,T,WKL,WBRODL,DVL,WTOTL,ALBL,
 	1    ADBL,AVBL,H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,         
 	2    PZ,TZ                          
@@ -281,28 +288,17 @@ C-------------------------------------------------------------------------------
 	1    CA / 'A'/,CB / 'B'/,CC / 'C'/                   
 	CHARACTER CEX*2,CEXST*2,CPRGID*60    
 	DATA CEXST/'EX'/
-	LOGICAL INIT
-	DATA INIT/.TRUE./
-	SAVE INIT
-	IF(INIT)THEN
-	   !--OUTPUT FILE 
-	   FILEOUT='LBLATM.LOG'
-	   IPR=66
-	   OPEN (IPR,FILE=FILEOUT,STATUS='UNKNOWN',ERR=2000)        
-	   !---INPUT FILE 
-	   IRD=55
-	   OPEN (IRD,FILE=FILEIN,STATUS='UNKNOWN',ERR=3000)        
-	   INIT=.FALSE.
-	ENDIF
+	EQUIVALENCE (CXID,CXIDLINE)                    
+
+
 				!---record 1.1
- 20	READ (IRD,905,END=80,ERR=6000) CXID  
+ 20	READ (IRD,905,END=80,ERR=6000) CXIDLINE 
 	IF (CXID.EQ.CPRCNT) THEN
-	   !WRITE(*,*) 'ERROR STOP -END OF FILE:',FILEIN
-	   !STOP 
-	   WRITE(*,*) '-END OF FILE:',FILEIN,I4FREQONLY,INIT
+	   WRITE(*,*) '-END OF FILE:',FILEIN
 	   RETURN 
 	ENDIF                       
 	IF (CXID.NE.CDOL) GO TO 20                            
+	READ (CXIDLINE,'(1x,10A8)') (XID(I),I=1,10)     
 				!---record 1.2
 	READ(IRD,925,END=80,ERR=6000) IHIRAC,ILBLF4,             
 	1    ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,    
@@ -310,10 +306,12 @@ C-------------------------------------------------------------------------------
 	3    MPTS,NPTS,INP  
 	
 	IF ((INP.LE.1).OR.(INP.GE.4)) INP=1
-	!---IF INP=1 !LBLRTM.IN INPUT
+	!---IF INP=1 !MONORTM.IN INPUT
 	!---IF INP=2 !ARM SONDES INPUTS
 	!---IF INP=3 !MONORTM_PROF.IN INPUT FILE
 	
+	IF (INP.EQ.2 .AND. IATM.NE.1) STOP 'INP=2 => IATM=1'
+
 	!----CHECKING THE INPUTS FROM RECORD 1.2
 	IF (IAERSL.GT.0) THEN
 	   WRITE(*,*) 'CURRENTLY MONORTM DOES NOT HANDLE AEROSOLS'
@@ -583,7 +581,17 @@ C-------------------------------------------------------------------------------
  25	      CONTINUE
  30	   CONTINUE        
 	ENDIF 
+	IF (INP.EQ.3) RETURN !In case inp=3 we need only the wave# info.
 	IF (IATM.EQ.1) CALL LBLATM
+
+	!---assignment of output variables
+	IBMAXOUT=IBMAX
+	H1Fout=H1F
+	H2Fout=H2F
+	do i=1,ibmax
+	   ZBNDOUT(i)=ZBND(i)
+	enddo
+	IF ((INP.EQ.2).AND.(H1F.GE.H2F)) STOP 'INP=2 -> H1<H2'
 	!---CHECKING RECORD 2.1
 	IF (NLAYRS.GT.200) THEN
 	   WRITE(*,*) '----------------------------------------'
@@ -610,16 +618,9 @@ C-------------------------------------------------------------------------------
 	IF (ANGLE.EQ.90.) IRT = 2 !limb measurements
 	!---END OF RECORD 2.1 CHECKING
 
-	IF (I4FREQONLY.EQ.0) THEN
-	   CLOSE(IRD)
-	   CLOSE(IPR)
-	   CLOSE(IPU)
-	   INIT=.TRUE.
-	ENDIF
-
  10	FORMAT (i4,5f19.13)
  901	FORMAT (1X,I1,I3,I5,F10.2,A20,F8.2,A4,F8.2,A5,F8.3,A7)
- 905	FORMAT (A1)                                                   
+ 905	FORMAT (A80)                                                   
  910	FORMAT (E15.7,F10.4,F10.4,A3,I2,1X,2(F7.2,F8.3,F7.2),E15.7)
  911	FORMAT (3F10.4,A3,I2,1X,2(F7.2,F8.3,F7.2),E15.7)           
  915	FORMAT (E15.7,F10.4,F10.4,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)
@@ -639,10 +640,6 @@ C-------------------------------------------------------------------------------
  1015	FORMAT (I5)
 	RETURN
  80	WRITE(*,*) ' EXIT; EOF ON :',FILEIN             
-	STOP
- 2000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILEOUT            
-	STOP
- 3000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILEIN           
 	STOP
  4000	WRITE(*,*) ' EXIT; ERROR OPENING EMISSION FILE'          
 	STOP
@@ -751,7 +748,6 @@ C-------------------------------------------------------------------------------
 	2    CLWCOLMN,TMPSFC,REFLC,EMISS,O,OL_WV,OS_WV,OF_WV,
 	3    OL_O2,OL_O3,OL_N2,OC_N2,OL_N2O,OL_CO,OL_SO2,
 	4    OL_NO2,OL_OH,O_CLW,NLAY,P,FILEOUT,ANGLE)
-	IMPLICIT NONE
 	include "declar.incl"
 	INTEGER I,NWN,NR,K,M,N,NLAY,J
 	REAL OTOT,OTOT_WV,OTOT_O2,OTOT_N2,OTOT_O3,OTOT_N2O
@@ -760,18 +756,10 @@ C-------------------------------------------------------------------------------
 	1    iserialnumber,isondeage
 	REAL SCLCPL,SCLHW,Y0RES,CLWCOLMN,TMPSFC,WVCOLMN,XSLF
 	CHARACTER FILEOUT*60
-	LOGICAL INIT
-	DATA INIT/.TRUE./
-	IF(INIT)THEN
-	   OPEN(1,file=FILEOUT,status='unknown',
-	1	form='formatted',ERR=1000)
-	   WRITE(1,'(a)') 'MONORTM RESULTS:'
-	   WRITE(1,'(a)') '----------------' 
-	   WRITE(1,'(a5,I8)') 'NWN :',NWN 
-	   INIT=.FALSE.
-	ENDIF
+	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+	1    RADCN1,RADCN2 
 	DO I=1,NWN
-	   FREQ=WN(I)*29.9792458
+	   FREQ=WN(I)*CLIGHT/1.E9
 	   !----Computation of the integrated optical depths
 	   OTOT=0.
 	   OTOT_WV=0.
@@ -809,11 +797,11 @@ C-------------------------------------------------------------------------------
 
 
 	SUBROUTINE CORR_OPTDEPTH(INP,NLAY,SECNTA,NWN,ANGLE,O,IRT)
-	IMPLICIT NONE
 	include "declar.incl"
 	INTEGER INP,J,NLAY,NWN,I,IRT
 	REAL PI,SECNT,ALPHA,ANGLE
-	PI=3.14159265
+	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+	1    RADCN1,RADCN2 
 	!----SANITY CHECK
 	IF (IRT.EQ.3) alpha=(angle*PI)/180.
 	IF ((IRT.EQ.1).and.(ANGLE.GT.90.)) alpha=((180.-angle)*PI)/180.
@@ -854,7 +842,8 @@ C-------------------------------------------------------------------------------
 
 	SUBROUTINE ARM2LBLATM(filearm,IFLAG,ilaunchdate,
 	1    ilaunchtime,ibasetime,iserialnumber,isondeage,
-	2    NWN,WN,V1,V2,DVSET,FILEIN)
+	2    NWN,WN,V1,V2,DVSET,FILEIN,NLAYRS,IBMAX,ZBND,
+	3    angle,H1F,H2F,NMOL,IPUNCH)
 	!This subroutine simply reads the file 'filearm'
 	!containing the ARM sonde data (extracted as follow:
 	!> > > ftp to vernlaw.er.anl.gov
@@ -863,7 +852,7 @@ C-------------------------------------------------------------------------------
 	!> > > cd to directory /pub/arm/sonde/YYYY/corr/asc or
 	!> > /pub/arm/sonde/YYYY/corr/cdf
 	!> > > get the files)
-	!and puts them into the file LBLRTM.IN to be read by
+	!and puts them into the file MONORTM.IN to be read by
 	!LBLATM and then put in common for MONORTM.
 	!---Output
 	!IF IFLAG=0 profile is valid
@@ -872,20 +861,18 @@ C-------------------------------------------------------------------------------
 	!Sid Ahmed Boukabara
 	include "declar.incl"	
 	INTEGER ibmax
-	PARAMETER (ibmax=32)
-	REAL PRESS(MXLAY),TEMP(MXLAY),HUMID(MXLAY),ALTIT(MXLAY)
-	real alti(ibmax)
+	PARAMETER (MXLEV=10000)
+	REAL PRESS(MXLEV),TEMP(MXLEV),HUMID(MXLEV),ALTIT(MXLEV)
+	real ZBND(IBMAX)
 	REAL*8 V1,V2
 	REAL DVSET
 	character filearm*90,filein*60,ligne*80,hmod*60
-	CHARACTER*1 JCHARP,JCHART,JCHAR(7)
+	CHARACTER*1 JCHARP,JCHART,JCHAR(35)
 	INTEGER ilaunchdate,ilaunchtime,iserialnumber,ibasetime
 	INTEGER isondeage
-	data alti /0.320,0.374,0.500,0.750,1.000,1.500,2.000,2.500,
-     &       3.000,3.500,4.000,4.500,5.000,5.500,6.000,6.500,
-     &       7.000,7.500,8.000,8.500,9.000,9.500,10.000,11.000,
-     &       12.000,13.000,14.000,15.000,16.500,18.000,19.5,21./
-	data 	JCHAR /'H','6','6','6','6','6','6'/
+	data 	JCHAR /'H','6','6','6','6','6','6','6','6','6','6','6',
+	1    '6','6','6','6','6','6','6','6','6','6','6','6','6','6',
+	2    '6','6','6','6','6','6','6','6','6'/
 
 	open(33,file=filein,status='unknown',form='formatted',err=1000)
 	open(44,file=filearm,status='old',form='formatted',err=2000)
@@ -900,31 +887,19 @@ C-------------------------------------------------------------------------------
 	read(44,'(a)') ligne
 	nlev=0
 	Pr_old=2000.
-	ialtmax=21000
-	df=-9999.
 	IFLAG=0
-	IF ((nlevels.le.5).or.(nlevels.gt.3400)) THEN  !minimum levels number is 5
+	IF ((nlevels.le.5).or.(nlevels.gt.MXLEV)) THEN  !minimum levels number is 5
 	   close(44)
 	   close(33)
 	   IFLAG=2
 	   RETURN
 	ENDIF
 
-	DO i=1,nlevels
+	DO 230 i=1,nlevels
 	   read(44,12) iTOff,Pr,Tp,RHorig,RHcor,xLat,xLon,iAlt
-	   !---To avoid -9999. below 21 kms (profile rejected)
-	   IF ((Pr.eq.df.or.tp.eq.df.or.RHcor.eq.df).and.
-	1	(ialt.le.ialtmax)) THEN
-	      close(44)
-	      close(33)
-	      IFLAG=2
-	      RETURN
-	   ENDIF
-	   !---To avoid -9999. above 21 kms (profile kept)
-	   IF ((Pr.eq.df.or.tp.eq.df.or.RHcor.eq.df).and.
-	1	(ialt.gt.ialtmax)) THEN
-	      IFLAG=0
-	      GOTO 100
+	   !---To avoid negative values 
+	   IF (Pr.lt.0..or.RHcor.lt.0.) THEN
+	      GOTO 230
 	   ENDIF
 	   !---to avoid two levels with the same pressure
 	   IF (Pr.lt.Pr_old) THEN
@@ -936,7 +911,7 @@ C-------------------------------------------------------------------------------
 	   ENDIF
 	   IF (Pr.ge.Pr_old) IFLAG=1
 	   Pr_old=Pr
-	ENDDO
+ 230	ENDDO
  100	IHIRAC=1
 	ILBLF4=0
 	ICNTNM=1
@@ -957,13 +932,16 @@ C-------------------------------------------------------------------------------
 	model=0
 	itype=2
 	nozero=1
-	noprnt=1
-	nmol=7
-	ipunch=1
-	H1=0.320
-	H2=21.000
-	angle=0.000
+	noprnt=0
 	immax=nlev
+	H1=max(H1F,ALTIT(1))
+	H2=min(H2F,ALTIT(IMMAX))
+	IBMAXSELECT=ibmax
+	DO i=1,ibmax
+	   IF (ZBND(i).GT.ALTIT(IMMAX)) GOTO 123
+	   IBMAXSELECT=I
+	ENDDO
+ 123	CONTINUE
 	JCHARP='A'
 	JCHART='B'
 	write(hmod,'(i12.12)') iserialnumber
@@ -979,13 +957,14 @@ C-------------------------------------------------------------------------------
 	   ENDDO
 	ENDIF
 	write(33,14) TMPBND,1.,0.,0.,0.,0.,0.           
-	write(33,15) model,itype,ibmax,nozero,noprnt,nmol,ipunch
+	write(33,15) model,itype,ibmaxselect,nozero,noprnt,nmol,ipunch
 	write(33,16) H1,H2,angle
-	write(33,17) (alti(i),i=1,ibmax)
+	write(33,17) H1,(ZBND(i),i=2,ibmaxselect)
 	write(33,18) immax,hmod
 	Do i=1,immax
-	   write(33,19) ALTIT(i),PRESS(i),TEMP(i),JCHARP,JCHART,JCHAR
-	   write(33,20) HUMID(i),0.,0.,0.,0.,0.,0.
+	   write(33,19) ALTIT(i),PRESS(i),TEMP(i),JCHARP,JCHART,
+	1	(JCHAR(j),j=1,nmol)
+	   write(33,20) HUMID(i),(0.,j=1,nmol-1)
 	enddo
 	write(33,'(a)') '-1'
 	write(33,'(a)') '%%%%%%%%%%%%%%%%'
@@ -1014,14 +993,13 @@ C-------------------------------------------------------------------------------
 	SUBROUTINE START(nprof,INP)
 	CHARACTER*15 HVRMON
 	COMMON /CVRMON  / HVRMON
-	HVRMON = '$Revision$' 
 	
 	WRITE(*,'(a)') '**********************************'
 	WRITE(*,'(a)') '*        M O N O R T M           *'
 	WRITE(*,'(a)') '*        '//HVRMON//'         *'
 	WRITE(*,'(a)') '**********************************'
 	WRITE(*,*) 'NUMBER OF PROFILES:',nprof
-	IF (INP.EQ.1) WRITE(*,*) 'INPUTS FROM LBLRTM.IN'
+	IF (INP.EQ.1) WRITE(*,*) 'INPUTS FROM MONORTM.IN'
 	IF (INP.EQ.2) WRITE(*,*) 'INPUTS FROM ARM.IN'
 	IF (INP.EQ.3) WRITE(*,*) 'INPUTS FROM MONORTM_PROF.IN'
 	WRITE(*,*)
@@ -1034,33 +1012,42 @@ C-------------------------------------------------------------------------------
 	SUBROUTINE GETPROFNUMBER(INP,FILEIN,fileARMlist,fileprof,
 	1    NPROF,filearmTAB)
 	include "declar.incl"
-	CHARACTER FILEIN*60,filearm*90
+	CHARACTER FILEIN*60,filearm*90,CXID*1
 	CHARACTER CDOL*1,CPRCNT*1,CXID*1,fileprof*80
 	CHARACTER fileARMlist*64
 	CHARACTER*8      HMOD                           
 	DATA CDOL / '$'/,CPRCNT / '%'/
 	NPROF=0
+
+	!---Get first the INP info
+	OPEN (530,FILE=FILEIN,STATUS='OLD',ERR=1000) 
+ 40	READ (530,'(a1)',END=80) CXID
+	IF (CXID.NE.CDOL) THEN
+	   GO TO 40     
+	ENDIF
+	READ (530,'(81X,I4)',END=80,ERR=6000) INP  
+	close(530)
+
 	IF (INP.EQ.1) THEN
-	   OPEN (53,FILE=FILEIN,STATUS='OLD',ERR=1000) 
- 20	   READ (53,'(a1)',END=80) CXID  
+	   OPEN (530,FILE=FILEIN,STATUS='OLD',ERR=1000) 
+ 20	   READ (530,'(a1)',END=80) CXID  
 	   IF (CXID.EQ.CDOL) NPROF=NPROF+1
 	   GO TO 20
 	ENDIF
 	IF (INP.EQ.2) THEN
-	   open(53,file=fileARMlist,status='old',
+	   open(530,file=fileARMlist,status='old',
 	1	form='formatted',err=1000)
 	   DO WHILE (.true.)
-	      read(53,'(a)',end=80,err=1000) filearm
+	      read(530,'(a)',end=80,err=1000) filearm
 	      NPROF=NPROF+1
 	      filearmTAB(NPROF)=filearm
 	   ENDDO
 	ENDIF
 	IF (INP.EQ.3) THEN
-	   open(53,file=fileprof,status='old',
+	   open(530,file=fileprof,status='old',
 	1	form='formatted',err=1000)
 	   DO WHILE (.true.) 
-c	      READ (53,924,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD
-	      READ (53,972,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD,
+	      READ (530,972,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD,
 	1	   HMOD,H1,H2,ANGLE,LEN  
 	      NPROF=NPROF+1
  22	      CONTINUE
@@ -1070,18 +1057,17 @@ c	      READ (53,924,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD
 	   WRITE(*,*) 'NO PROFILE FOUND IN GETPROFNUMBER'
 	   STOP
 	ELSE
-	   CLOSE(53)
-	   IF (INP.EQ.3) open(53,file=fileprof,status='old',
-	1	form='formatted',err=1000)
+	   CLOSE(530)
 	   RETURN
 	ENDIF
  1000	WRITE(*,*) 'ERROR OPENING OR READING FILE in GETPROFNUMBER'
  924	FORMAT (1X,I1,I3,I5,F10.6,A24) 
  972	FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2) 
+ 6000	WRITE(*,*) ' EXIT; ERROR READING :',FILEIN          
 	STOP
 	END
 
-	SUBROUTINE CHECKINPUTS(NWN,NPROF,NWNMX,NPROFMX)
+	SUBROUTINE CHECKINPUTS(NWN,NPROF,NWNMX,NPROFMX,INP)
 	INTEGER NWN,NPROF,NWNMX,NPROFMX
 	IF (NWN.GT.NWNMX) THEN
 	   WRITE(*,*) 'Number of wavenumbers too big:',NWN
@@ -1089,7 +1075,7 @@ c	      READ (53,924,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD
 	   WRITE(*,*) 'Must extend NWNMX in declar.incl AND RECOMPILE'
 	   STOP
 	ENDIF
-	IF (NPROF.GT.NPROFMX) THEN
+	IF (NPROF.GT.NPROFMX .AND. INP.EQ.2) THEN
 	   WRITE(*,*) 'Number of profiles too big:',NPROF
 	   WRITE(*,*) 'Maximum Allowed:',NPROFMX
 	   WRITE(*,*) 'Must extend NPROFMX  AND RECOMPILE'
@@ -1098,17 +1084,17 @@ c	      READ (53,924,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD
 	RETURN
 	END
 
-      SUBROUTINE EXPINT (X,X1,X2,A)                                   
-C******************************************************************** 
-C     THIS SUBROUTINE EXPONENTIALLY INTERPOLATES X1 AND X2 TO X BY  
-C     THE FACTOR A             . NEEDED BY LBLATM                   
+	SUBROUTINE EXPINT (X,X1,X2,A)                                   
 C********************************************************************
-      IF (X1.EQ.0.0.OR.X2.EQ.0.0) GO TO 10                          
-      X = X1*(X2/X1)**A                                        
-      RETURN                                                   
-   10 X = X1+(X2-X1)*A                                         
-      RETURN                                                   
-      END                                                      
+C       THIS SUBROUTINE EXPONENTIALLY INTERPOLATES X1 AND X2 TO X BY  
+C       THE FACTOR A             . NEEDED BY LBLATM                   
+C********************************************************************
+	IF (X1.EQ.0.0.OR.X2.EQ.0.0) GO TO 10                          
+	X = X1*(X2/X1)**A                                        
+	RETURN                                                   
+ 10	X = X1+(X2-X1)*A                                         
+	RETURN                                                   
+	END                                                      
 
 	!----TEST -----------------------------
 	!  TO MAINTAIN COMPATIBILTY WITH LBLATM

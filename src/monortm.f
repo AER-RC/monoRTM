@@ -1,3 +1,8 @@
+C     path:		$Source$
+C     author:		$Author $
+C     revision:	        $Revision$
+C     created:	        $Date$
+
 	PROGRAM MONORTM
                                                                          
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
@@ -57,7 +62,7 @@ C**********************************************************************
 	!   MONORTM:
 	!   ********
 	!   MonoRTM is designed to be very flexible. We can either use 
-	!   it as a black box and control everything from the LBLRTM.IN
+	!   it as a black box and control everything from the MONORTM.IN
 	!   input file, or one can modify the code itself and
 	!   recompile it. In the latter, it is structured in such a way 
 	!   that the changes should always be done in "monortm.f" (the  
@@ -98,7 +103,7 @@ C**********************************************************************
 	!     IDU=1  -> profiles from surface to top (default)
 	!
 	!   - read the inputs from different sources/formats. see INP
-	!     INP=1  ->the inputs read by LBLATM input (LBLRTM.IN). This 
+	!     INP=1  ->the inputs read by LBLATM input (MONORTM.IN). This 
 	!              input file is consistent with LBLRTM's TAPE5.
 	!     INP=2  ->ARM files transformed to LBLATM input (needs ARM.IN 
 	!              that will contain the list of ARM sondes files with 
@@ -109,7 +114,7 @@ C**********************************************************************
 	!              MONORTM_PROF.IN. It contains the layers information
 	!              WARNING: In this case, the surface temperature is 
 	!              taken to be the surface level temperature.
-	!     INP comes from the LBLRTM.IN file (see instructions)
+	!     INP comes from the MONORTM.IN file (see instructions)
 	!   - scale/tune several parameters for the line coupling and
 	!     the continuum computation, see :
 	!     XSLF   : scaling factor for self continuum (default=1)
@@ -126,7 +131,7 @@ C**********************************************************************
 	!
 	!   - output the simulations in radiances or in brightness
 	!     temperatures. Note that the internal calculations are first
-	!     done in radiances. IOUT comes from LBLRTM.IN
+	!     done in radiances. IOUT comes from MONORTM.IN
 	!     IOUT   : =0 -> radiances 
 	!     IOUT   : =1 -> TB+RAD
 	!  
@@ -146,29 +151,24 @@ C**********************************************************************
 	!     Fixed the handling of N2 amount coming from LBLATM (which
 	!     depends on the number of molecules NMOL). Added version 
 	!     numbers and comments in the output file.
-	!     Adopted accurate constants values. 
+	!     Adopted accurate constants values. SAB.
 	!     Sid Ahmed Boukabara. Dec 14th 2001.
-	! 
+        !   - Updated on January 7th 2002. ARM option (INP=2) updated and
+	!     made more efficient after Jim's comments. (INP=3) option optimized.
+	!     WV line intensities modified in the microwave (see Tony's email).
+	!     Sid Ahmed Boukabara AER Inc. 2002. 
+	!
 	!***************************************************************
 	include "declar.incl"
 	INTEGER NWN,I,ICPL,IS,IOUT,IRT,J,ICNTNM,IATM,INP,IVC
 	REAL*8 V1,V2,SECANT,XALTZ 
 	REAL TMPSFC,TPROF(mxlay),qprof(mxlay),press(mxlay)
-	REAL zvec(mxlay),dzvec(mxlay)
+	REAL zvec(mxlay),dzvec(mxlay),zbnd(mxfsc)
         CHARACTER HVRATM*15,HVRMODM*15,HVRSUB*15,HVRMON*15
 	CHARACTER fileARMlist*64,hmod*60,CTYPE*3
 	CHARACTER fileprof*80,HFILE*80,FILEOUT*60,ht1*4,ht2*4
-	CHARACTER*60 FILEIN,FILESONDE
+	CHARACTER*60 FILEIN,FILESONDE,FILELOG
 	character*8 XID,HMOLID,YID,HDATE,HTIME
-	CHARACTER*48 CFORM1,CFORM2                                    
-	CHARACTER*4 PZFORM(5)
-	CHARACTER*7 PAFORM(2)                                         
-	DATA PAFORM / '1PE15.7','  G15.7'/                            
-	DATA PZFORM / 'F8.6','F8.5','F8.4','F8.3','F8.2'/              
-	DATA CFORM1 / '(1PE15.7,0PF10.2,10X,A3,I2,1X,
-	1    2(F7.3,F8.3,F7.2))'/  
-	DATA CFORM2 / '(  G15.7,0PF10.2,10X,A3,I2,23X,
-	1    (F7.3,F8.3,F7.2))'/  
 	COMMON /CVRMON  / HVRMON
         COMMON /CVRATM  / HVRATM
         COMMON /CVRMODM / HVRMODM
@@ -185,13 +185,15 @@ C**********************************************************************
 	COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4), 
 	1    WK(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   
 	2    EMISIV,FSCDID(17),NMOL,LAYRS ,YI1,YID(10),LSTWDF    
+	COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,  
+	1    NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
+	2    NLTEFL,LNFIL4,LNGTH4                                 
 
 
 	!---INPUTS & GENERAL CONTROL PARAMETERS
 	IVC=2    !if=2->CKD2.4  MPMf87/s93 (if=3)
 	ICPL=1   !=1->cpl =0->nocpl
-	IDU=1    !IDU=0->the prof are from top to surface, IDU=1->the opposite
-
+	IDU=1    !IDU=0->from top 2 surface (not supported), IDU=1->the opposite
 	XSLF=1.  !scaling factor (SLF cont)
 	XFRG=1.  !scaling factor (FRG cont)
 	XCN2=1.  !scaling factor (N2 cont)
@@ -199,14 +201,16 @@ C**********************************************************************
 	SCLHW=1. !scaling factor (Pressure Dependence of the halfwidth of the 0 band)
 	Y0RES=0. !Y0RES of the line coupling coeffs
 	SCALWV=1.!scaling of the WV profile
+	IPUNCH=1 !flag to create (1) or not (0) TAPE7 in case INP=2
 
 	!---FILES NAMES ALL PUT HERE FOR CONVENIENCE
-	FILEIN      ='../in/LBLRTM.IN'
+	FILEIN      ='../in/MONORTM.IN'
 	FILESONDE   ='../in/SONDE.IN'
 	fileARMlist ='../in/ARM.IN'
-	fileprof    ='TAPE7'
+	fileprof    ='../in/MONORTM_PROF.IN'
 	HFILE       ='../in/spectral_lines.dat'
 	FILEOUT     ='../out/MONORTM.OUT'
+	FILELOG     ='MONORTM.LOG'
 
 	!---Initializations of the version numbers
 	HVRMON      ='NOT USED       ' 
@@ -214,19 +218,41 @@ C**********************************************************************
 	HVRMODM     ='NOT USED       ' 
 	HVRSUB      ='NOT USED       ' 
 
-
-	!---GET THE WAVENUMBERS AND INP,IRT INFORMATION
-	CALL RDLBLINP(0,IATM,IOUT,IRT,NWN,WN,FILEIN,ICNTNM,CLW,INP)    
+	!---Version number of MonoRTM
+	HVRMON = '$Revision$' 
 
 	!---GET THE PROFILES NUMBER
 	CALL GETPROFNUMBER(INP,FILEIN,fileARMlist,fileprof,
 	1    NPROF,filearmTAB)
 
+	!---File Unit numbers/Open files
+	IPU  =7 
+	IPR  =66
+	IOT  =1
+	IRD  =55
+	IPF  =53
+	OPEN (IPR,FILE=FILELOG,STATUS='UNKNOWN',ERR=2000)        
+	OPEN (IRD,FILE=FILEIN,STATUS='UNKNOWN',ERR=3000)        
+	OPEN (IOT,file=FILEOUT,status='unknown',
+	1    form='formatted',ERR=4000)
+	IF (INP.EQ.3) OPEN(IPF,file=fileprof,status='old',
+	1    form='formatted',err=6000)
+
+	!---Get info about IBMAX/ZBND/H1/H2...
+	CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
+	1    ICNTNM,CLW,INP,IBMAX,ZBND,H1f,H2f)
+
+	!---Write header in output file
+	WRITE(IOT,'(a)') 'MONORTM RESULTS:'
+	WRITE(IOT,'(a)') '----------------' 
+	WRITE(IOT,'(a5,I8)') 'NWN :',NWN 
+
+
 	!---PRINT OUT MONORTM VERSION AND PROFILES NUMBER
 	CALL start(NPROF,INP)
 
 	!---CHECK INPUTS AND THEIR CONSISTENCY WITH MONORTM
-	CALL CHECKINPUTS(NWN,NPROF,NWNMX,NPROFMX)
+	CALL CHECKINPUTS(NWN,NPROF,NWNMX,NPROFMX,INP)
 
 	!---Loop over the number of profiles to be processed
 	NREC=0
@@ -234,56 +260,55 @@ C**********************************************************************
 	   !*********************************************
 	   !* First Step: Read in the inputs
 	   !*********************************************	   
-	   !---Inputs: LBLRTM.IN (TAPE5-type of file)
+	   !---Inputs: MONORTM.IN (TAPE5-type of file)
 	   IF (INP.EQ.1) THEN
-	      CALL RDLBLINP(1,IATM,IOUT,IRT,NWN,WN,FILEIN,ICNTNM,
-	1	   CLW,INP)
+	      IF (NPR.EQ.1) THEN
+		 REWIND(IPU)
+		 REWIND(IRD)
+		 IPASS=0
+	      ENDIF
+	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
+	1	   ICNTNM,CLW,INP,IBMAX,ZBND,H1f,H2f)
 	   ENDIF
-	   !---Inputs: wavenumbers from LBLRTM.IN, profiles from ARM sondes
+	   !---Inputs: wave#/path/angle from MONORTM.IN, profiles from ARM sondes
 	   IF (INP.EQ.2) THEN
+	      IF (NPR.EQ.1) REWIND(IPU)
 	      CALL ARM2LBLATM(filearmTAB(NPR),IFLAG,ilaunchdate, 
 	1	   ilaunchtime,ibasetime,iserialnumber,isondeage,
-	2	   NWN,WN,V1,V2,DVSET,FILESONDE)
+	2	   NWN,WN,V1,V2,DVSET,FILESONDE,NLAYRS,IBMAX,ZBND,
+	3	   ANGLE,H1F,H2F,NMOL,IPUNCH)
 	      IF (IFLAG.EQ.2) THEN
 		 WRITE(*,'(a30,i5,a8)') 'PROCESSING PROFILE NUMBER:',
 	1	      NPR,' FLAG=2'
 		 GOTO 111
 	      ENDIF
-	      CALL RDLBLINP(0,IATM,IOUT,IRT,NWN,WN,FILESONDE,ICNTNM,
-	1	   CLW,INP)
+	      OPEN (IRD,FILE=FILESONDE,STATUS='UNKNOWN',ERR=5000)        
+	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILESONDE,
+	1	   ICNTNM,CLW,INP,IBMAX,ZBND,H1f,H2f)
+	      CLOSE(IRD)
 	   ENDIF
 	   !---Inputs: MONORTM_PROF.IN (TAPE7 consistent)
 	   IF (INP.EQ.3) THEN
-	      READ (53,924,END=110,ERR=50) IFORM,NLAYRS,NMOL,SECNT0,
-	1	   HMOD
+	      READ (IPF,'(1x,i5,10a8)') ipass, xid
+	      READ (IPF,972,END=110,ERR=50) IFORM,NLAYRS,NMOL,SECNT0,
+	1	   HMOD,HMOD,H1,H2,ANGLE,LEN 
+	      IF (ANGLE.GT.90.) IRT = 1 !space-based observer (looking down) 
+	      IF (ANGLE.LT.90.) IRT = 3 !ground-based observer (looking up)
+	      IF (ANGLE.EQ.90.) IRT = 2 !limb measurements
 	      DO IL=1,NLAYRS
 		 SECNTA(IL)=SECNT0
-		 LTST = IL                                       
-		 IF (IL.EQ.1) LTST = 0                               
-		 PTST = ALOG10(PZ(LTST))                          
-		 NPTST = PTST+2                                     
-		 IF (PTST.LT.0.0) NPTST = 1                           
-		 CFORM1(38:41) = PZFORM(NPTST)                     
-		 CFORM2(38:41) = PZFORM(NPTST)                       
-		 NPTST = 1                                           
-		 IF (P(IL).GE.0.1) NPTST = 2                     
-		 CFORM1(2:8) = PAFORM(NPTST)                        
-		 CFORM2(2:8) = PAFORM(NPTST)                           
-		 IF (IL.EQ.1) THEN                                   
-		    READ (53,CFORM1,END=110,ERR=50) P(IL),T(IL),  
-	1		 CTYPE,IPATH,ALTZ(IL-1),PZ(IL-1),        
+		 IF (IL.EQ.1) THEN  
+		    READ (IPF,*,END=110,ERR=50) P(IL),T(IL),  
+	1		 IPATH,ALTZ(IL-1),PZ(IL-1),        
 	2		 TZ(IL-1),ALTZ(IL),  PZ(IL),  TZ(IL)  
 		    TMPSFC=TZ(IL-1)
-		    IF (IPATH.EQ.1) IRT=1 !space-based observer
-		    IF (IPATH.EQ.3) IRT=3 !ground-based observer
-		    IF (IPATH.EQ.2) IRT=2 !limb measurement
 		 ELSE                                             
-		    READ (53,CFORM2,END=110,ERR=50) P(IL),T(IL),  
-	1		 CTYPE,IPATH,ALTZ(IL),PZ(IL),TZ(IL)    
+		    READ (IPF,*,END=110,ERR=50) P(IL),T(IL),  
+	1		 IPATH,ALTZ(IL),PZ(IL),TZ(IL)   
 		 ENDIF                                              
-		 READ(53,978,END=110,ERR=50) (WKL(K,IL),K=1,7),
+		 READ(IPF,978,END=110,ERR=50) (WKL(K,IL),K=1,7),
 	1	      WBRODL(IL)          
-		 IF (NMOL.GT.7) READ(53,978) (WKL(K,IL),K=8,NMOL)
+		 IF (NMOL.GT.7) READ(IPF,978) (WKL(K,IL),K=8,NMOL)
 	      ENDDO 
 	   ENDIF
 
@@ -357,9 +382,15 @@ C**********************************************************************
 	   WRITE(*,'(a30,i5)') 'PROCESSING PROFILE NUMBER:',NPR
 
  111	ENDDO			!Loop over the profiles
-	WRITE(1,1000) HVRMON,HVRMODM,HVRSUB,HVRATM  
- 110	CLOSE(1)		!closes the output file
+
+	!---Write out tail of the output file
+	WRITE(IOT,'(a)') 
+	WRITE(IOT,'(a)') '--------------------------------------'
+	WRITE(IOT,1000) HVRMON,HVRMODM,HVRSUB,HVRATM  
+
+	!---Different formats
  924	FORMAT (1X,I1,I3,I5,F10.6,3A8) 
+ 972	FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2) 
  926	FORMAT (E15.7,F10.4,10X,I5,1X,F7.3,15X,F7.3,/,(1P8E15.7))    
  978	FORMAT (1P8E15.7)                                             
  1000	FORMAT ('Modules versions used in this calculation:',/,/,5X,
@@ -367,12 +398,51 @@ C**********************************************************************
 	2    'modm.f           :  ',4X,A15,/,5X,
 	2    'monortm_sub.f : ',4X,A15,10X,
 	3    'lblatm_monortm.f :  ',4X,A15)
-	CLOSE(53)		!closes the MONORTM_PROF.IN file
-	CLOSE(55)		!closes the LBLRTM.IN file
-	CLOSE(66)		!closes the LBLATM.LOG file
+ 110	CONTINUE
+
+	!---Close all files
+        CLOSE(IPF)		!closes the MONORTM_PROF.IN file
+	CLOSE(IOT)		!closes the output file
+	CLOSE(IRD)		!closes the MONORTM.IN file
+	CLOSE(IPR)		!closes the LBLATM.LOG file
+	CLOSE(IPU)		!closes TAPE7
 	STOP
- 50	WRITE(*,*) 'ERROR OPENING/READING FILE:',fileprof
+
+	!---Error messages
+ 50	WRITE(*,*) ' EXIT; ERROR READING :',fileprof
+	STOP
+ 2000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILELOG          
+	STOP
+ 3000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILEIN           
+	STOP
+ 4000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILEOUT
+	STOP
+ 5000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILESONDE           
+	STOP
+ 6000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILEPROF           
 	STOP
 	END
+
+	!---Block data to be consistent with LBLRTM/LBLATM
+	Block Data phys_consts
+	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+	1    RADCN1,RADCN2 
+	DATA PI / 3.1415927410125732 / !Pi was obtained from PI = 2.*ASIN(1.) 
+c---------------------------------------------                
+c       Constants from NIST 01/11/2002
+c---------------------------------------------                
+	DATA PLANCK / 6.62606876E-27 /, BOLTZ  / 1.3806503E-16 /,
+	1    CLIGHT / 2.99792458E+10 /, 
+	2    AVOGAD / 6.02214199E+23 /, ALOSMT / 2.6867775E+19 /,
+	3    GASCON / 8.314472  E+07 /
+	4    RADCN1 / 1.191042722E-12 /, RADCN2 / 1.4387752    /
+c---------------------------------------------                
+c       units are generally cgs
+c       The first and second radiation constants are taken from NIST.
+c       They were previously obtained from the relations:
+c       RADCN1 = 2.*PLANCK*CLIGHT*CLIGHT*1.E-07      
+c       RADCN2 = PLANCK*CLIGHT/BOLTZ 
+c---------------------------------------------                
+	end
 
 

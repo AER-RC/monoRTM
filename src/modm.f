@@ -1,3 +1,8 @@
+C     path:		$Source$
+C     author:		$Author $
+C     revision:	        $Revision$
+C     created:	        $Date$
+
       SUBROUTINE MODM(IVC,ICP,NWN,WN,NLAY,P,T,W_wv,
      &     W_o2,W_o3,W_n2,W_n2O,W_co,W_so2,W_no2,
      &     W_oh,W_other,CLW,O,OL_WV,OS_WV,OF_WV,OL_O2,
@@ -109,6 +114,9 @@ C	Fixed the handling of N2 amount coming from LBLATM (which
 C	depends on the number of molecules NMOL). 
 C	Adopted accurate constants values. 
 C	Sid Ahmed Boukabara. Dec 14th 2001.
+C     - Updated on January 7th 2002. ARM option (INP=2) updated and
+C       made more efficient after Jim's comments. (INP=3) option optimized.
+C       WV line intensities modified in the microwave (see Tony's email).
 C
 C     Comments should be forwarded to Sid Ahmed Boukabara (sboukaba@aer.com)
 C     or Tony Clough (clough@aer.com).
@@ -448,17 +456,16 @@ C-------------------------------------------------------------------------------
 
       FUNCTION HALFWHM_D(MOL,ISO,XNU,T)
       PARAMETER (NMOL=36,Nspeci=85)
+      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+     $     RADCN1,RADCN2 
       REAL C,K,T,M,AVOG,M
       REAL*8 XNU  
       INTEGER ILOC,ISO
       COMMON /ISVECT/ ISOVEC(NMOL),ISO82(Nspeci),ISONM(NMOL),
      *     smassi(Nspeci)
-      C=2.99792458E10      !light speed
-      K=1.3806503E-16      !Boltzman constant
-      AVOG= 6.02214199E23  !Avogadro number
       ILOC = ISOVEC(MOL)+ISO                                       
       M=SMASSI(ILOC)
-      HALFWHM_D=(XNU/C)*SQRT(2.*ALOG(2.)*((k*T)/(M/AVOG)))
+      HALFWHM_D=(XNU/CLIGHT)*SQRT(2.*LOG(2.)*((BOLTZ*T)/(M/AVOGAD)))
       END
 
 
@@ -590,19 +597,19 @@ C-------------------------------------------------------------------------------
       SUBROUTINE INITI(P,T,RADCT,T0,P0,W_wv,W_o2,
      &     W_o3,W_n2,W_n2O,W_co,W_so2,W_no2,W_oh,
      &     W_other,XN0,Xn,Xn_WV,RHOFAC)
-      DATA OXYGEN /2.090E+05/
-      DATA AN2    /7.81E+05/
+      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+     $     RADCN1,RADCN2 
       DATA WVMOLMASS /18.016 /, DRYMOLMASS/28.97/   
-      RADCT=1.4387752           !in K/cm-1
+      RADCT=PLANCK*CLIGHT/BOLTZ !in K/cm-1
       T0=296.                   !in K
       P0=1013.25                !in HPa
-      XN0=(P0/(1.3806503E-16*T0))*1.E+3
-      XN =(P /(1.3806503E-16*T ))*1.E+3
+      XN0=(P0/(BOLTZ*T0))*1.E+3
+      XN =(P /(BOLTZ*T ))*1.E+3
       WDRY=W_o2+W_o3+W_n2+W_n2O+W_co+W_so2+W_no2+W_oh+W_other
       RATIOMIX=(W_wv*WVMOLMASS)/(WDRY*DRYMOLMASS)
       !WVPRESS=(RATIOMIX/(RATIOMIX+0.622))*P
       WVPRESS=(RATIOMIX/(RATIOMIX+(WVMOLMASS/DRYMOLMASS)))*P
-      Xn_WV=(WVPRESS/(1.3806503E-16*T))*1.E+3
+      Xn_WV=(WVPRESS/(BOLTZ*T))*1.E+3
       RHOFAC=(W_n2/(WDRY+W_wv))*(P/P0)*(273.15/T)
       END 
       
@@ -640,10 +647,14 @@ C-------------------------------------------------------------------------------
       REAL DELTNU(NNM,IIM),E(NNM,IIM),ALPS(NNM,IIM),ALPF(NNM,IIM)
       REAL X(NNM,IIM),XG(NNM,IIM),S0(NNM,IIM)
       INTEGER MOL(NNM),NBLM(NNM),ISO(NNM,IIM)
-      Character Q1*9,Q2*9,HFILE*80
+      Character Q1*9,Q2*9,HFILE*80,CXID*1,CXIDLINE*80
       COMMON/HITR/MOL,NBLM,ISO,XNU0,DELTNU,S0,E,ALPS,ALPF,X,XG,NMOLEC
+      COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,  
+     $     NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
+     $     NLTEFL,LNFIL4,LNGTH4                                 
       DATA MOL_WV/1/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,MOL_N2O/4/
       DATA MOL_CO/5/,MOL_SO2/9/,MOL_NO2/10/,MOL_OH/13/
+      EQUIVALENCE (CXID,CXIDLINE)                    
       I_WV=0
       I_O3=0
       I_O2=0
@@ -655,6 +666,14 @@ C-------------------------------------------------------------------------------
       I_OH=0
       NMOLEC=0
       OPEN(9,FILE=HFILE,form='formatted',status='old',ERR=20)
+      !---We read comments /put them in LOG file
+      WRITE(IPR,'(a80)') '--------------------------------'
+      WRITE(IPR,'(a80)') 'SPECTROSCOPIC INFORMATION USED'
+      WRITE(IPR,'(a80)') '--------------------------------'
+ 23   READ (9,'(A80)',END=30,ERR=30) CXIDLINE
+      WRITE(IPR,'(a80)') CXIDLINE
+      IF (CXID.NE.'$') GO TO 23                            
+
       ILINE=0
  22   READ(9,100,END=3,ERR=30) mo,iso_scal,nu0,S0_scal,R,
      &     alpf_scal,alps_scal,E_scal,X_scal,deltnu_scal,
@@ -773,7 +792,9 @@ C-------------------------------------------------------------------------------
       !Ref:(INT. J. IR & MM WAVES V.12(17) JULY 1991
       COMPLEX EPS,RE
       REAL*8 WN
-      FREQ=WN*29.9792458
+      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+     $     RADCN1,RADCN2 
+      FREQ=WN*CLIGHT/1.E9
       IF ((FREQ.GT.3000.).AND.(CLW.GT.0.)) THEN
          WRITE(*,*) 'STOP: CLOUD IS PRESENT FOR SIMULATIONS'
          WRITE(*,*) 'IN A NON-MICROWAVE SPECTRAL REGION'
@@ -789,7 +810,7 @@ C-------------------------------------------------------------------------------
      $     (EPS1-EPS2)/CMPLX(1.,FREQ/FS) +EPS2
       RE = (EPS-1.)/(EPS+2.)
       !ODCLW = -.06286057*CLW*AIMAG(RE)*FREQ
-      ODCLW = -(6.*3.1415926535897932/299.792458)*CLW*AIMAG(RE)*FREQ
+      ODCLW = -(6.*PI/299.792458)*CLW*AIMAG(RE)*FREQ
       RETURN
       END
 
@@ -797,20 +818,23 @@ C-------------------------------------------------------------------------------
       FUNCTION XLORENTZ(Z)
       REAL*8 Z
       REAL XLORENTZ
-         XLORENTZ=1./(3.14159*(1.+(Z**2))) 
+      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+     $     RADCN1,RADCN2 
+      XLORENTZ=1./(PI*(1.+(Z**2))) 
       RETURN
       END
 
 
 
       FUNCTION VOIGT(DELTNU,ALPHAL,ALPHAD)
-      IMPLICIT NONE
       COMPLEX v,w4
       REAL*8 DELTNU
       REAL avc(0:101)
       REAL ALPHAL,ALPHAD,ZETA,ALPHAV,AVCINTERP,DNU
       REAL AL,AD,X,Y,ANORM1,VOIGT,DZETA
       INTEGER IZETA2,IZETA1
+      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+     $     RADCN1,RADCN2 
       DATA AVC/                                       
      *  .10000E+01,.99535E+00,.99073E+00,.98613E+00,.98155E+00,   
      *  .97700E+00,.97247E+00,.96797E+00,.96350E+00,.95905E+00,   
@@ -850,18 +874,18 @@ C-------------------------------------------------------------------------------
       end if
       !---case of pure lorentz
       if (zeta .eq. 1.00) then 
-         VOIGT=(ALPHAL/(3.14159*(ALPHAL**2+(DELTNU)**2)))
+         VOIGT=(ALPHAL/(PI*(ALPHAL**2+(DELTNU)**2)))
          RETURN
       end if
       !---SETUP PARAMETERS FOR CALL TO VOIGT GENERATOR (HUMLICEK)
-      x = sqrt(alog(2.))*(dnu)
+      x = sqrt(log(2.))*(dnu)
       y = 1000.
       if (zeta .lt. 1.000) then
-         y = sqrt(alog(2.))*AL
+         y = sqrt(log(2.))*AL
       end if
       !---CALL the Humlicek subroutine
       v=W4(x,y)
-      anorm1 = sqrt(alog(2.)/3.1415926535897932)/alphad
+      anorm1 = sqrt(log(2.)/PI)/alphad
       VOIGT=REAL(v)*ANORM1
       RETURN
       end

@@ -1,6 +1,14 @@
+SHELL = /bin/sh
 CF=	f90 
 LDR=	f90 
-COMMAND=../bin/monortm
+
+#------if we run build.sh
+#COMMAND=../bin/monortm_$(vers) #if we want to automatize the version #
+
+
+#------if we run make directly
+vers=2.00
+COMMAND=../bin/monortm_$(vers)
 
 SRCS=	monortm.f monortm_sub.f lblatm_monortm.f modm.f 
 
