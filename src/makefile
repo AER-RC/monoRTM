@@ -7,7 +7,7 @@ LDR=	 pgf90
 
 
 #------if we run make directly
-vers=2.12_rev
+vers=2.12
 COMMAND=../bin/monortm_v$(vers)
 
 SRCS=	monortm.f monortm_sub.f lblatm_monortm.f modm.f 
