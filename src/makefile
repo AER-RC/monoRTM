@@ -8,7 +8,7 @@ LDR=	f90
 
 #------if we run make directly
 vers=2.11
-COMMAND=../bin/monortm_$(vers)
+COMMAND=../bin/monortm_v$(vers)
 
 SRCS=	monortm.f monortm_sub.f lblatm_monortm.f modm.f 
 

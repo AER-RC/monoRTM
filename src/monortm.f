@@ -265,12 +265,6 @@ C**********************************************************************
 
 	!---PRINT OUT MONORTM VERSION AND PROFILES NUMBER
 	CALL start(NPROF,INP)
-	WRITE(*,'(a)')    '***************************************'
-          WRITE (*,'(a)') '* NEW LINE COUPLING PARAMETERS FOR O2 *'
-          WRITE (*,'(a)') '*      Y = Y * 0.87; G = G * 0.       *'
-	WRITE(*,'(a)')    '***************************************'
-	WRITE(*,'(a)') '             '
-
 
 	!---CHECK INPUTS AND THEIR CONSISTENCY WITH MONORTM
 	CALL CHECKINPUTS(NWN,NPROF,NWNMX,NPROFMX,INP)

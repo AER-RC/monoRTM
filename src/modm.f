@@ -680,11 +680,17 @@ C-------------------------------------------------------------------------------
       NMOLEC=0
       OPEN(9,FILE=HFILE,form='formatted',status='old',ERR=20)
       !---We read comments /put them in LOG file
+      KOUNT = 0
       WRITE(IPR,'(a80)') '--------------------------------'
       WRITE(IPR,'(a80)') 'SPECTROSCOPIC INFORMATION USED'
       WRITE(IPR,'(a80)') '--------------------------------'
+      WRITE(*,'(a80)') '--------------------------------'
+      WRITE(*,'(a80)') 'SPECTROSCOPIC INFORMATION USED'
+      WRITE(*,'(a80)') '--------------------------------'
  23   READ (9,'(A100)',END=30,ERR=30) CXIDLINE
       WRITE(IPR,'(a100)') CXIDLINE
+      if (ikount.le.3) write (*,'(a80)') CXIDLINE
+      ikount = ikount + 1
       IF (CXID.NE.'$') GO TO 23                            
 
       ILINE=0

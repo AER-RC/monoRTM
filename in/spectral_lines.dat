@@ -1,7 +1,7 @@
-	path:		$Source$
-	author:		$Author$
-	revision:	$Revision$
-	created:	$Date$
+C	path:		$Source$
+C	author:		$Author$
+C	revision:	$Revision$
+C	created:	$Date$
 C***************************************************************************************************
 C	This is the spectroscopic data file. It contains all the line information necessary to
 C	process the lines contribution. It is based on HITRAN 1996 except for the water vapor 
@@ -9,6 +9,11 @@ C	intensities at 0.74 cm-1 (22.233 GHz) and 6.11 cm-1 (183 GHz) -these are based
 C	work performed by S.A. Clough 2002-. This file covers the microwave and the submillimeter
 C	regions. It could be used for frequencies up to 55 cm-1 (1648 GHz).
 C	Jan 17th 2002. AER Inc, SAB.
+C       
+c       O2 line coupling parameters have been modified: Y parameter was scaled by 0.87
+c                                                       G parameter was set to zero.
+c       September 2003
+c
 C	The spectroscopic information should start right after the line that begins with a 
 C	dollar ($) sign.
 C***************************************************************************************************

@@ -46,14 +46,19 @@ Assuming you are in the main directory.
 
 . Running:
   > cd bin
-  > monortm_version#
+  > monortm_v#
+  > cd ..
 
 . Visualization of the output:
   >cd idl
   >idl
   IDL> .run monortm.pro
+  > cd ..
 
 
+. Numerical check
+  >cd out
+  > diff MONORTM.OUT MONORTM.OUT_sample
 
 HOW TO TAILOR MONORTM TO SPECIFIC NEEDS:
 ----------------------------------------
