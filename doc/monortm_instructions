@@ -86,6 +86,9 @@ IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  I
 	                   still read from LBLRTM.IN (wavenumbers, etc).
 			   In case of 3, the skin temperature is assumed to be the 
 	                   surface level temperature.
+        *SPD    -->  (0,1)
+ 	             =0 Slow version of MonoRTM (accurate) -default value-
+ 		     =1 Fastversion of MonoRTM (valid only in the microwave).
 	 
 
 --------------
