@@ -1,0 +1,86 @@
+****************************************************************
+*
+*      M O N O R T M       D I R E C T O R Y
+*
+****************************************************************
+
+This is MONORTM directory. It contains several sub-directories described
+briefly below:
+
+CVS -> for version control. Do not edit.
+
+bin -> contains the MonoRTM executable. Will be generated automatically.
+
+in  -> contains the input files 
+       . spectral_lines.dat : contains the lines informations, depends on the the spectrum.
+       . LBLRTM.IN          : input compatible with lblrtm (ex-TAPE5). INP=1
+       . MONORTM_PROF.IN    : profile information (temp, WV, etc) in case INP=3 in monortm.f
+
+out -> output from MonoRTM is put in this directory: MONORTM.OUT. 
+       IDL code to read this file and to make plots is available in idl sub-directory.
+
+
+src -> contains all source files needed by MonoRTM as well as the makefile.
+
+doc -> detailed documentation about MonoRTM.
+
+idl -> visualization tool
+
+
+
+HOW TO RUN MONORTM:
+-------------------
+Assuming you are in the main directory.
+
+. Compilation:
+  > cd src
+  > make
+  > rm *.o 
+  > cd ..
+
+. Running:
+  > bin/monortm
+
+. Visualization of the output:
+  >cd idl
+  >idl
+  IDL> .run monortm.pro
+
+
+
+
+HOW TO TAILOR MONORTM TO SPECIFIC NEEDS:
+----------------------------------------
+MONORTM id a driver program that calls the core module called the Monochromatic 
+Optical Depth Model (MODM). 
+The inputs to MODM could be modified inside monortm.f directly or through the input
+file LBLRTM.IN (same type of format as LBLRTM's TAPE5).
+
+. If MonoRTM is to use LBLRTM.IN, the control variable INP must be set to 1
+  If MonoRTM is to use MONORTM_PROF.IN, INP must be set to 3.
+
+. The version of the continuum to be used can be changed through the variable IVC
+
+. Frequency: By default, MonoRTM runs for the microwave spectrum. It computes
+  the brightness temperatures for the frequency range 0.1 -300 GHz (1000 spectral points)
+  We can change that by modifying the wavenumbers to be processed either in LBLRTM.IN
+  or in monortm.f itself.
+
+
+
+
+QUESTIONS:
+----------
+Any comments or questions should be forwarded to Sid Ahmed Boukabara or Tony Clough in AER 
+at the address below:
+
+AER , Radiation and Climate Group
+131 Hartwell Avenue
+Lexington, MA 02421
+USA
+Tel: 1 781 761 2213
+Fax: 1 781 761 2299
+
+By E-mail:
+sboukaba@aer.com
+clough@aer.com
