@@ -143,43 +143,10 @@
 	   IF (tbspect eq 1) then begin
 	     erase
 	     !p.multi=1
-	     ;plot,freq,monortm(0,*,PROFILE2PLOT),xtitle='Frequency (GHz)',$
-	     ;ytitle='Brightness Temperature (K)',$
-	     ;charsize=1.3,charthick=4,thick=3,title='PROFILE #'+string(PROFILE2PLOT+1,'(I5)')
-	
-	     ;----test 
 	     plot,freq,monortm(0,*,PROFILE2PLOT),xtitle='Frequency (GHz)',$
 	     ytitle='Brightness Temperature (K)',$
-	     charsize=2,charthick=4,thick=1,$
-	     ;yrange=[min(monortm(0,*,PROFILE2PLOT)),max(monortm(0,*,PROFILE2PLOT))]
-	     yrange=[250,300],xrange=[40,200]
-	     ;---amsu
-	     ;df=0.01
-	     ;ind=where((freq le 23.8+df) and (freq ge 23.8-df))
-	     ;tbc=monortm(0,ind,PROFILE2PLOT)
-	     ;arrow,23.8-0.135,tbc,23.8+0.135,tbc,/data
-	     ;arrow,23.8+0.135,tbc,23.8-0.135,tbc,/data
-	     ;xyouts,23.8-3*0.135,tbc,'AMSU'
-	     ;plots,[23.8-0.135,23.8-0.135],[tbc-0.5,tbc+0.5]
-	     ;plots,[23.8+0.135,23.8+0.135],[tbc-0.5,tbc+0.5]
-	     ;---ssmi
-	     ;df=0.007
-	     ;ind=where((freq le 22.235+df) and (freq ge 22.235-df))
-	     ;tbc=monortm(0,ind,PROFILE2PLOT)
-	     ;arrow,22.235-0.120,tbc,22.235+0.120,tbc,/data
-	     ;arrow,22.235+0.120,tbc,22.235-0.120,tbc,/data
-	     ;xyouts,22.235-3*0.120,tbc,'SSM/I'
-	     ;plots,[22.235-0.120,22.235-0.120],[tbc-0.5,tbc+0.5]
-	     ;plots,[22.235+0.120,22.235+0.120],[tbc-0.5,tbc+0.5]
-	     ;---tmi
-	     ;df=0.007
-	     ;ind=where((freq le 21.3+df) and (freq ge 21.3-df))
-	     ;tbc=monortm(0,ind,PROFILE2PLOT)
-	     ;arrow,21.3-0.100,tbc,21.3+0.100,tbc,/data
-	     ;arrow,21.3+0.100,tbc,21.3-0.100,tbc,/data
-	     ;xyouts,21.3+2*0.100,tbc,'TMI'
-	     ;plots,[21.3-0.100,21.3-0.100],[tbc-0.5,tbc+0.5]
-	     ;plots,[21.3+0.100,21.3+0.100],[tbc-0.5,tbc+0.5]
+	     charsize=2,charthick=4,thick=1,title='PROFILE #'+string(PROFILE2PLOT+1,'(I5)'),$
+	     yrange=[min(monortm(0,*,PROFILE2PLOT)),max(monortm(0,*,PROFILE2PLOT))]
 	   ENDIF
 
 	   IF (radspect eq 1) then begin
@@ -213,7 +180,8 @@
 	     oplot,freq,monortm(7,*,PROFILE2PLOT),color=col_n2,linestyle=lin_n2
 	     oplot,freq,monortm(8,*,PROFILE2PLOT),color=col_o3,linestyle=lin_o3
 	     plot_legend,5,min(freq),max(freq),0.000001,0.006,$
-	     [0,lin_wv,lin_o2,lin_n2,lin_o3],[0,col_wv,col_o2,col_n2,col_o3],['All','H2O','O2','N2','O3'],$
+	     [0,lin_wv,lin_o2,lin_n2,lin_o3],[0,col_wv,col_o2,col_n2,col_o3],$
+	     ['All','H2O','O2','N2','O3'],$
 	     [0,0,0,0,0],0.9
 	   ENDIF
 
