@@ -1,8 +1,0 @@
-
-	path:		$Source$
-	author:		$Author$
-	revision:	$Revision$
-	created:	$Date$
-
-*******************
-
