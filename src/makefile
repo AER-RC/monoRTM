@@ -1,12 +1,10 @@
 CF=	f90 
 LDR=	f90 
-#CF=	f77 
-#LDR=	f77 
 COMMAND=../bin/monortm
 
-SRCS=	monortm.f monortm_sub.f lblatm.f modm.f 
+SRCS=	monortm.f monortm_sub.f lblatm_monortm.f modm.f 
 
-OBJS=	monortm.o monortm_sub.o lblatm.o modm.o 
+OBJS=	monortm.o monortm_sub.o lblatm_monortm.o modm.o 
 
 .f.o:
 	$(CF) -c $*.f
