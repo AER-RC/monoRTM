@@ -157,6 +157,16 @@ C**********************************************************************
 	!     made more efficient after Jim's comments. (INP=3) option optimized.
 	!     WV line intensities modified in the microwave (see Tony's email).
 	!     Sid Ahmed Boukabara AER Inc. 2002. 
+	!   - Updated on October 2nd 2002. SAB. Major changes: fix in the 
+	!     way we read radiosondes, no correction of slant path 
+	!     (lblatm does that). Speed option implemented.
+	!     We added also the possibility to run Voigt or Lorentz
+	!     line shape (speed up process) depending on the current
+	!     condition (parameter zeta). The pressure induced
+	!     shifted frequency is also passed to the line shape 
+	!     computation (instead of the spectroscopic wavenumber).
+	!     Also, in the uplooking configuration we compute only the 
+	!     downwelling radiance (again, for speed purposes).
 	!
 	!***************************************************************
 	include "declar.incl"
@@ -241,7 +251,7 @@ C**********************************************************************
 
 	!---Get info about IBMAX/ZBND/H1/H2...
 	CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
-	1    ICNTNM,CLW,INP,IBMAX,ZBND,H1f,H2f)
+	1    ICNTNM,CLW,INP,IBMAX,ZBND,H1f,H2f,ISPD)
 
 	!---Write header in output file
 	WRITE(IOT,'(a)') 'MONORTM RESULTS:'
@@ -269,7 +279,7 @@ C**********************************************************************
 		 IPASS=0
 	      ENDIF
 	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
-	1	   ICNTNM,CLW,INP,IBMAX,ZBND,H1f,H2f)
+	1	   ICNTNM,CLW,INP,IBMAX,ZBND,H1f,H2f,ISPD)
 	   ENDIF
 	   !---Inputs: wave#/path/angle from MONORTM.IN, profiles from ARM sondes
 	   IF (INP.EQ.2) THEN
@@ -285,7 +295,7 @@ C**********************************************************************
 	      ENDIF
 	      OPEN (IRD,FILE=FILESONDE,STATUS='UNKNOWN',ERR=5000)        
 	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILESONDE,
-	1	   ICNTNM,CLW,INP,IBMAX2,ZBND2,H1,H2)
+	1	   ICNTNM,CLW,INP,IBMAX2,ZBND2,H1,H2,ISPD)
 	      CLOSE(IRD)
 	   ENDIF
 	   !---Inputs: MONORTM_PROF.IN (TAPE7 consistent)
@@ -356,14 +366,13 @@ C**********************************************************************
 	2	W_oh,W_other,CLW,O,OL_WV,OS_WV,OF_WV,OL_O2,
 	3	OL_O3,OL_N2,OC_N2,OL_N2O,OL_CO,OL_SO2,
 	4	OL_NO2,OL_OH,O_CLW,XSLF,XFRG,XCN2,
-	5	SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM)
+	5	SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ISPD)
 	   
 	   !***********************************************
 	   !* Fourth Step: CORRECT FOR THE SLANT PATH
 	   !***********************************************	   
-	   !---CORRECT THE OPTDEPTHS FOR THE SLANT PATH : SHOULD NOT BE USED IF LBLATM (INP=1,2) IS CALLED
-	   !--- OR IF LBLATM GENERATED INP=3 INPUTS
-	   ! CALL CORR_OPTDEPTH(INP,NLAYRS,SECNTA,NWN,ANGLE,O,IRT)
+	   !---CORRECT THE OPTDEPTHS FOR THE SLANT PATH
+	   !CALL CORR_OPTDEPTH(INP,NLAYRS,SECNTA,NWN,ANGLE,O,IRT)
 
 	   !***********************************************
 	   !* Fifth Step: RADIATIVE TRANSFER

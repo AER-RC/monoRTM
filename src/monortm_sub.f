@@ -205,7 +205,7 @@ c
 
 	SUBROUTINE RDLBLINP(IATM,IPLOT,IRT,NWN,WN,
 	1    FILEIN,ICNTNM,CLW,INP,IBMAXOUT,ZBNDOUT,
-	2    H1fout,H2fout)
+	2    H1fout,H2fout,ISPD)
 C-------------------------------------------------------------------------------
 C
 C     SUBROUTINE:  RDLBLINP
@@ -310,7 +310,7 @@ C-------------------------------------------------------------------------------
 	READ(IRD,925,END=80,ERR=6000) IHIRAC,ILBLF4,             
 	1    ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,    
 	2    ITEST,IATM, CMRG,ILAS, IOD,IXSECT,IRAD,
-	3    MPTS,NPTS,INP  
+	3    MPTS,NPTS,INP,ISPD  
 	
 	IF ((INP.LE.1).OR.(INP.GE.4)) INP=1
 	!---IF INP=1 !MONORTM.IN INPUT
@@ -633,7 +633,7 @@ C-------------------------------------------------------------------------------
  915	FORMAT (E15.7,F10.4,F10.4,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)
  916	FORMAT (3F10.4,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)         
  920	FORMAT (I3)                                                 
- 925	FORMAT (10(4X,I1),3X,2A1,3(4X,I1),I1,I4,1X,I4,1X,I4)    
+ 925	FORMAT (10(4X,I1),3X,2A1,3(4X,I1),I1,I4,1X,I4,1X,I4,1X,I4)    
  9255	FORMAT (8E15.7)
  927	FORMAT (8E10.3)                                          
  930	FORMAT (I1)                                               

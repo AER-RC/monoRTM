@@ -8,7 +8,7 @@ C     created:	        $Date$
      &     W_oh,W_other,CLW,O,OL_WV,OS_WV,OF_WV,OL_O2,
      &     OL_O3,OL_N2,OC_N2,OL_N2O,OL_CO,OL_SO2,
      &     OL_NO2,OL_OH,O_CLW,XSLF,XFRG,XCN2,SCLCPL,
-     &     SCLHW,Y0RES,HFILE,ICNTNM)
+     &     SCLHW,Y0RES,HFILE,ICNTNM,ISPD)
 
 C-------------------------------------------------------------------------------
 C
@@ -64,6 +64,9 @@ C                  of the zero frequency band (usually SCLHW=1)
 C     - Y0RES    : Y0 resonnance (usually Y0RES=0) to be added to the Yi
 C     - HFILE    : Name of the spectral lines information file (HITRAN)
 C     - ICNTNM   : Flag to account for the continuum (if =1) or not (if =0)
+C     - ISPD     : Flag to use the slow version (if 0) (all the lines present) 
+C                  which is most accurate, or use the fast version (if 1)
+C                  (only flagged lines used). valid only for the microwave.
 C
 C
 C     OUTPUTS:
@@ -117,6 +120,12 @@ C	Sid Ahmed Boukabara. Dec 14th 2001.
 C     - Updated on January 7th 2002. ARM option (INP=2) updated and
 C       made more efficient after Jim's comments. (INP=3) option optimized.
 C       WV line intensities modified in the microwave (see Tony's email).
+C     - Updated on October 2nd 2002. SAB. Speed option implemented.
+C       We added also the possibility to run Voigt or Lorentz
+C       line shape (speed up process) depending on the current
+C       condition (parameter zeta). The pressure induced
+C       shifted frequency is also passed to the line shape 
+C       computation (instead of the spectroscopic wavenumber).
 C
 C     Comments should be forwarded to Sid Ahmed Boukabara (sboukaba@aer.com)
 C     or Tony Clough (clough@aer.com).
@@ -131,7 +140,7 @@ C-------------------------------------------------------------------------------
       HVRMODM = '$Revision$' 
       IF(INIT)THEN
          CALL VECISO               !set-up the isotopes
-         CALL READ_HITR(ICP,HFILE) !reads the HITRAN data
+         CALL READ_HITR(ICP,HFILE,ISPD) !reads the HITRAN data
          INIT=.FALSE.
       ENDIF
       DO M=1,NWN                !loop over the wavenumbers
@@ -645,7 +654,7 @@ C-------------------------------------------------------------------------------
       RETURN
       END
         
-      SUBROUTINE READ_HITR(ICP,HFILE)
+      SUBROUTINE READ_HITR(ICP,HFILE,ISPD)
       PARAMETER (NNM=   9,IIM=    5000)
       REAL*8 XNU0(NNM,IIM),nu0
       REAL DELTNU(NNM,IIM),E(NNM,IIM),ALPS(NNM,IIM),ALPF(NNM,IIM)
@@ -679,9 +688,10 @@ C-------------------------------------------------------------------------------
       IF (CXID.NE.'$') GO TO 23                            
 
       ILINE=0
+      ILINE_O2=0
  22   READ(9,100,END=3,ERR=30) mo,iso_scal,nu0,S0_scal,R,
      &     alpf_scal,alps_scal,E_scal,X_scal,deltnu_scal,
-     &     iv1,iv2,Q1,Q2,ier1,ier2,ier3,iref1,iref2,iref3
+     &     iv1,iv2,Q1,Q2,ier1,ier2,ier3,iref1,iref2,iref3,iflg
       !---test to limit the number of lines used-----
       !if ((nu0.ge.60.)) goto 3
       !---test to limit the strength of the WV lines used
@@ -690,7 +700,17 @@ C-------------------------------------------------------------------------------
       !if((iso_scal.ne.1).and.(mo.eq.1)) goto 22
       !---test to remove the wavenumber shift effect
       !deltnu_scal=0.
+      !---test to use only those lines that are flagged
+      IF (ISPD .eq. 1) then
+         IF (iflg.ne.mo) then 
+            IF ((iref3.EQ.-1).OR.(iref3.EQ.-3)) THEN 
+               READ(9,2,END=3,ERR=30)JF,XF,DF,SF,EF,AS,AF,XS,XF
+            ENDIF
+            goto 22
+         ENDIF
+      ENDIF
       !-----------------------------------------------
+      IF (mo.EQ.mol_o2) ILINE_O2=ILINE_O2+1
       ILINE=ILINE+1
       IF (ILINE.EQ.1) MINWN=nu0
       CALL S_INDX(mo,mol_wv,I_WV,NMOLEC,NMOL_WV,MOL,II,JJ)
@@ -732,6 +752,13 @@ C-------------------------------------------------------------------------------
       GOTO 22
  3    CONTINUE
       MAXWN=NU0
+      IF (ISPD.EQ.1) THEN
+         WRITE(*,*) '****************************************'
+         WRITE(*,*) '*            W A R N I N G             *'
+         WRITE(*,*) '****************************************'
+         WRITE(*,*) 'FAST VERSION IS RUNNING.'
+         WRITE(*,*) 'CURRENTLY VALID IN THE MICROWAVE ONLY.'
+      ENDIF
       WRITE(*,*) '****************************************'
       WRITE(*,*) '* SPECTRAL LINES INFORMATION AVAILABLE *'
       WRITE(*,*) '****************************************'
@@ -749,13 +776,16 @@ C-------------------------------------------------------------------------------
          IF (MOL(J).EQ.MOL_SO2) NBLM(J)=I_SO2
          IF (MOL(J).EQ.MOL_NO2) NBLM(J)=I_NO2
          IF (MOL(J).EQ.MOL_OH)  NBLM(J)=I_OH
-         WRITE(*,'(2x,i8,5x,i8,5x,i8)') J,MOL(J),NBLM(J)
+         IF (MOL(J).NE.MOL_O2) WRITE(*,'(2x,i8,5x,i8,5x,i8)') J,
+     &        MOL(J),NBLM(J)
+         IF (MOL(J).EQ.MOL_O2) WRITE(*,'(2x,i8,5x,i8,5x,i8)') J,
+     &        MOL(J),ILINE_O2
       ENDDO
       WRITE(*,*)
       WRITE(*,*) '****************************************'
       CLOSE(9)
  100  FORMAT (I2,I1,F12.6,1P,2E10.3,0P,2F5.4,F10.4,F4.2,F8.6,
-     &     2I3,2A9,3I1,3I2)
+     &     2I3,2A9,3I1,3I2,I2)
  2    FORMAT (I2,1P,4(E13.6,E11.4),0P,I2)                           
       RETURN
  20   PRINT *, 'ERROR OPENING HITRAN FILE:',HFILE
