@@ -68,11 +68,14 @@ C-------------------------------------------------------------------------------
 	include "declar.incl"
 	INTEGER NWN,NLAY,IRT,I,IOUT,IDU
 	REAL RADCN1,RADCN2
-	PARAMETER (RADCN2=1.438786314,RADCN1=1.191061999E-12)
+	PARAMETER (RADCN2=1.438786314232,RADCN1=1.191061999E-12)
 	REAL*8 V
+	CHARACTER HVRSUB*15
 	REAL TMPSFC,ESFC,RSFC,SURFRAD,ALPH,COSMOS,TSKY
 	REAL fbeta,beta,bb_fn,X
-	BB_fn(V,fbeta)  = RADCN1*(V**3)/(EXP(V*fbeta)-1.)               
+	COMMON /CVRSUB/ HVRSUB
+	BB_fn(V,fbeta)  = RADCN1*(V**3)/(EXP(V*fbeta)-1.)   
+	HVRSUB = '$Revision$' 
 	!---Up and Down radiances
 	CALL RAD_UP_DN(T,NLAY,TZ,WN,rup,trtot,rdn,O,NWN,IDU)
 	!---RADIATIVE TRANSFER
@@ -99,10 +102,11 @@ C-------------------------------------------------------------------------------
  	RETURN
 	END 
 
+
 	SUBROUTINE RAD_UP_DN(T,nlayer,TZ,WN,rup,trtot,rdn,O,NWN,IDU)
 	IMPLICIT REAL*8 (V)      
 	include "declar.incl"
-	PARAMETER (RADCN2=1.438786314,RADCN1=1.191061999E-12,
+	PARAMETER (RADCN2=1.438786314232,RADCN1=1.191061999E-12,
 	1    aa_inv=3.597122302)
 	INTEGER  layer,nlayer,NWN,IDU,lmin,lmax,nl
 	REAL          beta,beta_a,bb,bba
@@ -154,8 +158,8 @@ C-------------------------------------------------------------------------------
  50	   continue
 	   TRTOT(I)=EXP(-ODTOT(I))
  60	ENDDO
-	RETURN                                                           
-	END                                                               
+	RETURN                                                   
+	END                                                       
 
 
 
@@ -259,21 +263,22 @@ C-------------------------------------------------------------------------------
 	COMMON /PATHD/ P,T,WKL,WBRODL,DVL,WTOTL,ALBL,
 	1    ADBL,AVBL,H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,         
 	2    PZ,TZ                          
-	COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,        
+	COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,  
 	1    NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
 	2    NLTEFL,LNFIL4,LNGTH4                                 
-	COMMON /MANE/ P0,TEMP0,NLAYRS,DVXM,H2OSLF,WTOT,ALBAR,ADBAR,AVBAR,  
+	COMMON /MANE/ P0,TEMP0,NLAYRS,DVXM,H2OSLF,WTOT,ALBAR,ADBAR,
+	1    AVBAR,  
 	1    AVFIX,LAYRFX,SECNT0,SAMPLE,DVSET,ALFAL0,AVMASS,      
 	2    DPTMIN,DPTFAC,ALTAV,AVTRAT,TDIFF1,TDIFF2,ALTD1,      
 	3    ALTD2,ANGLE,IANT,LTGNT,LH1,LH2,IPFLAG,PLAY,TLAY,     
 	4    EXTID(10)    
-	COMMON /BNDPRP/ TMPBND,BNDEMI(3),BNDRFL(3),IBPROP                   
-	COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4),       
+	COMMON /BNDPRP/ TMPBND,BNDEMI(3),BNDRFL(3),IBPROP            
+	COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4),  
 	1    WK(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   
 	2    EMISIV,FSCDID(17),NMOL,LAYRS ,YI1,YID(10),LSTWDF    
 	DATA CDOL / '$'/,CPRCNT / '%'/
-	DATA CONE / '1'/,CTWO / '2'/,CTHREE / '3'/,CFOUR / '4'/,            
-	1    CA / 'A'/,CB / 'B'/,CC / 'C'/                                  	
+	DATA CONE / '1'/,CTWO / '2'/,CTHREE / '3'/,CFOUR / '4'/,       
+	1    CA / 'A'/,CB / 'B'/,CC / 'C'/                   
 	CHARACTER CEX*2,CEXST*2,CPRGID*60    
 	DATA CEXST/'EX'/
 	LOGICAL INIT
@@ -281,7 +286,7 @@ C-------------------------------------------------------------------------------
 	SAVE INIT
 	IF(INIT)THEN
 	   !--OUTPUT FILE 
-	   FILEOUT='out/LBLATM.LOG'
+	   FILEOUT='LBLATM.LOG'
 	   IPR=66
 	   OPEN (IPR,FILE=FILEOUT,STATUS='UNKNOWN',ERR=2000)        
 	   !---INPUT FILE 
@@ -361,19 +366,19 @@ C-------------------------------------------------------------------------------
 	   WRITE(*,*) 'WARNING: NPTS IS IGNORED IN MONORTM'
 	   WRITE(*,*) 'IN ',FILEIN,' NPTS=',NPTS
 	ENDIF
-	IF (CMRG(2).EQ.CA) THEN                                             
-	   IMRG = 12                                                        
-	ELSEIF (CMRG(2).EQ.CB) THEN                                         
-	   IMRG = 22                                                        
-	ELSEIF (CMRG(2).EQ.CC) THEN                                         
-	   IMRG = 32                                                        
-	ELSE                                                                
-	   READ (CMRG(2),930) IMRG                                          
-	   IF (CMRG(1).EQ.CONE) IMRG = IMRG+10                              
-	   IF (CMRG(1).EQ.CTWO) IMRG = IMRG+20                              
-	   IF (CMRG(1).EQ.CTHREE) IMRG = IMRG+30                            
+	IF (CMRG(2).EQ.CA) THEN                               
+	   IMRG = 12                                          
+	ELSEIF (CMRG(2).EQ.CB) THEN                              
+	   IMRG = 22                                             
+	ELSEIF (CMRG(2).EQ.CC) THEN                           
+	   IMRG = 32                                            
+	ELSE                                                    
+	   READ (CMRG(2),930) IMRG                              
+	   IF (CMRG(1).EQ.CONE) IMRG = IMRG+10                    
+	   IF (CMRG(1).EQ.CTWO) IMRG = IMRG+20                      
+	   IF (CMRG(1).EQ.CTHREE) IMRG = IMRG+30               
 	   IF (CMRG(1).EQ.CFOUR) IMRG = IMRG+40
-	ENDIF                                                               
+	ENDIF                                                  
 	!------END CHECKING RECORD 1.2
 				!---record 1.2.1
 	IF (IEMIT.EQ.2) THEN
@@ -424,7 +429,8 @@ C-------------------------------------------------------------------------------
 	      WRITE(*,*) 'WARNING: DVOUT IS IGNORED IN MONORTM'
 	      WRITE(*,*) 'IN ',FILEIN,' DVOUT=',DVOUT
 	   ENDIF
-	   IF ((DVSET.LE.0.).AND.(V1.NE.V2).AND.(V1.GT.0.).AND.(V2.GT.0.)) THEN
+	   IF ((DVSET.LE.0.).AND.(V1.NE.V2).AND.(V1.GT.0.).AND.
+	1	(V2.GT.0.)) THEN
 	      WRITE(*,*) 'MONORTM REQUIRES POSITIVE DVSET,'
 	      WRITE(*,*) 'OR (V1=V2 AND DVSET=0) IF YOU WANT ONLY '
 	      WRITE(*,*) 'ONE FREQ PROCESSED'
@@ -434,6 +440,12 @@ C-------------------------------------------------------------------------------
 	   !---record 1.3.1
 	   IF ((V1.LT.0.).OR.(V2.LT.0.)) THEN
 	      READ(IRD,'(I8)',ERR=6000)NWN
+	      IF (NWN.GT.NWNMX) THEN
+		 WRITE(*,*) 'STOP: NUMBER OF WAVENUMBERS ',
+	1	      'EXCEEDS LIMIT. ',NWN,NWNMX
+		 WRITE(*,*) 'FIX: EXTEND NWNMX IN DECLAR.INCL'
+		 STOP
+	      ENDIF
 	      !---record 1.3.2
 	      DO IWN=1,NWN
 		 READ(IRD,'(E19.7)',ERR=6000) WN(IWN)
@@ -441,6 +453,12 @@ C-------------------------------------------------------------------------------
 	   ELSE
 	      IF (DVSET.NE.0.) THEN 
 		 NWN=NINT(((V2-V1)/DVSET)+1.)
+		 IF (NWN.GT.NWNMX) THEN
+		    WRITE(*,*) 'STOP: NUMBER OF WAVENUMBERS ',
+	1		 'EXCEEDS LIMIT. ',NWN,NWNMX
+		    WRITE(*,*) 'FIX: EXTEND NWNMX IN DECLAR.INCL'
+		    STOP
+		 ENDIF
 		 DO J=1,NWN
 		    WN(J)=V1+(J-1)*DVSET
 		 ENDDO
@@ -460,7 +478,7 @@ C-------------------------------------------------------------------------------
 	!---END CHECKING RECORD 1.3
 				!---record 1.4
 	IEMIT=1
-	IF (IEMIT.GT.0) THEN                                                
+	IF (IEMIT.GT.0) THEN                                   
 	   READ (IRD,970,END=80,ERR=6000) TMPBND,
 	1	(BNDEMI(IBND),IBND=1,3),            
 	1	(BNDRFL(IBND),IBND=1,3)                    
@@ -472,11 +490,11 @@ C-------------------------------------------------------------------------------
 	   CALL READEM(ICOEF)
 	   CLOSE (ICOEF)
 	ELSE
-	   XVMID = (V1+V2)/2.                                            
-	   EMITST = BNDEMI(1)+BNDEMI(2)*XVMID+BNDEMI(3)*XVMID*XVMID      
-	   IF (EMITST.LT.0..OR.EMITST.GT.1.) THEN                        
-	      STOP 'BNDEMI OUTSIDE PHYSICAL RANGE'                                              
-	   ENDIF                                                         
+	   XVMID = (V1+V2)/2.                                
+	   EMITST = BNDEMI(1)+BNDEMI(2)*XVMID+BNDEMI(3)*XVMID*XVMID   
+	   IF (EMITST.LT.0..OR.EMITST.GT.1.) THEN                     
+	      STOP 'BNDEMI OUTSIDE PHYSICAL RANGE'                  
+	   ENDIF                                                     
 	ENDIF
 				!---record 1.4 (continued: manual reflectivities)
 	IF (BNDRFL(1).LT.0) THEN
@@ -484,9 +502,9 @@ C-------------------------------------------------------------------------------
 	   CALL READRF(ICOEF)
 	   CLOSE (ICOEF)
 	ELSE
-	   REFTST = BNDRFL(1)+BNDRFL(2)*XVMID+BNDRFL(3)*XVMID*XVMID      
-	   IF (REFTST.LT.0..OR.REFTST.GT.1.) THEN                        
-	      STOP 'BNDRFL OUTSIDE PHYSICAL RANGE'                                              
+	   REFTST = BNDRFL(1)+BNDRFL(2)*XVMID+BNDRFL(3)*XVMID*XVMID   
+	   IF (REFTST.LT.0..OR.REFTST.GT.1.) THEN                     
+	      STOP 'BNDRFL OUTSIDE PHYSICAL RANGE'                    
 	   ENDIF                                     
 	ENDIF     
 				!---record 1.6a
@@ -501,39 +519,39 @@ C-------------------------------------------------------------------------------
 	   READ (IRD,901,ERR=6000) IFORM,NLAYRS,NMOL,SECNT0,HEAD20,ZH1,
 	1	HEAD4,ZH2,HEAD5,ANGLE,HEAD7    
 				!---record 2.1.1
-	   DO 30 L = 1, NLAYRS                                                 
-	      IF (L.EQ.1) THEN                                                 
+	   DO 30 L = 1, NLAYRS                                      
+	      IF (L.EQ.1) THEN                                       
 		 IF (IFORM.EQ.1) THEN
 		    READ (IRD,910,ERR=6000) PAVE,TAVE,SECNTK,
 	1		 CINP,IPTHRK,ALTZ(L-1),     
-	1		 PZ(L-1),TZ(L-1),ALTZ(L),PZ(L),TZ(L),CLW(L)                   
+	1		 PZ(L-1),TZ(L-1),ALTZ(L),PZ(L),TZ(L),CLW(L)  
 		 ELSE
 		    READ (IRD,911,ERR=6000) PAVE,TAVE,SECNTK,
 	1		 CINP,IPTHRK,ALTZ(L-1),
 	1		 PZ(L-1),TZ(L-1),ALTZ(L),PZ(L),TZ(L),CLW(L) 
 		 ENDIF
-	      ELSE                                                             
+	      ELSE                                                   
 		 IF (IFORM.EQ.1) THEN
 		    READ (IRD,915,ERR=6000) PAVE,TAVE,SECNTK,
-	1		 CINP,IPTHRK,ALTZ(L),PZ(L),TZ(L),CLW(L)                                                  
+	1		 CINP,IPTHRK,ALTZ(L),PZ(L),TZ(L),CLW(L)     
 		 ELSE
 		    READ (IRD,916,ERR=6000) PAVE,TAVE,SECNTK,
 	1		 CINP,IPTHRK,ALTZ(L),PZ(L),TZ(L),CLW(L) 
 		 ENDIF
-	      ENDIF                                                            
+	      ENDIF                                                  
 	      IF (TZ(L).EQ.0.) TZ(L) = TAVE
-	      P(L) = PAVE                                                  
-	      T(L) = TAVE                                                  
-	      SECANT = SECNT0                                                  
-	      SECL(L) = SECANT                                                 
-	      SECNTA(L) = SECANT                                               
+	      P(L) = PAVE                                         
+	      T(L) = TAVE                                        
+	      SECANT = SECNT0                                        
+	      SECL(L) = SECANT                                        
+	      SECNTA(L) = SECANT                                     
 				!---record 2.1.2
 	      IF (IFORM.EQ.1) THEN
 		 READ (IRD,9255,ERR=6000) 
 	1	      (WKL(M,L),M=1,7),WBRODL(L)
 				!---record 2.1.3
 		 IF (NMOL.GT.7) 
-	1	      READ (IRD,9255,ERR=6000) (WKL(M,L),M=8,NMOL)             
+	1	      READ (IRD,9255,ERR=6000) (WKL(M,L),M=8,NMOL)   
 	      ELSE
 		 READ (IRD,927,ERR=6000) (WKL(M,L),M=1,7),WBRODL(L)
 				!---record 2.1.3
@@ -581,18 +599,15 @@ C-------------------------------------------------------------------------------
 	   WRITE(*,*) 'NMOL IS SET INTERNALLY TO 35'
 	   NMOL=35
 	ENDIF
-	IF (NMOL.EQ.0) NMOL = 7                                          
+	IF (NMOL.EQ.0) NMOL = 7                             
 	IF ((SECNT0.NE.1.).AND.(SECNT0.NE.-1.)) THEN
 	   WRITE(*,*) '----------------------------------------'
 	   WRITE(*,*) 'WARNING: SECNT0 MUST BE EITHER 1 OR -1'
 	   WRITE(*,*) 'IN ',FILEIN,' SECNT0=',SECNT0
-	   WRITE(*,*) 'ONLY THE SIGN OF SECNT0 IS CONSIDERED'
-	   WRITE(*,*) 'NOTE ALSO THAT SECNTK ARE NOT USED EITHER'
-	   WRITE(*,*) 'AND THAT IPATH IS SET TO ZERO'
 	ENDIF
-	IF (SECNT0.LT.0.) IRT = 1 !space-based observer (looking down)  
-	IF (SECNT0.GT.0.) IRT = 3 !ground-based observer (looking up)
-	IF (SECNT0.EQ.0.) IRT = 2 !limb measurements
+	IF (ANGLE.GT.90.) IRT = 1 !space-based observer (looking down) 
+	IF (ANGLE.LT.90.) IRT = 3 !ground-based observer (looking up)
+	IF (ANGLE.EQ.90.) IRT = 2 !limb measurements
 	!---END OF RECORD 2.1 CHECKING
 
 	IF (I4FREQONLY.EQ.0) THEN
@@ -604,19 +619,19 @@ C-------------------------------------------------------------------------------
 
  10	FORMAT (i4,5f19.13)
  901	FORMAT (1X,I1,I3,I5,F10.2,A20,F8.2,A4,F8.2,A5,F8.3,A7)
- 905	FORMAT (A1)                                                        
+ 905	FORMAT (A1)                                                   
  910	FORMAT (E15.7,F10.4,F10.4,A3,I2,1X,2(F7.2,F8.3,F7.2),E15.7)
- 911	FORMAT (3F10.4,A3,I2,1X,2(F7.2,F8.3,F7.2),E15.7)                          
+ 911	FORMAT (3F10.4,A3,I2,1X,2(F7.2,F8.3,F7.2),E15.7)           
  915	FORMAT (E15.7,F10.4,F10.4,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)
- 916	FORMAT (3F10.4,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)                          
- 920	FORMAT (I3)                                                         
+ 916	FORMAT (3F10.4,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)         
+ 920	FORMAT (I3)                                                 
  925	FORMAT (10(4X,I1),3X,2A1,3(4X,I1),I1,I4,1X,I4,1X,I4)    
  9255	FORMAT (8E15.7)
- 927	FORMAT (8E10.3)                                                     
- 930	FORMAT (I1)                                                         
+ 927	FORMAT (8E10.3)                                          
+ 930	FORMAT (I1)                                               
  945	FORMAT (A55,1X,I4)
  946	FORMAT (A55)
- 970	FORMAT (8E10.3,4X,I1,5x,e10.3)                                      
+ 970	FORMAT (8E10.3,4X,I1,5x,e10.3)                           
  990	FORMAT (F20.8)                                   
  1000	FORMAT ('Layer',I2,': Changing molecule ',I2,' from ',E10.3,
 	1    ' to 1.000E+20.')
@@ -639,13 +654,13 @@ C-------------------------------------------------------------------------------
 	
 	
 	FUNCTION EMISFN (VI)                         
-	IMPLICIT REAL*8           (V)                                     
+	IMPLICIT REAL*8           (V)                        
         !  FUNCTION EMISFN CALCULATES BOUNDARY EMISSIVITY FOR WAVE NUMBER      
         !  VALUE CORRESPONDING TO       
 	PARAMETER (NMAXCO=4040)
 	COMMON /EMSFIN/ V1EMIS,V2EMIS,DVEMIS,NLIMEM,ZEMIS(NMAXCO)
-	COMMON /BNDPRP/ TMPBND,BNDEMI(3),BNDRFL(3),IBPROP                   
-	EQUIVALENCE (BNDEMI(1),A) , (BNDEMI(2),B) , (BNDEMI(3),C)           
+	COMMON /BNDPRP/ TMPBND,BNDEMI(3),BNDRFL(3),IBPROP       
+	EQUIVALENCE (BNDEMI(1),A) , (BNDEMI(2),B) , (BNDEMI(3),C)     
 	!---Check for A < 0->use inputs in file "EMISSION"
 	IF (A.LT.0.) THEN
 	   NELMNT = INT((VI-V1EMIS)/DVEMIS)
@@ -663,23 +678,23 @@ C-------------------------------------------------------------------------------
 	   EMISFN = ZINT
 	   RETURN
 	ENDIF
-	IF (B.EQ.0..AND.C.EQ.0.) THEN                                       
-	   EMISFN = A                                                       
-	   RETURN                                                           
-	ENDIF                                                               
-	XVI = VI                                                            
+	IF (B.EQ.0..AND.C.EQ.0.) THEN                               
+	   EMISFN = A                                               
+	   RETURN                                                
+	ENDIF                                                   
+	XVI = VI                                                 
 	EMISFN = A+B*XVI+C*XVI*XVI    
-	RETURN                                                              
+	RETURN                                                   
 	END  
                                                                
 	FUNCTION REFLFN (VI)                         
-	IMPLICIT REAL*8           (V)                                      
+	IMPLICIT REAL*8           (V)                           
 	!---FUNCTION REFLFN CALCULATES BOUNDARY REFLECTIVITY FOR WAVE NUMBER    
 	!   VALUE CORRESPONDING TO VI       
 	PARAMETER (NMAXCO=4040)
 	COMMON /RFLTIN/ V1RFLT,V2RFLT,DVRFLT,NLIMRF,ZRFLT(NMAXCO)
-	COMMON /BNDPRP/ TMPBND,BNDEMI(3),BNDRFL(3),IBPROP                   
-	EQUIVALENCE (BNDRFL(1),A) , (BNDRFL(2),B) , (BNDRFL(3),C)           
+	COMMON /BNDPRP/ TMPBND,BNDEMI(3),BNDRFL(3),IBPROP         
+	EQUIVALENCE (BNDRFL(1),A) , (BNDRFL(2),B) , (BNDRFL(3),C)     
 	!---Check for A < 0->use values in from file"REFLECTION"
 	IF (A.LT.0.) THEN
 	   NELMNT = INT((VI-V1RFLT)/DVRFLT)
@@ -697,14 +712,14 @@ C-------------------------------------------------------------------------------
 	   REFLFN = ZINT
 	   RETURN
 	ENDIF
-	IF (B.EQ.0..AND.C.EQ.0.) THEN                                       
-	   REFLFN = A                                                       
-	   RETURN                                                           
-	ENDIF                                                               
-	XVI = VI                                                            
-	REFLFN = A+B*XVI+C*XVI*XVI                                                    
-	RETURN                                                              
-	END                                                                 
+	IF (B.EQ.0..AND.C.EQ.0.) THEN                         
+	   REFLFN = A                                             
+	   RETURN                                                 
+	ENDIF                                                     
+	XVI = VI                                                  
+	REFLFN = A+B*XVI+C*XVI*XVI                                 
+	RETURN                                                     
+	END                                                        
 	
 	SUBROUTINE LINTCO(V1,Z1,V2,Z2,VINT,ZINT,ZDEL)
 	!Linearly interpolates emission and reflection values which
@@ -752,10 +767,11 @@ C-------------------------------------------------------------------------------
 	1	form='formatted',ERR=1000)
 	   WRITE(1,'(a)') 'MONORTM RESULTS:'
 	   WRITE(1,'(a)') '----------------' 
+	   WRITE(1,'(a5,I8)') 'NWN :',NWN 
 	   INIT=.FALSE.
 	ENDIF
 	DO I=1,NWN
-	   FREQ=WN(I)*29.98
+	   FREQ=WN(I)*29.9792458
 	   !----Computation of the integrated optical depths
 	   OTOT=0.
 	   OTOT_WV=0.
@@ -794,9 +810,11 @@ C-------------------------------------------------------------------------------
 
 	SUBROUTINE CORR_OPTDEPTH(INP,NLAY,SECNTA,NWN,ANGLE,O,IRT)
 	IMPLICIT NONE
+	include "declar.incl"
 	INTEGER INP,J,NLAY,NWN,I,IRT
-	REAL PI,SECNTA(NLAY),O(NWN,NLAY),SECNT,ALPHA,ANGLE
+	REAL PI,SECNT,ALPHA,ANGLE
 	PI=3.14159265
+	!----SANITY CHECK
 	IF (IRT.EQ.3) alpha=(angle*PI)/180.
 	IF ((IRT.EQ.1).and.(ANGLE.GT.90.)) alpha=((180.-angle)*PI)/180.
 	IF ((IRT.EQ.1).and.(ANGLE.LE.90.)) then
@@ -817,8 +835,9 @@ C-------------------------------------------------------------------------------
 
 	SUBROUTINE INTEGR(W,CLW,NLAYRS,WVCOLMN,CLWCOLMN)
 	IMPLICIT NONE
-	REAL W(NLAYRS),WVCOLMN
-	REAL CLW(NLAYRS),CLWCOLMN
+	include "declar.incl"
+	REAL W(MXLAY)
+	REAL CLWCOLMN,WVCOLMN
 	INTEGER I,NLAYRS
 	WVCOLMN=0.
 	CLWCOLMN=0.
@@ -851,12 +870,12 @@ C-------------------------------------------------------------------------------
 	!IF IFLAG=1 profile valid but levls with same press removed
 	!IF IFLAG=2 profile is rejected
 	!Sid Ahmed Boukabara
-	INTEGER NLEVMAX,ibmax,NWN
-	PARAMETER (NLEVMAX=10000,ibmax=32)
-	REAL PRESS(NLEVMAX),TEMP(NLEVMAX),HUMID(NLEVMAX),
-	1    ALTIT(NLEVMAX)
+	include "declar.incl"	
+	INTEGER ibmax
+	PARAMETER (ibmax=32)
+	REAL PRESS(MXLAY),TEMP(MXLAY),HUMID(MXLAY),ALTIT(MXLAY)
 	real alti(ibmax)
-	REAL*8 WN(NWN),V1,V2
+	REAL*8 V1,V2
 	REAL DVSET
 	character filearm*90,filein*60,ligne*80,hmod*60
 	CHARACTER*1 JCHARP,JCHART,JCHAR(7)
@@ -892,16 +911,18 @@ C-------------------------------------------------------------------------------
 	ENDIF
 
 	DO i=1,nlevels
-	   read(44,12) iTOff,Pr,T,RHorig,RHcor,xLat,xLon,iAlt
+	   read(44,12) iTOff,Pr,Tp,RHorig,RHcor,xLat,xLon,iAlt
 	   !---To avoid -9999. below 21 kms (profile rejected)
-	   IF ((Pr.eq.df.or.t.eq.df.or.RHcor.eq.df).and.(ialt.le.ialtmax)) THEN
+	   IF ((Pr.eq.df.or.tp.eq.df.or.RHcor.eq.df).and.
+	1	(ialt.le.ialtmax)) THEN
 	      close(44)
 	      close(33)
 	      IFLAG=2
 	      RETURN
 	   ENDIF
 	   !---To avoid -9999. above 21 kms (profile kept)
-	   IF ((Pr.eq.df.or.t.eq.df.or.RHcor.eq.df).and.(ialt.gt.ialtmax)) THEN
+	   IF ((Pr.eq.df.or.tp.eq.df.or.RHcor.eq.df).and.
+	1	(ialt.gt.ialtmax)) THEN
 	      IFLAG=0
 	      GOTO 100
 	   ENDIF
@@ -909,7 +930,7 @@ C-------------------------------------------------------------------------------
 	   IF (Pr.lt.Pr_old) THEN
 	      nlev=nlev+1
 	      PRESS(nlev)=Pr
-	      TEMP(nlev)=T
+	      TEMP(nlev)=Tp
 	      HUMID(nlev)=RHcor
 	      ALTIT(nlev)=iAlt/1000.
 	   ENDIF
@@ -976,12 +997,12 @@ C-------------------------------------------------------------------------------
  11	format(19x,f12.3)
  12	format(i8,f13.1,f10.1,f9.1,f11.1,f13.5,f12.5,i8)
  13	FORMAT (10(4X,I1),3X,2X ,3(4X,I1),1X,I4,1X,I4,1X,I4)    
- 14	FORMAT (8E10.3,4X,I1,5x,e10.3)                                      
+ 14	FORMAT (8E10.3,4X,I1,5x,e10.3)                         
  15	FORMAT (7I5)                                      
  16	FORMAT (3f10.3)                                      
  17	FORMAT (8f10.3)                                      
- 18	FORMAT (I5,' Serial#',3A8)                                      
- 19	FORMAT (3f10.3,5x,2A1,3x,28A1)                                      
+ 18	FORMAT (I5,' Serial#',3A8)                        
+ 19	FORMAT (3f10.3,5x,2A1,3x,28A1)                          
  20	FORMAT (8f10.3)                                      
 	RETURN
  1000	PRINT *, 'ERROR OPENING in ARM2LBLATM:',filein
@@ -991,9 +1012,13 @@ C-------------------------------------------------------------------------------
 	END
 
 	SUBROUTINE START(nprof,INP)
+	CHARACTER*15 HVRMON
+	COMMON /CVRMON  / HVRMON
+	HVRMON = '$Revision$' 
+	
 	WRITE(*,'(a)') '**********************************'
 	WRITE(*,'(a)') '*        M O N O R T M           *'
-	WRITE(*,'(a)') '*         version 1.0            *'
+	WRITE(*,'(a)') '*        '//HVRMON//'         *'
 	WRITE(*,'(a)') '**********************************'
 	WRITE(*,*) 'NUMBER OF PROFILES:',nprof
 	IF (INP.EQ.1) WRITE(*,*) 'INPUTS FROM LBLRTM.IN'
@@ -1012,7 +1037,7 @@ C-------------------------------------------------------------------------------
 	CHARACTER FILEIN*60,filearm*90
 	CHARACTER CDOL*1,CPRCNT*1,CXID*1,fileprof*80
 	CHARACTER fileARMlist*64
-	CHARACTER*8      HMOD                                             
+	CHARACTER*8      HMOD                           
 	DATA CDOL / '$'/,CPRCNT / '%'/
 	NPROF=0
 	IF (INP.EQ.1) THEN
@@ -1052,7 +1077,7 @@ c	      READ (53,924,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD
 	ENDIF
  1000	WRITE(*,*) 'ERROR OPENING OR READING FILE in GETPROFNUMBER'
  924	FORMAT (1X,I1,I3,I5,F10.6,A24) 
- 972	FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2)     
+ 972	FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2) 
 	STOP
 	END
 
@@ -1067,9 +1092,38 @@ c	      READ (53,924,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD
 	IF (NPROF.GT.NPROFMX) THEN
 	   WRITE(*,*) 'Number of profiles too big:',NPROF
 	   WRITE(*,*) 'Maximum Allowed:',NPROFMX
-	   WRITE(*,*) 'Must extend NPROFMX in declar.incl AND RECOMPILE'
+	   WRITE(*,*) 'Must extend NPROFMX  AND RECOMPILE'
 	   STOP
 	ENDIF
 	RETURN
 	END
 
+      SUBROUTINE EXPINT (X,X1,X2,A)                                   
+C******************************************************************** 
+C     THIS SUBROUTINE EXPONENTIALLY INTERPOLATES X1 AND X2 TO X BY  
+C     THE FACTOR A             . NEEDED BY LBLATM                   
+C********************************************************************
+      IF (X1.EQ.0.0.OR.X2.EQ.0.0) GO TO 10                          
+      X = X1*(X2/X1)**A                                        
+      RETURN                                                   
+   10 X = X1+(X2-X1)*A                                         
+      RETURN                                                   
+      END                                                      
+
+	!----TEST -----------------------------
+	!  TO MAINTAIN COMPATIBILTY WITH LBLATM
+	!  WE ADD THE FOLLOWING DUMMY ARGUMENTS
+	!--------------------------------------
+	SUBROUTINE LBLDAT(HDATE)  
+        CHARACTER*8      HDATE
+	RETURN
+	END
+
+        SUBROUTINE FTIME (HTIME)
+	CHARACTER*8      HTIME   
+	RETURN
+	END
+
+	SUBROUTINE XSREAD (XV1,XV2)   	
+	RETURN
+	END

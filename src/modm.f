@@ -1,9 +1,9 @@
       SUBROUTINE MODM(IVC,ICP,NWN,WN,NLAY,P,T,W_wv,
      &     W_o2,W_o3,W_n2,W_n2O,W_co,W_so2,W_no2,
-     &     W_oh,CLW,O,OL_WV,OS_WV,OF_WV,OL_O2,OL_O3,
-     &     OL_N2,OC_N2,OL_N2O,OL_CO,OL_SO2,OL_NO2,
-     &     OL_OH,O_CLW,XSLF,XFRG,XCN2,SCLCPL,SCLHW,
-     &     Y0RES,HFILE,ICNTNM)
+     &     W_oh,W_other,CLW,O,OL_WV,OS_WV,OF_WV,OL_O2,
+     &     OL_O3,OL_N2,OC_N2,OL_N2O,OL_CO,OL_SO2,
+     &     OL_NO2,OL_OH,O_CLW,XSLF,XFRG,XCN2,SCLCPL,
+     &     SCLHW,Y0RES,HFILE,ICNTNM)
 
 C-------------------------------------------------------------------------------
 C
@@ -27,37 +27,38 @@ C          oxygen, the ozone, the nitrogen and nitrogen dioxide.
 C
 C     INPUTS:
 C     ------
-C     - IVC   : Flag of contin. vers.: CKD2.4(if=2)  MPMf87/s93 (if=3)
-C     - ICP   : Flag to take(if =1) or not (if=0) the line coupling
-C     - NWN   : Number of wavenumbers to be treated
-C     - WN    : Vector of NWN wavenumbers [in cm-1], one should note that
-C               this input could be a scalar (associated with NWN=1)
-C     - NLAY  : Number of layers to be treated.
-C     - P     : Vector of NLAY pressures (in mbar), one should note that
-C               this input could be a scalar (associated with NLAY=1)
-C     - T     : Vector of NLAY temperatures [in Kelvin]
-C     - W_WV  : Vector of NLAY water vapor column amounts [in molecules/cm2]
-C     - W_O2  : Vector of NLAY oxygen column amounts [in molecules/cm2]
-C     - W_O3  : Vector of NLAY ozone column amounts [in molecules/cm2]
-C     - W_N2  : Vector of NLAY nitrogen column amounts [in molecules/cm2]
-C     - W_N2O : Vector of NLAY N2O column amounts [in molecules/cm2]
-C     - W_CO  : Vector of NLAY CO column amounts [in molecules/cm2]
-C     - W_SO2 : Vector of NLAY SO2 column amounts [in molecules/cm2]
-C     - W_NO2 : Vector of NLAY NO2 column amounts [in molecules/cm2]
-C     - W_OH  : Vector of NLAY OH column amounts [in molecules/cm2]
-C     - CLW   : Vector of NLAY Cloud Liquid Water amounts [in kg/m2 or mm]
-C               When Cloud is present, the frequency must be consistent
-C               with Rayleigh absorption (no scattering performed in 
-C               monortm). 
-C     - XSLF  : Scaling factor of the self WV continuum (usually XSLF=1)
-C     - XFRG  : Scaling factor of the foreign WV continuum (usually XFRG=1)
-C     - XCN2  : Scaling factor of the N2 continuum (usually XCN2=1)
-C     - SCLCPL: Scaling factor of the Line Coupling parameters (usually SCLCPL=1)
-C     - SCLHW : Scaling factor of the pressure dependence of the halfwidth
-C               of the zero frequency band (usually SCLHW=1)
-C     - Y0RES : Y0 resonnance (usually Y0RES=0) to be added to the Yi
-C     - HFILE : Name of the spectral lines information file (HITRAN)
-C     - ICNTNM: Flag to account for the continuum (if =1) or not (if =0)
+C     - IVC      : Flag of contin. vers.: CKD2.4(if=2)  MPMf87/s93 (if=3)
+C     - ICP      : Flag to take(if =1) or not (if=0) the line coupling
+C     - NWN      : Number of wavenumbers to be treated
+C     - WN       : Vector of NWN wavenumbers [in cm-1], one should note that
+C                  this input could be a scalar (associated with NWN=1)
+C     - NLAY     : Number of layers to be treated.
+C     - P        : Vector of NLAY pressures (in mbar), one should note that
+C                  this input could be a scalar (associated with NLAY=1)
+C     - T        : Vector of NLAY temperatures [in Kelvin]
+C     - W_WV     : Vector of NLAY water vapor column amounts [in molecules/cm2]
+C     - W_O2     : Vector of NLAY oxygen column amounts [in molecules/cm2]
+C     - W_O3     : Vector of NLAY ozone column amounts [in molecules/cm2]
+C     - W_N2     : Vector of NLAY nitrogen column amounts [in molecules/cm2]
+C     - W_N2O    : Vector of NLAY N2O column amounts [in molecules/cm2]
+C     - W_CO     : Vector of NLAY CO column amounts [in molecules/cm2]
+C     - W_SO2    : Vector of NLAY SO2 column amounts [in molecules/cm2]
+C     - W_NO2    : Vector of NLAY NO2 column amounts [in molecules/cm2]
+C     - W_OH     : Vector of NLAY OH column amounts [in molecules/cm2]
+C     - W_OTHER  : Vector of NLAY of other species column amounts [in molecules/cm2]
+C     - CLW      : Vector of NLAY Cloud Liquid Water amounts [in kg/m2 or mm]
+C                  When Cloud is present, the frequency must be consistent
+C                  with Rayleigh absorption (no scattering performed in 
+C                  monortm). 
+C     - XSLF     : Scaling factor of the self WV continuum (usually XSLF=1)
+C     - XFRG     : Scaling factor of the foreign WV continuum (usually XFRG=1)
+C     - XCN2     : Scaling factor of the N2 continuum (usually XCN2=1)
+C     - SCLCPL   : Scaling factor of the Line Coupling parameters (usually SCLCPL=1)
+C     - SCLHW    : Scaling factor of the pressure dependence of the halfwidth
+C                  of the zero frequency band (usually SCLHW=1)
+C     - Y0RES    : Y0 resonnance (usually Y0RES=0) to be added to the Yi
+C     - HFILE    : Name of the spectral lines information file (HITRAN)
+C     - ICNTNM   : Flag to account for the continuum (if =1) or not (if =0)
 C
 C
 C     OUTPUTS:
@@ -91,13 +92,36 @@ C                 depth (due to lines only), [in Nepers]
 C     - O_CLW  : An array of NWNxNLAY elts containing the CLW optical
 C                 depth , [in Nepers]
 C
+C     History of the modifications:
+C     *****************************  
+C     - written in 1999 by Sid Ahmed Boukabara, Ross Hoffman
+C	and Tony Clough. 
+C     - validated against ARM sondes in the
+C	microwave spectrum (23.8 and 31.4 GHz). SAB, 2000.
+C     - extended to more species by Sid Ahmed Boukabara in 03/2000.
+C     - cleaned up and commented in 2001 for first public release.
+C	Also put under CVS configuration management. SAB.
+C     - Extended O2 lines to submillimeter. Extensive validation
+C	by comparison to Rosenkranz model and MWR data.
+C	Update of the LBLATM module (accepts inputs at pressure 
+C	grid, along with altitude grid). 
+C	Fixed the handling of N2 amount coming from LBLATM (which
+C	depends on the number of molecules NMOL). 
+C	Adopted accurate constants values. 
+C	Sid Ahmed Boukabara. Dec 14th 2001.
+C
+C     Comments should be forwarded to Sid Ahmed Boukabara (sboukaba@aer.com)
+C     or Tony Clough (clough@aer.com).
+C
 C-------------------------------------------------------------------------------
       include "declar.incl"
 
-      CHARACTER HFILE*80
+      CHARACTER HFILE*80,HVRMODM*15
+      COMMON /CVRMODM/ HVRMODM
       LOGICAL INIT
       DATA INIT/.TRUE./
       SAVE INIT
+      HVRMODM = '$Revision$' 
       IF(INIT)THEN
          CALL VECISO               !set-up the isotopes
          CALL READ_HITR(ICP,HFILE) !reads the HITRAN data
@@ -107,28 +131,28 @@ C-------------------------------------------------------------------------------
          DO K=1,NLAY            !Loop over the Temp/Press/Amount profile 
             CALL INITI(P(K),T(K),RADCT,T0,P0,W_wv(K),W_o2(K),         !INITIALIZATION
      &      W_o3(K),W_n2(K),W_n2O(K),W_co(K),W_so2(K),
-     &      W_no2(K),W_oh(K),XN0,Xn,Xn_WV,RHOFAC)
+     &      W_no2(K),W_oh(K),W_other(K),XN0,Xn,Xn_WV,RHOFAC)
             RFT=WN(M)*TANH((RADCT*WN(M))/(2*T(K)))	              !RAD_FIELD_TERM
             CALL LINES(Xn,WN(M),T(K),W_wv(K),W_o2(K),W_o3(K),         !PROCESS_LINES
      &      W_n2(K),W_n2O(K),W_co(K),W_so2(K),W_no2(K),
-     &      W_oh(K),RADCT,T0,OL_WV(M,K),OL_O2(M,K),
+     &      W_oh(K),W_other(K),RADCT,T0,OL_WV(M,K),OL_O2(M,K),
      &      OL_O3(M,K),OL_N2(M,K),OL_N2O(M,K),OL_CO(M,K),
      &      OL_SO2(M,K),OL_NO2(M,K),OL_OH(M,K),XN0,RFT,
      &      P(K),P0,SCLCPL,SCLHW,Y0RES)
-            O_CLW(M,K)=ODCLW(WN(M),T(K),CLW(K))                           !OPTDEPTH CLW
+            O_CLW(M,K)=ODCLW(WN(M),T(K),CLW(K))                       !OPTDEPTH CLW
             IF (ICNTNM.EQ.1) THEN 
-               OS_WV(M,K)=SWV(IVC,WN(M),T(K),T0,W_wv(K),RFT,Xn,           !CONT_SELF_WV
+               OS_WV(M,K)=SWV(IVC,WN(M),T(K),T0,W_wv(K),RFT,Xn,       !CONT_SELF_WV
      &              Xn_WV,XN0,XSLF) 
-               OF_WV(M,K)=FWV(IVC,WN(M),W_wv(K),RFT,Xn,Xn_WV,XN0,XFRG)    !CONT_FRGN_WV 
+               OF_WV(M,K)=FWV(IVC,WN(M),W_wv(K),RFT,Xn,Xn_WV,XN0,XFRG)!CONT_FRGN_WV 
                OC_N2(M,K)=CONTI_N2(WN(M),T(K),T0,W_n2(K),RFT,RHOFAC,
-     &              XCN2)                                                 !CONT_N2
-               O(M,K)=OL_WV(M,K)+OL_O2(M,K)+OL_O3(M,K)+OL_N2(M,K)+        !TOTAL_OPTDEPTH
+     &              XCN2)                                             !CONT_N2
+               O(M,K)=OL_WV(M,K)+OL_O2(M,K)+OL_O3(M,K)+OL_N2(M,K)+    !TOTAL_OPTDEPTH
      &              OL_N2O(M,K)+OL_CO(M,K)+OL_SO2(M,K)+OL_NO2(M,K)+
      &              OL_OH(M,K)+OS_WV(M,K)+OF_WV(M,K)+OC_N2(M,K)+
      &              O_CLW(M,K)
             ENDIF
             IF (ICNTNM.NE.1) THEN 
-               O(M,K)=OL_WV(M,K)+OL_O2(M,K)+OL_O3(M,K)+OL_N2(M,K)+        !TOTAL_OPTDEPTH
+               O(M,K)=OL_WV(M,K)+OL_O2(M,K)+OL_O3(M,K)+OL_N2(M,K)+    !TOTAL_OPTDEPTH
      &              OL_N2O(M,K)+OL_CO(M,K)+OL_SO2(M,K)+OL_NO2(M,K)+
      &              OL_OH(M,K)+O_CLW(M,K)
             ENDIF
@@ -174,10 +198,13 @@ C-------------------------------------------------------------------------------
       COMMON /SH2O/ V1,V2,DV,NPTSLFWV,SWV296(2003)!---UNITS(CM**3/MOL)*1.E-20   
       COMMON /S260/ V1_,V2_,DV_,NPTSLFWV_,SWV260(2003)
       J=INT((WN-V1)/DV)+1
-      X(1)=((SWV296(J-1))*(SWV260(J-1)/SWV296(J-1))**((T-T0)/(260.-T0)))
+      X(1)=((SWV296(J-1))*(SWV260(J-1)/SWV296(J-1))
+     &     **((T-T0)/(260.-T0)))
       X(2)=((SWV296(J))*(SWV260(J)/SWV296(J))**((T-T0)/(260.-T0)))
-      X(3)=((SWV296(J+1))*(SWV260(J+1)/SWV296(J+1))**((T-T0)/(260.-T0)))
-      X(4)=((SWV296(J+2))*(SWV260(J+2)/SWV296(J+2))**((T-T0)/(260.-T0)))
+      X(3)=((SWV296(J+1))*(SWV260(J+1)/SWV296(J+1))
+     &     **((T-T0)/(260.-T0)))
+      X(4)=((SWV296(J+2))*(SWV260(J+2)/SWV296(J+2))
+     &     **((T-T0)/(260.-T0)))
       XF     = ( WN- (V1 + DV * FLOAT(J-1)) ) / DV
       SFAC = 3. 
       SWV_MPMf87s93=(W_wv)*RFT*
@@ -189,7 +216,7 @@ C-------------------------------------------------------------------------------
 
       FUNCTION FWV_MPMf87s93(WN,W_wv,RFT,Xn,Xn_WV,XN0,XFRG)
       REAL*8 WN,X(4)
-      COMMON /FH2O/ V1,V2,DV,NPTFH2O,FH2O(2003)                              
+      COMMON /FH2O/ V1,V2,DV,NPTFH2O,FH2O(2003)                 
       J=INT((WN-V1)/DV)+1
       DO I=1,4
          X(I)=FH2O(J+I-2)
@@ -251,10 +278,13 @@ C-------------------------------------------------------------------------------
       DATA FACTRS2,V0S3,HWSQ3 /-0.2333,1310.,14400./
       DATA BETAS3,FACTRS3 /5.E-06,-0.15/
       J=INT((WN-V1)/DV)+1
-      X(1)=((SWV296(J-1))*(SWV260(J-1)/SWV296(J-1))**((T-T0)/(260.-T0)))
+      X(1)=((SWV296(J-1))*(SWV260(J-1)/SWV296(J-1))
+     &     **((T-T0)/(260.-T0)))
       X(2)=((SWV296(J))*(SWV260(J)/SWV296(J))**((T-T0)/(260.-T0)))
-      X(3)=((SWV296(J+1))*(SWV260(J+1)/SWV296(J+1))**((T-T0)/(260.-T0)))
-      X(4)=((SWV296(J+2))*(SWV260(J+2)/SWV296(J+2))**((T-T0)/(260.-T0)))
+      X(3)=((SWV296(J+1))*(SWV260(J+1)/SWV296(J+1))
+     &     **((T-T0)/(260.-T0)))
+      X(4)=((SWV296(J+2))*(SWV260(J+2)/SWV296(J+2))
+     &     **((T-T0)/(260.-T0)))
       XF     = ( WN- (V1 + DV * FLOAT(J-1)) ) / DV
       SFAC = 1.
       VS2 = (WN-V0S1)**2
@@ -289,7 +319,7 @@ C-------------------------------------------------------------------------------
       X(3)=(CT296(J+1))*(CT296(J+1)/CT220(J+1))**((T-T0)/(220.-T0))
       X(4)=(CT296(J+2))*(CT296(J+2)/CT220(J+2))**((T-T0)/(220.-T0))
       XF     = ( WN- (V1 + DV * FLOAT(J-1)) ) / DV
-      CONTI_N2=XLGR(XF,X)*1.E-20*((W_n2/0.268675)*RFT*(RHOFAC))*XCN2     
+      CONTI_N2=XLGR(XF,X)*1.E-20*((W_n2/0.26867775)*RFT*(RHOFAC))*XCN2
       RETURN
       END 
 
@@ -304,8 +334,8 @@ C-------------------------------------------------------------------------------
       END
 
       SUBROUTINE LINES(Xn,WN,T,W_wv,W_o2,W_o3,W_n2,
-     &     W_n2O,W_co,W_so2,W_no2,W_oh,RADCT,T0,
-     &     OL_WV,OL_O2,OL_O3,OL_N2,OL_N2O,
+     &     W_n2O,W_co,W_so2,W_no2,W_oh,W_other,RADCT,
+     &     T0,OL_WV,OL_O2,OL_O3,OL_N2,OL_N2O,
      &     OL_CO,OL_SO2,OL_NO2,OL_OH,
      &     XN0,RFT,P,P0,SCLCPL,SCLHW,Y0RES)
       PARAMETER (NNM=   9,IIM=   5000)
@@ -319,7 +349,7 @@ C-------------------------------------------------------------------------------
       DATA MOL_WV/1/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,MOL_N2O/4/
       DATA MOL_CO/5/,MOL_SO2/9/,MOL_NO2/10/,MOL_OH/13/
       deltnuC=25.          !cm-1
-      WTOT=W_wv+W_o2+W_o3+W_n2+W_n2O+W_co+W_so2+W_no2+W_oh
+      WTOT=W_wv+W_o2+W_o3+W_n2+W_n2O+W_co+W_so2+W_no2+W_oh+W_other
       RP=P/P0                   !ratio of pressure
       RP2=RP*RP                 !square of the ratio of pressure
       DO IL=1,3                 !find correct temp. interval for interpolation
@@ -383,13 +413,15 @@ C-------------------------------------------------------------------------------
             ENDIF
             Xnu=Xnu0(I,J)+(deltnu(I,J)*(Xn/xn0))
             !check line within 25cm-1 from WN, (except for O2, cause line coupling)
-            IF ((ABS(WN-Xnu).GT.deltnuC).and.(MOL(I).NE.MOL_O2)) GOTO 30   
+            IF ((ABS(WN-Xnu).GT.deltnuC).and.(MOL(I).NE.MOL_O2)) 
+     &           GOTO 30   
             CALL QOFT (MOL(I),ISO(I,J),296.,QT_296) 
             CALL QOFT (MOL(I),ISO(I,J),T,QT) 
             XIPSF = QT_296/QT
             CALL INTENS(T,S0(I,J),E(I,J),RADCT,T0,Xnu,STILD,XIPSF)
             XTILD=1-X(I,J)
-            HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RN,MOL(I),RAT)
+            HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RN,MOL(I),
+     &           RAT)
             HWHM_D=HALFWHM_D(MOL(I),ISO(I,J),Xnu,T)
             IF(XG(I,J).EQ.-3.) THEN
                HWHM_C=HWHM_C*(1-(AIP*(RP))-(BIP*(RP2)))
@@ -421,16 +453,17 @@ C-------------------------------------------------------------------------------
       INTEGER ILOC,ISO
       COMMON /ISVECT/ ISOVEC(NMOL),ISO82(Nspeci),ISONM(NMOL),
      *     smassi(Nspeci)
-      C=2.997925E10      !light speed
-      K=1.380662E-16     !Boltzman constant
-      AVOG= 6.022045E23  !Avogadro number
+      C=2.99792458E10      !light speed
+      K=1.3806503E-16      !Boltzman constant
+      AVOG= 6.02214199E23  !Avogadro number
       ILOC = ISOVEC(MOL)+ISO                                       
       M=SMASSI(ILOC)
       HALFWHM_D=(XNU/C)*SQRT(2.*ALOG(2.)*((k*T)/(M/AVOG)))
       END
 
 
-      SUBROUTINE LSF_VOIGT(XF,RP,RP2,AIP,BIP,HWHM,WN,Xnu,ICF,SLS,AD,MOL)
+      SUBROUTINE LSF_VOIGT(XF,RP,RP2,AIP,BIP,HWHM,WN,Xnu,ICF,SLS,
+     &     AD,MOL)
       REAL*8 WN,Xnu,deltXNU,deltnuC
       DATA MOL_WV/1/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,MOL_N2O/4/
       deltnuC=25.          !cm-1
@@ -489,9 +522,15 @@ C-------------------------------------------------------------------------------
                XL1=VOIGT(deltXNU,HWHM,AD) !VOIGT for (+) osc.
                deltXNU=(WN+Xnu)
                XL2=VOIGT(deltXNU,HWHM,AD) !VOIGT for (-) osc.
-               Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
-               Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2))
-               SLS = (XL1*(Y1)+XL2*(Y2))
+               IF (XF.EQ.-1) THEN
+                  Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
+                  Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2))
+                  SLS = (XL1*(Y1)+XL2*(Y2))
+               ELSE
+                  Y1=1.
+                  Y2=1.
+                  SLS=(XL1+XL2)
+               ENDIF
             ENDIF
          ENDIF
       ENDIF
@@ -550,20 +589,21 @@ C-------------------------------------------------------------------------------
 
       SUBROUTINE INITI(P,T,RADCT,T0,P0,W_wv,W_o2,
      &     W_o3,W_n2,W_n2O,W_co,W_so2,W_no2,W_oh,
-     &     XN0,Xn,Xn_WV,RHOFAC)
+     &     W_other,XN0,Xn,Xn_WV,RHOFAC)
       DATA OXYGEN /2.090E+05/
       DATA AN2    /7.81E+05/
       DATA WVMOLMASS /18.016 /, DRYMOLMASS/28.97/   
-      RADCT=1.4387865           !in K/cm-1
+      RADCT=1.4387752           !in K/cm-1
       T0=296.                   !in K
-      P0=1013.                  !in HPa
-      XN0=(P0/(1.380662E-16*T0))*1.E+3
-      XN=(P/(1.380662E-16*T))*1.E+3
-      WDRY=W_o2+W_o3+W_n2+W_n2O+W_co+W_so2+W_no2+W_oh
+      P0=1013.25                !in HPa
+      XN0=(P0/(1.3806503E-16*T0))*1.E+3
+      XN =(P /(1.3806503E-16*T ))*1.E+3
+      WDRY=W_o2+W_o3+W_n2+W_n2O+W_co+W_so2+W_no2+W_oh+W_other
       RATIOMIX=(W_wv*WVMOLMASS)/(WDRY*DRYMOLMASS)
-      WVPRESS=(RATIOMIX/(RATIOMIX+0.622))*P
-      Xn_WV=(WVPRESS/(1.380662E-16*T))*1.E+3
-      RHOFAC=(W_n2/(WDRY+W_wv))*(P/P0)*(273./T)
+      !WVPRESS=(RATIOMIX/(RATIOMIX+0.622))*P
+      WVPRESS=(RATIOMIX/(RATIOMIX+(WVMOLMASS/DRYMOLMASS)))*P
+      Xn_WV=(WVPRESS/(1.3806503E-16*T))*1.E+3
+      RHOFAC=(W_n2/(WDRY+W_wv))*(P/P0)*(273.15/T)
       END 
       
       SUBROUTINE QofT(Mol, Iso, Tout, QT) !version of October 28th 1998
@@ -619,6 +659,15 @@ C-------------------------------------------------------------------------------
  22   READ(9,100,END=3,ERR=30) mo,iso_scal,nu0,S0_scal,R,
      &     alpf_scal,alps_scal,E_scal,X_scal,deltnu_scal,
      &     iv1,iv2,Q1,Q2,ier1,ier2,ier3,iref1,iref2,iref3
+      !---test to limit the number of lines used-----
+      !if ((nu0.ge.60.)) goto 3
+      !---test to limit the strength of the WV lines used
+      !if(((S0_scal.lt.1.E-25)).and.(mo.eq.1)) goto 22
+      !---test to limit the isotopes of WV 
+      !if((iso_scal.ne.1).and.(mo.eq.1)) goto 22
+      !---test to remove the wavenumber shift effect
+      !deltnu_scal=0.
+      !-----------------------------------------------
       ILINE=ILINE+1
       IF (ILINE.EQ.1) MINWN=nu0
       CALL S_INDX(mo,mol_wv,I_WV,NMOLEC,NMOL_WV,MOL,II,JJ)
@@ -724,7 +773,7 @@ C-------------------------------------------------------------------------------
       !Ref:(INT. J. IR & MM WAVES V.12(17) JULY 1991
       COMPLEX EPS,RE
       REAL*8 WN
-      FREQ=WN*29.98
+      FREQ=WN*29.9792458
       IF ((FREQ.GT.3000.).AND.(CLW.GT.0.)) THEN
          WRITE(*,*) 'STOP: CLOUD IS PRESENT FOR SIMULATIONS'
          WRITE(*,*) 'IN A NON-MICROWAVE SPECTRAL REGION'
@@ -739,7 +788,8 @@ C-------------------------------------------------------------------------------
       EPS = (EPS0-EPS1)/CMPLX(1.,FREQ/FP) +
      $     (EPS1-EPS2)/CMPLX(1.,FREQ/FS) +EPS2
       RE = (EPS-1.)/(EPS+2.)
-      ODCLW = -.06286057*CLW*AIMAG(RE)*FREQ
+      !ODCLW = -.06286057*CLW*AIMAG(RE)*FREQ
+      ODCLW = -(6.*3.1415926535897932/299.792458)*CLW*AIMAG(RE)*FREQ
       RETURN
       END
 
@@ -761,7 +811,7 @@ C-------------------------------------------------------------------------------
       REAL ALPHAL,ALPHAD,ZETA,ALPHAV,AVCINTERP,DNU
       REAL AL,AD,X,Y,ANORM1,VOIGT,DZETA
       INTEGER IZETA2,IZETA1
-      DATA AVC/                                                         
+      DATA AVC/                                       
      *  .10000E+01,.99535E+00,.99073E+00,.98613E+00,.98155E+00,   
      *  .97700E+00,.97247E+00,.96797E+00,.96350E+00,.95905E+00,   
      *  .95464E+00,.95025E+00,.94589E+00,.94156E+00,.93727E+00,   
@@ -782,7 +832,7 @@ C-------------------------------------------------------------------------------
      *  .87747E+00,.88376E+00,.89035E+00,.89721E+00,.90435E+00,   
      *  .91176E+00,.91945E+00,.92741E+00,.93562E+00,.94409E+00,   
      *  .95282E+00,.96179E+00,.97100E+00,.98044E+00,.99011E+00,   
-     *  .10000E+01,.10000E+01/                                          
+     *  .10000E+01,.10000E+01/                             
       !---computes zeta
       zeta=alphal/(alphal+alphad)
       !---interpolation of the AVC
@@ -811,7 +861,7 @@ C-------------------------------------------------------------------------------
       end if
       !---CALL the Humlicek subroutine
       v=W4(x,y)
-      anorm1 = sqrt(alog(2.)/3.14159)/alphad
+      anorm1 = sqrt(alog(2.)/3.1415926535897932)/alphad
       VOIGT=REAL(v)*ANORM1
       RETURN
       end

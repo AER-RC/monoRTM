@@ -1,5 +1,5 @@
 	PROGRAM MONORTM
-C                                                                         
+                                                                         
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C                                                                      
 C             ALGORITHM AUTHORS:    
@@ -32,8 +32,9 @@ C   By E-mail : sboukaba@aer.com, clough@aer.com
 C
 C
 C   Sid Ahmed Boukabara, AER Inc, April, 2001
-C*                                                                     
+C                                                                     
 C**********************************************************************
+
 	!***************************************************************
 	!        Monochromatic Radiative Transfer Model 
 	!***************************************************************
@@ -138,32 +139,50 @@ C**********************************************************************
 	!   - extended to more species by Sid Ahmed Boukabara in 03/2000.
 	!   - cleaned up and commented in 2001 for first public release.
 	!     Also put under CVS configuration management. SAB.
+	!   - Extended O2 lines to submillimeter. Extensive validation
+	!     by comparison to Rosenkranz model and MWR data.
+	!     Update of the LBLATM module (accepts inputs at pressure 
+	!     grid, along with altitude grid). 
+	!     Fixed the handling of N2 amount coming from LBLATM (which
+	!     depends on the number of molecules NMOL). Added version 
+	!     numbers and comments in the output file.
+	!     Adopted accurate constants values. 
+	!     Sid Ahmed Boukabara. Dec 14th 2001.
 	! 
 	!***************************************************************
 	include "declar.incl"
 	INTEGER NWN,I,ICPL,IS,IOUT,IRT,J,ICNTNM,IATM,INP,IVC
 	REAL*8 V1,V2,SECANT,XALTZ 
-	REAL TMPSFC
+	REAL TMPSFC,TPROF(mxlay),qprof(mxlay),press(mxlay)
+	REAL zvec(mxlay),dzvec(mxlay)
+        CHARACTER HVRATM*15,HVRMODM*15,HVRSUB*15,HVRMON*15
 	CHARACTER fileARMlist*64,hmod*60,CTYPE*3
 	CHARACTER fileprof*80,HFILE*80,FILEOUT*60,ht1*4,ht2*4
 	CHARACTER*60 FILEIN,FILESONDE
 	character*8 XID,HMOLID,YID,HDATE,HTIME
-	CHARACTER*48 CFORM1,CFORM2                                         
+	CHARACTER*48 CFORM1,CFORM2                                    
 	CHARACTER*4 PZFORM(5)
-	CHARACTER*7 PAFORM(2)                                              
-	DATA PAFORM / '1PE15.7','  G15.7'/                                 
-	DATA PZFORM / 'F8.6','F8.5','F8.4','F8.3','F8.2'/                  
-	DATA CFORM1 / '(1PE15.7,0PF10.2,10X,A3,I2,1X,2(F7.3,F8.3,F7.2))'/  
-	DATA CFORM2 / '(  G15.7,0PF10.2,10X,A3,I2,23X,(F7.3,F8.3,F7.2))'/  
+	CHARACTER*7 PAFORM(2)                                         
+	DATA PAFORM / '1PE15.7','  G15.7'/                            
+	DATA PZFORM / 'F8.6','F8.5','F8.4','F8.3','F8.2'/              
+	DATA CFORM1 / '(1PE15.7,0PF10.2,10X,A3,I2,1X,
+	1    2(F7.3,F8.3,F7.2))'/  
+	DATA CFORM2 / '(  G15.7,0PF10.2,10X,A3,I2,23X,
+	1    (F7.3,F8.3,F7.2))'/  
+	COMMON /CVRMON  / HVRMON
+        COMMON /CVRATM  / HVRATM
+        COMMON /CVRMODM / HVRMODM
+	COMMON /CVRSUB  / HVRSUB
 	COMMON /PATHD/ P,T,WKL,WBRODL,DVL,WTOTL,ALBL,ADBL,AVBL,
 	2    H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,PZ,TZ
-	COMMON /MANE/ P0,TEMP0,NLAYRS,DVXM,H2OSLF,WTOT,ALBAR,ADBAR,AVBAR,  
+	COMMON /MANE/ P0,TEMP0,NLAYRS,DVXM,H2OSLF,WTOT,ALBAR,
+	1    ADBAR,AVBAR,  
 	1    AVFIX,LAYRFX,SECNT0,SAMPLE,DVSET,ALFAL0,AVMASS,      
 	2    DPTMIN,DPTFAC,ALTAV,AVTRAT,TDIFF1,TDIFF2,ALTD1,      
 	3    ALTD2,ANGLE,IANT,LTGNT,LH1,LH2,IPFLAG,PLAY,TLAY,     
 	4    EXTID(10)    
 	COMMON /BNDPRP/ TMPSFC,BNDEMI(3),BNDRFL(3),IBPROP          
-	COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4),       
+	COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4), 
 	1    WK(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   
 	2    EMISIV,FSCDID(17),NMOL,LAYRS ,YI1,YID(10),LSTWDF    
 
@@ -182,16 +201,22 @@ C**********************************************************************
 	SCALWV=1.!scaling of the WV profile
 
 	!---FILES NAMES ALL PUT HERE FOR CONVENIENCE
-	FILEIN      ='in/LBLRTM.IN'
-	FILESONDE   ='in/SONDE.IN'
-	fileARMlist ='in/ARM.IN'
-	fileprof    ='in/MONORTM_PROF.IN'
-	HFILE       ='in/spectral_lines.dat'
-	FILEOUT     ='out/MONORTM.OUT'
+	FILEIN      ='../in/LBLRTM.IN'
+	FILESONDE   ='../in/SONDE.IN'
+	fileARMlist ='../in/ARM.IN'
+	fileprof    ='TAPE7'
+	HFILE       ='../in/spectral_lines.dat'
+	FILEOUT     ='../out/MONORTM.OUT'
+
+	!---Initializations of the version numbers
+	HVRMON      ='NOT USED       ' 
+	HVRATM      ='NOT USED       ' 
+	HVRMODM     ='NOT USED       ' 
+	HVRSUB      ='NOT USED       ' 
 
 
 	!---GET THE WAVENUMBERS AND INP,IRT INFORMATION
-	CALL RDLBLINP(0,IATM,IOUT,IRT,NWN,WN,FILEIN,ICNTNM,CLW,INP)                
+	CALL RDLBLINP(0,IATM,IOUT,IRT,NWN,WN,FILEIN,ICNTNM,CLW,INP)    
 
 	!---GET THE PROFILES NUMBER
 	CALL GETPROFNUMBER(INP,FILEIN,fileARMlist,fileprof,
@@ -211,7 +236,8 @@ C**********************************************************************
 	   !*********************************************	   
 	   !---Inputs: LBLRTM.IN (TAPE5-type of file)
 	   IF (INP.EQ.1) THEN
-	      CALL RDLBLINP(1,IATM,IOUT,IRT,NWN,WN,FILEIN,ICNTNM,CLW,INP)
+	      CALL RDLBLINP(1,IATM,IOUT,IRT,NWN,WN,FILEIN,ICNTNM,
+	1	   CLW,INP)
 	   ENDIF
 	   !---Inputs: wavenumbers from LBLRTM.IN, profiles from ARM sondes
 	   IF (INP.EQ.2) THEN
@@ -219,28 +245,31 @@ C**********************************************************************
 	1	   ilaunchtime,ibasetime,iserialnumber,isondeage,
 	2	   NWN,WN,V1,V2,DVSET,FILESONDE)
 	      IF (IFLAG.EQ.2) THEN
-		 WRITE(*,'(a30,i5,a8)') 'PROCESSING PROFILE NUMBER:',NPR,' FLAG=2'
+		 WRITE(*,'(a30,i5,a8)') 'PROCESSING PROFILE NUMBER:',
+	1	      NPR,' FLAG=2'
 		 GOTO 111
 	      ENDIF
-	      CALL RDLBLINP(0,IATM,IOUT,IRT,NWN,WN,FILESONDE,ICNTNM,CLW,INP)
+	      CALL RDLBLINP(0,IATM,IOUT,IRT,NWN,WN,FILESONDE,ICNTNM,
+	1	   CLW,INP)
 	   ENDIF
 	   !---Inputs: MONORTM_PROF.IN (TAPE7 consistent)
 	   IF (INP.EQ.3) THEN
-	      READ (53,924,END=110,ERR=50) IFORM,NLAYRS,NMOL,SECNT0,HMOD
+	      READ (53,924,END=110,ERR=50) IFORM,NLAYRS,NMOL,SECNT0,
+	1	   HMOD
 	      DO IL=1,NLAYRS
 		 SECNTA(IL)=SECNT0
-		 LTST = IL                                                     
-		 IF (IL.EQ.1) LTST = 0                                         
-		 PTST = ALOG10(PZ(LTST))                                      
-		 NPTST = PTST+2                                               
-		 IF (PTST.LT.0.0) NPTST = 1                                   
-		 CFORM1(38:41) = PZFORM(NPTST)                                
-		 CFORM2(38:41) = PZFORM(NPTST)                                
-		 NPTST = 1                                                    
-		 IF (P(IL).GE.0.1) NPTST = 2                                
-		 CFORM1(2:8) = PAFORM(NPTST)                                  
-		 CFORM2(2:8) = PAFORM(NPTST)                                  
-		 IF (IL.EQ.1) THEN                                                 
+		 LTST = IL                                       
+		 IF (IL.EQ.1) LTST = 0                               
+		 PTST = ALOG10(PZ(LTST))                          
+		 NPTST = PTST+2                                     
+		 IF (PTST.LT.0.0) NPTST = 1                           
+		 CFORM1(38:41) = PZFORM(NPTST)                     
+		 CFORM2(38:41) = PZFORM(NPTST)                       
+		 NPTST = 1                                           
+		 IF (P(IL).GE.0.1) NPTST = 2                     
+		 CFORM1(2:8) = PAFORM(NPTST)                        
+		 CFORM2(2:8) = PAFORM(NPTST)                           
+		 IF (IL.EQ.1) THEN                                   
 		    READ (53,CFORM1,END=110,ERR=50) P(IL),T(IL),  
 	1		 CTYPE,IPATH,ALTZ(IL-1),PZ(IL-1),        
 	2		 TZ(IL-1),ALTZ(IL),  PZ(IL),  TZ(IL)  
@@ -248,11 +277,12 @@ C**********************************************************************
 		    IF (IPATH.EQ.1) IRT=1 !space-based observer
 		    IF (IPATH.EQ.3) IRT=3 !ground-based observer
 		    IF (IPATH.EQ.2) IRT=2 !limb measurement
-		 ELSE                                                             
+		 ELSE                                             
 		    READ (53,CFORM2,END=110,ERR=50) P(IL),T(IL),  
-	1		 CTYPE,IPATH,ALTZ(IL),PZ(IL),TZ(IL)             
-		 ENDIF                                                            
-		 READ(53,978,END=110,ERR=50) (WKL(K,IL),K=1,7),WBRODL(IL)          
+	1		 CTYPE,IPATH,ALTZ(IL),PZ(IL),TZ(IL)    
+		 ENDIF                                              
+		 READ(53,978,END=110,ERR=50) (WKL(K,IL),K=1,7),
+	1	      WBRODL(IL)          
 		 IF (NMOL.GT.7) READ(53,978) (WKL(K,IL),K=8,NMOL)
 	      ENDDO 
 	   ENDIF
@@ -261,8 +291,14 @@ C**********************************************************************
 	   DO IL=1,NLAYRS
 	      W_wv0(IL)=WKL(1,IL)
 	      W_o2(IL)=WKL(7,IL)
-	      W_n2(IL)=WBRODL(IL)
-	      !W_n2(IL)=WKL(22,IL)
+	      IF (NMOL.GE.22) THEN
+		 W_n2(IL)=WKL(22,IL)
+		 W_other(IL)=WBRODL(IL)
+	      ENDIF
+	      IF (NMOL.LT.22) THEN
+		 W_n2(IL)=WBRODL(IL)
+		 W_other(IL)=0.
+	      ENDIF
 	      W_o3(IL)=WKL(3,IL)
 	      W_n2O(IL)=WKL(4,IL)
 	      W_co(IL)=WKL(5,IL)
@@ -288,16 +324,16 @@ C**********************************************************************
 
 	   !***********************************************
 	   !* Third Step: OPTICAL DEPTHS COMPUTATION
-	   !***********************************************	   
+	   !***********************************************	
            CALL MODM(IVC,ICPL,NWN,WN,NLAYRS,P,T,W_wv,
 	1	W_o2,W_o3,W_n2,W_n2O,W_co,W_so2,W_no2,
-	2	W_oh,CLW,O,OL_WV,OS_WV,OF_WV,OL_O2,
+	2	W_oh,W_other,CLW,O,OL_WV,OS_WV,OF_WV,OL_O2,
 	3	OL_O3,OL_N2,OC_N2,OL_N2O,OL_CO,OL_SO2,
 	4	OL_NO2,OL_OH,O_CLW,XSLF,XFRG,XCN2,
 	5	SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM)
-
+	   
 	   !***********************************************
-	   !* Fourth Step: CORRECT FOR THE SLANT PAT
+	   !* Fourth Step: CORRECT FOR THE SLANT PATH
 	   !***********************************************	   
 	   !---CORRECT THE OPTDEPTHS FOR THE SLANT PATH
 	   CALL CORR_OPTDEPTH(INP,NLAYRS,SECNTA,NWN,ANGLE,O,IRT)
@@ -306,8 +342,8 @@ C**********************************************************************
 	   !* Fifth Step: RADIATIVE TRANSFER
 	   !***********************************************	   
 	   CALL RTM(IOUT,IRT,NWN,WN,NLAYRS,T,TZ,
-	1	TMPSFC,O,RUP,TRTOT,RDN,REFLC,EMISS,RAD,TB,IDU)
-				
+	1	TMPSFC,O,RUP,TRTOT,RDN,REFLC,EMISS,RAD,TB,IDU)				
+
 	   !***********************************************
 	   !* Sixth Step: WRITE OUT THE RESULTS
 	   !***********************************************	   
@@ -321,10 +357,16 @@ C**********************************************************************
 	   WRITE(*,'(a30,i5)') 'PROCESSING PROFILE NUMBER:',NPR
 
  111	ENDDO			!Loop over the profiles
+	WRITE(1,1000) HVRMON,HVRMODM,HVRSUB,HVRATM  
  110	CLOSE(1)		!closes the output file
  924	FORMAT (1X,I1,I3,I5,F10.6,3A8) 
- 926	FORMAT (E15.7,F10.4,10X,I5,1X,F7.3,15X,F7.3,/,(1P8E15.7))          
- 978	FORMAT (1P8E15.7)                                                  
+ 926	FORMAT (E15.7,F10.4,10X,I5,1X,F7.3,15X,F7.3,/,(1P8E15.7))    
+ 978	FORMAT (1P8E15.7)                                             
+ 1000	FORMAT ('Modules versions used in this calculation:',/,/,5X,
+	1    'monortm.f     : ',4X,A15,10X,
+	2    'modm.f           :  ',4X,A15,/,5X,
+	2    'monortm_sub.f : ',4X,A15,10X,
+	3    'lblatm_monortm.f :  ',4X,A15)
 	CLOSE(53)		!closes the MONORTM_PROF.IN file
 	CLOSE(55)		!closes the LBLRTM.IN file
 	CLOSE(66)		!closes the LBLATM.LOG file
@@ -332,4 +374,5 @@ C**********************************************************************
  50	WRITE(*,*) 'ERROR OPENING/READING FILE:',fileprof
 	STOP
 	END
+
 
