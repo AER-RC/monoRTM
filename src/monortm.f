@@ -25,6 +25,12 @@ C                                     DEPARTMENT OF ENERGY
 C                                                                      
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C                                                                      
+C  Copyright 2002, 2003, Atmospheric & Environmental Research, Inc. (AER).
+C  This software may be used, copied, or redistributed as long as it is not sold and this copyright notice is
+C  reproduced on each copy made.  This model is provided as is without any express or implied warranties.
+C  (http://www.rtweb.aer.com/)
+
+
 C                                                                      
 C**********************************************************************
 C   Comments and/or questions are appreciated. 
