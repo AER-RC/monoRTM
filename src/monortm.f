@@ -423,7 +423,7 @@ C**********************************************************************
  978	FORMAT (1P8E15.7)                                             
  1000	FORMAT ('Modules and versions used in this calculation:',/,/,
      &    A15,/,/,5X,
-     &    'spectral file :'     5X,A15,/,5X, 
+     &    'spectral file :',    5X,A15,/,5X, 
      &    'monortm.f     : ',4X,A15,10X,
      &    'modm.f           :  ',4X,A15,/,5X,
      &    'monortm_sub.f : ',4X,A15,10X,

@@ -1032,42 +1032,42 @@ C-------------------------------------------------------------------------------
 	1    NPROF,filearmTAB)
 	include "declar.incl"
 	CHARACTER FILEIN*60,filearm*90,CXID*1
-	CHARACTER CDOL*1,CPRCNT*1,CXID*1,fileprof*80
+	CHARACTER CDOL*1,CPRCNT*1,fileprof*80
 	CHARACTER fileARMlist*64
 	CHARACTER*8      HMOD                           
 	DATA CDOL / '$'/,CPRCNT / '%'/
 	NPROF=0
 
 	!---Get first the INP info
-	OPEN (530,FILE=FILEIN,STATUS='OLD',ERR=1000) 
- 40	READ (530,'(a1)',END=80) CXID
+	OPEN (90,FILE=FILEIN,STATUS='OLD',ERR=1000) 
+ 40	READ (90,'(a1)',END=80) CXID
 	IF (CXID.NE.CDOL) THEN
 	   GO TO 40     
 	ENDIF
-	READ (530,'(81X,I4)',END=80,ERR=6000) INP  
-	close(530)
+	READ (90,'(81X,I4)',END=80,ERR=6000) INP  
+	close(90)
 
 	IF (INP.EQ.1) THEN
-	   OPEN (530,FILE=FILEIN,STATUS='OLD',ERR=1000) 
- 20	   READ (530,'(a1)',END=80) CXID  
+	   OPEN (90,FILE=FILEIN,STATUS='OLD',ERR=1000) 
+ 20	   READ (90,'(a1)',END=80) CXID  
 	   IF (CXID.EQ.CDOL) NPROF=NPROF+1
 	   GO TO 20
 	ENDIF
 	IF (INP.EQ.2) THEN
-	   open(530,file=fileARMlist,status='old',
+	   open(90,file=fileARMlist,status='old',
 	1	form='formatted',err=1000)
 	   DO WHILE (.true.)
-	      read(530,'(a)',end=80,err=1000) filearm
+	      read(90,'(a)',end=80,err=1000) filearm
 	      NPROF=NPROF+1
 	      IF (NPROF.GT.NPROFMX) STOP' ERROR: NPROF>NPROFMX'
 	      filearmTAB(NPROF)=filearm
 	   ENDDO
 	ENDIF
 	IF (INP.EQ.3) THEN
-	   open(530,file=fileprof,status='old',
+	   open(90,file=fileprof,status='old',
 	1	form='formatted',err=1000)
 	   DO WHILE (.true.) 
-	      READ (530,972,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD,
+	      READ (90,972,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD,
 	1	   HMOD,H1,H2,ANGLE,LEN  
 	      NPROF=NPROF+1
  22	      CONTINUE
@@ -1077,7 +1077,7 @@ C-------------------------------------------------------------------------------
 	   WRITE(*,*) 'NO PROFILE FOUND IN GETPROFNUMBER'
 	   STOP
 	ELSE
-	   CLOSE(530)
+	   CLOSE(90)
 	   RETURN
 	ENDIF
  1000	WRITE(*,*) 'ERROR OPENING OR READING FILE in GETPROFNUMBER'
