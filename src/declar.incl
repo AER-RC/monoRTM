@@ -3,7 +3,7 @@
 	REAL*8 WN(NWNMX)
 	REAL W_wv(MXLAY),W_o2(MXLAY),W_o3(MXLAY),W_n2(MXLAY),
      &     W_n2O(MXLAY),W_co(MXLAY),W_so2(MXLAY),
-     &     W_no2(MXLAY),W_oh(MXLAY),CLW(MXLAY)
+     &     W_no2(MXLAY),W_oh(MXLAY),W_other(MXLAY),CLW(MXLAY)
 	REAL O(NWNMX,MXLAY),
      &     OL_WV(NWNMX,MXLAY),OS_WV(NWNMX,MXLAY),
      &     OF_WV(NWNMX,MXLAY),OL_O2(NWNMX,MXLAY),
