@@ -1,32 +1,8 @@
 
-$Author$
+	path:		$Source$
+	author:		$Author$
+	revision:	$Revision$
+	created:	$Date$
 
-oooooooooooooooo
+*******************
 
-$Date$
-
-oooooooooooooooo
-
-$Header$
-
-oooooooooooooooo
-
-$id$
-
-oooooooooooooooo
-
-$name$
-
-oooooooooooooooo
-
-$revision$
-
-oooooooooooooooo
-
-$log$
-
-oooooooooooooooo
-
-$Source$
-
-oooooooooooooooo
