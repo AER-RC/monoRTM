@@ -123,7 +123,6 @@ C     or Tony Clough (clough@aer.com).
 C
 C-------------------------------------------------------------------------------
       include "declar.incl"
-
       CHARACTER HFILE*80,HVRMODM*15
       COMMON /CVRMODM/ HVRMODM
       LOGICAL INIT
@@ -434,8 +433,13 @@ C-------------------------------------------------------------------------------
             IF(XG(I,J).EQ.-3.) THEN
                HWHM_C=HWHM_C*(1-(AIP*(RP))-(BIP*(RP2)))
             ENDIF
-            CALL LSF_VOIGT(XG(I,J),RP,RP2,AIP,BIP,HWHM_C,WN,
-     &           Xnu,ICF(MOL(I)),SLS,HWHM_D,MOL(I))
+            zeta=HWHM_C/(HWHM_C+HWHM_D)
+            ilshp=1                            !=0->Lorentz, =1->Voigt
+            if ((ABS(WN-Xnu).GT.(10.*HWHM_D)).or.(zeta.GT.0.99))ilshp=0
+            IF (ilshp.eq.0) CALL LSF_LORTZ(XG(I,J),RP,RP2,AIP,BIP,
+     &           HWHM_C,WN,Xnu,ICF(MOL(I)),SLS)
+            IF (ilshp.eq.1) CALL LSF_VOIGT(XG(I,J),RP,RP2,AIP,BIP,
+     &           HWHM_C,WN,Xnu,ICF(MOL(I)),SLS,HWHM_D,MOL(I))
             SF=SF+(STILD*SLS)
  30         CONTINUE
             J=JJ
