@@ -80,7 +80,7 @@ C-------------------------------------------------------------------------------
 	BB_fn(V,fbeta)  = RADCN1*(V**3)/(EXP(V*fbeta)-1.)   
 	HVRSUB = '$Revision$' 
 	!---Up and Down radiances
-	CALL RAD_UP_DN(T,NLAY,TZ,WN,rup,trtot,rdn,O,NWN,IDU)
+	CALL RAD_UP_DN(T,NLAY,TZ,WN,rup,trtot,rdn,O,NWN,IDU,IRT)
 	!---RADIATIVE TRANSFER
 	TSKY=2.75 !Cosmic background in Kelvin
 	beta= RADCN2/TMPSFC
@@ -90,13 +90,14 @@ C-------------------------------------------------------------------------------
 	   COSMOS   = bb_fn(WN(I),alph)
 	   ESFC=EMISS(I)
 	   RSFC=REFLC(I)
-	   IF (IRT.EQ.1) THEN
-	      RAD(I)=RUP(I)+((trtot(i)**2)*COSMOS)+
-	1	   trtot(i)*(rsfc*rdn(i)+esfc*SURFRAD)
-	   ENDIF
+	   IF (IRT.EQ.1) RAD(I)=RUP(I)+
+	1   trtot(i)*( (rsfc*(trtot(i)*COSMOS)+rdn(i))+esfc*SURFRAD ) ! sac 06/04/02
+c
 	   IF (IRT.EQ.3) RAD(I)=RDN(I)+(trtot(i)*COSMOS)
-	   IF (IRT.EQ.2) RAD(I)=RUP(I)+RDN(I)*trtot(i)+
-	1	((trtot(i)**2)*COSMOS)
+c
+	   IF (IRT.EQ.2) RAD(I)=RUP(I)+ 
+	1   trtot(i)*( (trtot(i)*COSMOS)+rdn(i) )  !sac 06/04/02
+c
 	   IF (IOUT.EQ.1) THEN
 	      X=RADCN1*(WN(I)**3)/RAD(I)+1.
 	      TB(I)=RADCN2*WN(I)/log(X)
@@ -106,7 +107,8 @@ C-------------------------------------------------------------------------------
 	END 
 
 
-	SUBROUTINE RAD_UP_DN(T,nlayer,TZ,WN,rup,trtot,rdn,O,NWN,IDU)
+	SUBROUTINE RAD_UP_DN(T,nlayer,TZ,WN,rup,trtot,rdn,O,NWN,
+	1    IDU,IRT)
 	IMPLICIT REAL*8 (V)      
 	include "declar.incl"
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
@@ -135,17 +137,22 @@ C-------------------------------------------------------------------------------
 	      beta_a= radcn2/tz(layer-1)
 	      bbaVEC(layer-1) = bb_fn(VV,beta_a)
 	   ENDDO
-	   ODT=ODTOT(I)
-	   DO 70 layer = 1,nlayer,1
-	      bb  = bbVEC(layer)
-	      bba = bbaVEC(layer)
-	      ODVI = O(I,layer)
-	      TRI = EXP(-ODVI)
-	      ODT=ODT-ODVI
-	      TRTOT(I)= EXP(-ODT)
-	      pade=0.193*ODVI+0.013*ODVI**2
-	      RUP(I)= RUP(I)+TRTOT(I)*(1.-TRI)*(bb+pade*bba)/(1.+pade)
- 70	   ENDDO
+
+	   IF (IRT.NE.3) THEN	!compute RUP only when IRT<>3
+	      ODT=ODTOT(I)
+	      DO 70 layer = 1,nlayer,1
+		 bb  = bbVEC(layer)
+		 bba = bbaVEC(layer)
+		 ODVI = O(I,layer)
+		 TRI = EXP(-ODVI)
+		 ODT=ODT-ODVI
+		 TRTOT(I)= EXP(-ODT)
+		 pade=0.193*ODVI+0.013*ODVI**2
+		 RUP(I)= RUP(I)+
+	1	      TRTOT(I)*(1.-TRI)*(bb+pade*bba)/(1.+pade)
+ 70	      ENDDO
+	   ENDIF
+
 	   ODT=ODTOT(I)
 	   do 50 layer = nlayer,1,-1
 	      bb  = bbVEC(layer)
@@ -861,7 +868,7 @@ C-------------------------------------------------------------------------------
 	!Sid Ahmed Boukabara
 	include "declar.incl"	
 	INTEGER ibmax
-	PARAMETER (MXLEV=10000)
+	PARAMETER (MXLEV=3400)
 	REAL PRESS(MXLEV),TEMP(MXLEV),HUMID(MXLEV),ALTIT(MXLEV)
 	real ZBND(IBMAX)
 	REAL*8 V1,V2
@@ -887,6 +894,7 @@ C-------------------------------------------------------------------------------
 	read(44,'(a)') ligne
 	nlev=0
 	Pr_old=2000.
+	alt_old=-2000.
 	IFLAG=0
 	IF ((nlevels.le.5).or.(nlevels.gt.MXLEV)) THEN  !minimum levels number is 5
 	   close(44)
@@ -901,17 +909,24 @@ C-------------------------------------------------------------------------------
 	   IF (Pr.lt.0..or.RHcor.lt.0.) THEN
 	      GOTO 230
 	   ENDIF
-	   !---to avoid two levels with the same pressure
-	   IF (Pr.lt.Pr_old) THEN
+	   !---to avoid two levels with the same pressure/altitude
+	   IF (Pr.lt.Pr_old .and. iAlt/1000. .gt. alt_old) THEN
 	      nlev=nlev+1
 	      PRESS(nlev)=Pr
 	      TEMP(nlev)=Tp
 	      HUMID(nlev)=RHcor
 	      ALTIT(nlev)=iAlt/1000.
+	      alt_old=ALTIT(nlev)
 	   ENDIF
 	   IF (Pr.ge.Pr_old) IFLAG=1
 	   Pr_old=Pr
  230	ENDDO
+	IF ((nlev.le.5).or.(nlev.gt.MXLEV)) THEN  !minimum levels number is 5
+	   close(44)
+	   close(33)
+	   IFLAG=2
+	   RETURN
+	ENDIF
  100	IHIRAC=1
 	ILBLF4=0
 	ICNTNM=1
@@ -937,9 +952,11 @@ C-------------------------------------------------------------------------------
 	H1=max(H1F,ALTIT(1))
 	H2=min(H2F,ALTIT(IMMAX))
 	IBMAXSELECT=ibmax
+	IBMINSELECT=1
 	DO i=1,ibmax
 	   IF (ZBND(i).GT.ALTIT(IMMAX)) GOTO 123
 	   IBMAXSELECT=I
+	   IF (ZBND(i).LT.H1) IBMINSELECT=I
 	ENDDO
  123	CONTINUE
 	JCHARP='A'
@@ -956,10 +973,11 @@ C-------------------------------------------------------------------------------
 	      WRITE(33,'(E19.7)') WN(I)
 	   ENDDO
 	ENDIF
-	write(33,14) TMPBND,1.,0.,0.,0.,0.,0.           
-	write(33,15) model,itype,ibmaxselect,nozero,noprnt,nmol,ipunch
+	write(33,14) TMPBND,1.,0.,0.,0.,0.,0.  
+	write(33,15) model,itype,ibmaxselect-IBMINSELECT+1,nozero,
+	1    noprnt,nmol,ipunch
 	write(33,16) H1,H2,angle
-	write(33,17) H1,(ZBND(i),i=2,ibmaxselect)
+	write(33,17) H1,(ZBND(i),i=IBMINSELECT+1,ibmaxselect)
 	write(33,18) immax,hmod
 	Do i=1,immax
 	   write(33,19) ALTIT(i),PRESS(i),TEMP(i),JCHARP,JCHART,
