@@ -163,12 +163,13 @@ C**********************************************************************
 	INTEGER NWN,I,ICPL,IS,IOUT,IRT,J,ICNTNM,IATM,INP,IVC
 	REAL*8 V1,V2,SECANT,XALTZ 
 	REAL TMPSFC,TPROF(mxlay),qprof(mxlay),press(mxlay)
-	REAL zvec(mxlay),dzvec(mxlay),zbnd(mxfsc)
+        REAL zvec(mxlay),dzvec(mxlay),zbnd(mxfsc),zbnd2(mxfsc)
         CHARACTER HVRATM*15,HVRMODM*15,HVRSUB*15,HVRMON*15
 	CHARACTER fileARMlist*64,hmod*60,CTYPE*3
 	CHARACTER fileprof*80,HFILE*80,FILEOUT*60,ht1*4,ht2*4
 	CHARACTER*60 FILEIN,FILESONDE,FILELOG
 	character*8 XID,HMOLID,YID,HDATE,HTIME
+	real tarray(2)
 	COMMON /CVRMON  / HVRMON
         COMMON /CVRATM  / HVRATM
         COMMON /CVRMODM / HVRMODM
@@ -284,7 +285,7 @@ C**********************************************************************
 	      ENDIF
 	      OPEN (IRD,FILE=FILESONDE,STATUS='UNKNOWN',ERR=5000)        
 	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILESONDE,
-	1	   ICNTNM,CLW,INP,IBMAX,ZBND,H1f,H2f)
+	1	   ICNTNM,CLW,INP,IBMAX2,ZBND2,H1,H2)
 	      CLOSE(IRD)
 	   ENDIF
 	   !---Inputs: MONORTM_PROF.IN (TAPE7 consistent)
@@ -360,8 +361,9 @@ C**********************************************************************
 	   !***********************************************
 	   !* Fourth Step: CORRECT FOR THE SLANT PATH
 	   !***********************************************	   
-	   !---CORRECT THE OPTDEPTHS FOR THE SLANT PATH
-	   CALL CORR_OPTDEPTH(INP,NLAYRS,SECNTA,NWN,ANGLE,O,IRT)
+	   !---CORRECT THE OPTDEPTHS FOR THE SLANT PATH : SHOULD NOT BE USED IF LBLATM (INP=1,2) IS CALLED
+	   !--- OR IF LBLATM GENERATED INP=3 INPUTS
+	   ! CALL CORR_OPTDEPTH(INP,NLAYRS,SECNTA,NWN,ANGLE,O,IRT)
 
 	   !***********************************************
 	   !* Fifth Step: RADIATIVE TRANSFER
@@ -427,7 +429,8 @@ C**********************************************************************
 	Block Data phys_consts
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
 	1    RADCN1,RADCN2 
-	DATA PI / 3.1415927410125732 / !Pi was obtained from PI = 2.*ASIN(1.) 
+        DATA PI / 3.1415926535897932 /   ! from http://www.cecm.sfu.ca/pi9
+
 c---------------------------------------------                
 c       Constants from NIST 01/11/2002
 c---------------------------------------------                
