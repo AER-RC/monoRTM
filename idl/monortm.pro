@@ -71,7 +71,7 @@
 		monortm_orig(0,ich-1,nr-1)=mo1      ;BRIGHTNESS TEMPERATURE (K)
 		monortm_orig(1,ich-1,nr-1)=mo2      ;TOTAL TRANSMITTANCE
 		monortm_orig(2,ich-1,nr-1)=cloud    ;INTEGRATED CLOUD AMOUNT (mm)
-		monortm_orig(3,ich-1,nr-1)=w        ;INTEGRATED WATER VAPOR (mm)
+		monortm_orig(3,ich-1,nr-1)=w        ;INTEGRATED WATER VAPOR (cm)
 		monortm_orig(4,ich-1,nr-1)=OTOT     ;COLUMN TOTAL OPTICAL DEPTH
 		monortm_orig(5,ich-1,nr-1)=OTOT_WV  ;COLUMN WV  OPTICAL DEPTH
 		monortm_orig(6,ich-1,nr-1)=OTOT_O2  ;COLUMN O2  OPTICAL DEPTH
