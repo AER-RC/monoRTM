@@ -1,4 +1,39 @@
 	PROGRAM MONORTM
+C                                                                         
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C                                                                      
+C             ALGORITHM AUTHORS:    
+C                                     S. BOUKABARA
+C                                     S.A. CLOUGH                      
+C                                     R. HOFFMAN                     
+C                                                                      
+C                                                                      
+C                      Atmospheric and Environmental Research Inc. (AER)
+C                      131 Hartwell Avenue
+C                      Lexington, MA, 02421      
+C                                                                      
+C----------------------------------------------------------------------
+C                                                                      
+C               WORK SUPPORTED BY:    THE ARM PROGRAM                  
+C                                     OFFICE OF ENERGY RESEARCH        
+C                                     DEPARTMENT OF ENERGY                          
+C                                                                      
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C                                                                      
+C                                                                      
+C**********************************************************************
+C   Comments and/or questions are appreciated. 
+C   They should be forwarded to:
+C   AER Inc. (Sid Boukabara or Tony Clough)
+C   131 Hartwell Avenue, Lexington, MA02421, USA
+C   By phone  : 1 781 761 2213
+C   By Fax    : 1 781 761 2299
+C   By E-mail : sboukaba@aer.com, clough@aer.com
+C
+C
+C   Sid Ahmed Boukabara, AER Inc, April, 2001
+C*                                                                     
+C**********************************************************************
 	!***************************************************************
 	!        Monochromatic Radiative Transfer Model 
 	!***************************************************************
@@ -104,19 +139,6 @@
 	!   - cleaned up and commented in 2001 for first public release.
 	!     Also put under CVS configuration management. SAB.
 	! 
-	!   Comments or Questions:
-	!   **********************
-	!   Comments and/or questions are appreciated. 
-	!   They should be forwarded to:
-	!   AER Inc. (Sid Boukabara or Tony Clough)
-        !   131 Hartwell Avenue, Lexington, MA02421, USA
-	!   By phone  : 1 781 761 2213
-	!   By Fax    : 1 781 761 2299
-	!   By E-mail : sboukaba@aer.com, clough@aer.com
-	!
-	!
-	!   Sid Ahmed Boukabara, AER Inc, April, 2001
-	!
 	!***************************************************************
 	include "declar.incl"
 	INTEGER NWN,I,ICPL,IS,IOUT,IRT,J,ICNTNM,IATM,INP,IVC
