@@ -208,7 +208,7 @@ C**********************************************************************
 	XSLF=1.  !scaling factor (SLF cont)
 	XFRG=1.  !scaling factor (FRG cont)
 	XCN2=1.  !scaling factor (N2 cont)
-	SCLCPL=1.!scaling factor (Line Coupling Parameters)
+	SCLCPL=0.87 !scaling factor (Line Coupling Parameters) (based on MWRP data: 9/2003)
 	SCLHW=1. !scaling factor (Pressure Dependence of the halfwidth of the 0 band)
 	Y0RES=0. !Y0RES of the line coupling coeffs
 	SCALWV=1.!scaling of the WV profile

@@ -416,7 +416,9 @@ C-------------------------------------------------------------------------------
                A(4)=X(I,JJ)
                B(4)=XG(I,JJ)
                AIP=A(ILC)+((A(ILC+1)-A(ILC))*RECTLC)*TMPDIF
-               BIP=B(ILC)+((B(ILC+1)-B(ILC))*RECTLC)*TMPDIF
+               !BIP=B(ILC)+((B(ILC+1)-B(ILC))*RECTLC)*TMPDIF
+c  change made in September 2003 to yield better agreement with MWRP measurements
+               BIP = 0.
             ENDIF
             !---application of the scaling factors
             IF ((XG(I,J).EQ.-1)) THEN !Scaling of the Line coupling parameters
