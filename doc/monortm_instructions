@@ -47,9 +47,9 @@
 --------------
 
  
-IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  IOD,IXSECT, MPTS, NPTS   INP
-     5,    10,    15,    20,   25,   30,    35,   40,   45,   50,54-55,   60,   65,    70,72-75,77-80,82-85
- 4X,I1, 4X,I1, 4X,I1, 4X,I1,4X,I1,4X,I1, 4X,I1,4X,I1,4X,I1,4X,I1,3X,A2,4X,I1,4X,I1, 4X,I1,1X,I4,1X,I4,1X,I4
+IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  IOD,IXSECT, MPTS, NPTS   INP ISPD
+     5,    10,    15,    20,   25,   30,    35,   40,   45,   50,54-55,   60,   65,    70,72-75,77-80,82-85,87-90
+ 4X,I1, 4X,I1, 4X,I1, 4X,I1,4X,I1,4X,I1, 4X,I1,4X,I1,4X,I1,4X,I1,3X,A2,4X,I1,4X,I1, 4X,I1,1X,I4,1X,I4,1X,I4,1X,I4
  
  
          IHIRAC -->  Should be one: Voigt profile.
@@ -86,7 +86,7 @@ IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  I
 	                   still read from LBLRTM.IN (wavenumbers, etc).
 			   In case of 3, the skin temperature is assumed to be the 
 	                   surface level temperature.
-        *SPD    -->  (0,1)
+        *ISPD    -->  (0,1)
  	             =0 Slow version of MonoRTM (accurate) -default value-
  		     =1 Fastversion of MonoRTM (valid only in the microwave).
 	 
