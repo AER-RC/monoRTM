@@ -12,7 +12,7 @@ C	Jan 17th 2002. AER Inc, SAB.
 C       
 c       O2 line coupling parameters have been modified: Y parameter was scaled by 0.87
 c                                                       G parameter was set to zero.
-c       September 2003
+c       September 18, 2003
 c
 C	The spectroscopic information should start right after the line that begins with a 
 C	dollar ($) sign.
