@@ -1121,12 +1121,18 @@ C********************************************************************
 	!  WE ADD THE FOLLOWING DUMMY ARGUMENTS
 	!--------------------------------------
 	SUBROUTINE LBLDAT(HDATE)  
-        CHARACTER*8      HDATE
+         CHARACTER*8      HDATE
+	character*8      hblnk
+	data hblnk /'        '/
+	hdate = hblnk
 	RETURN
 	END
 
         SUBROUTINE FTIME (HTIME)
 	CHARACTER*8      HTIME   
+	character*8      hblnk
+	data hblnk /'        '/
+	htime = hblnk
 	RETURN
 	END
 

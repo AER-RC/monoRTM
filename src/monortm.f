@@ -224,7 +224,7 @@ C**********************************************************************
 	SCLCPL= 1. !scaling factor (Line Coupling Parameters)
 	SCLHW=1. !scaling factor (Pressure Dependence of the halfwidth of the 0 band)
 	Y0RES=0. !Y0RES of the line coupling coeffs
-	SCALWV=1.!scaling of the WV profile
+	SCALWV=2.857 !scaling of the WV profile
 	IPUNCH=1 !flag to create (1) or not (0) TAPE7 in case INP=2
 
 	!---FILES NAMES ALL PUT HERE FOR CONVENIENCE
@@ -247,7 +247,7 @@ C**********************************************************************
 	HVRMON = '$Revision$' 
 
 	!---Release number of MonoRTM
-	HVRREL = 'Release 2.11'
+	HVRREL = 'Release 2.12'
 
 	!---GET THE PROFILES NUMBER
 	CALL GETPROFNUMBER(INP,FILEIN,fileARMlist,fileprof,
