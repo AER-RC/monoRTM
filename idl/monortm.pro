@@ -150,9 +150,9 @@
 	     ;----test 
 	     plot,freq,monortm(0,*,PROFILE2PLOT),xtitle='Frequency (GHz)',$
 	     ytitle='Brightness Temperature (K)',$
-	     charsize=2,charthick=4,thick=3,$
-	     yrange=[min(monortm(0,*,PROFILE2PLOT)),max(monortm(0,*,PROFILE2PLOT))]
-	     ;yrange=[191,197],xrange=[21,24]
+	     charsize=2,charthick=4,thick=1,$
+	     ;yrange=[min(monortm(0,*,PROFILE2PLOT)),max(monortm(0,*,PROFILE2PLOT))]
+	     yrange=[250,300],xrange=[40,200]
 	     ;---amsu
 	     ;df=0.01
 	     ;ind=where((freq le 23.8+df) and (freq ge 23.8-df))
@@ -234,6 +234,7 @@
 		print, 'Postscript :',ficres  
 		set_plot,'ps'
 		device,filename=ficres,/color,ysize=23,yoffset=2,xsize=17
+		;device,filename=ficres,/color,ysize=17,yoffset=2,xsize=23
 		goto, imp
 	   ENDIF
 	   bo:print ,'-----------------------------------------------------'
