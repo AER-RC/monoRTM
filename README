@@ -41,7 +41,7 @@ Assuming you are in the main directory.
 
 . Compilation:
   > cd src
-  > build.sh (this executes the makefile)
+  > make (this executes the makefile)
   > cd ..
 
 . Running:
