@@ -10,11 +10,13 @@ briefly below:
 CVS    -> For version control. Do not edit.
 README -> This file.
 bin    -> Contains the MonoRTM executable. Will be generated automatically.
+	  In case LBLATM is ON, TAPE6 and TAPE7 will be generated also.
+	  . TAPE6    : Log file for LBLATM
+          . TAPE7    : profile info, in case INP=3 
 in     -> Contains the input files 
           . spectral_lines.dat : contains the spectral lines informations.
           . LBLRTM.IN          : input compatible with lblrtm (ex-TAPE5). INP=1
 	  . ARM.IN             : List of ARM sondes. INP=2
-          . MONORTM_PROF.IN    : profile info. (TAPE7-consistent) in case INP=3 
 out -> output from MonoRTM is put in this directory: MONORTM.OUT. 
        IDL code to read this file and to make plots is available in idl sub-directory.
 src -> contains all source files needed by MonoRTM as well as the makefile.
@@ -34,7 +36,8 @@ Assuming you are in the main directory.
   > cd ..
 
 . Running:
-  > bin/monortm
+  > cd bin
+  > monortm
 
 . Visualization of the output:
   >cd idl
