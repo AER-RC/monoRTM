@@ -180,6 +180,7 @@ C**********************************************************************
 	REAL TMPSFC,TPROF(mxlay),qprof(mxlay),press(mxlay)
         REAL zvec(mxlay),dzvec(mxlay),zbnd(mxfsc),zbnd2(mxfsc)
         CHARACTER HVRATM*15,HVRMODM*15,HVRSUB*15,HVRMON*15
+        CHARACTER HVRREL*15, HVRSPEC*15
 	CHARACTER fileARMlist*64,hmod*60,CTYPE*3
 	CHARACTER fileprof*80,HFILE*80,FILEOUT*60,ht1*4,ht2*4
 	CHARACTER*60 FILEIN,FILESONDE,FILELOG
@@ -189,6 +190,8 @@ C**********************************************************************
         COMMON /CVRATM  / HVRATM
         COMMON /CVRMODM / HVRMODM
 	COMMON /CVRSUB  / HVRSUB
+	COMMON /CVRREL  / HVRREL
+	COMMON /CVRSPEC  / HVRSPEC
 	COMMON /PATHD/ P,T,WKL,WBRODL,DVL,WTOTL,ALBL,ADBL,AVBL,
 	2    H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,PZ,TZ
 	COMMON /MANE/ P0,TEMP0,NLAYRS,DVXM,H2OSLF,WTOT,ALBAR,
@@ -225,16 +228,20 @@ C**********************************************************************
 	fileprof    ='../in/MONORTM_PROF.IN'
 	HFILE       ='../in/spectral_lines.dat'
 	FILEOUT     ='../out/MONORTM.OUT'
-	FILELOG     ='MONORTM.LOG'
+	FILELOG     ='../out/MONORTM.LOG'
 
 	!---Initializations of the version numbers
 	HVRMON      ='NOT USED       ' 
 	HVRATM      ='NOT USED       ' 
 	HVRMODM     ='NOT USED       ' 
 	HVRSUB      ='NOT USED       ' 
+	HVRREL      ='NOT USED       ' 
 
 	!---Version number of MonoRTM
 	HVRMON = '$Revision$' 
+
+	!---Release number of MonoRTM
+	HVRREL = 'Release 2.11'
 
 	!---GET THE PROFILES NUMBER
 	CALL GETPROFNUMBER(INP,FILEIN,fileARMlist,fileprof,
@@ -401,18 +408,20 @@ C**********************************************************************
 	!---Write out tail of the output file
 	WRITE(IPR,'(a)') 
 	WRITE(IPR,'(a)') '--------------------------------------'
-	WRITE(IPR,1000) HVRMON,HVRMODM,HVRSUB,HVRATM  
+	WRITE(IPR,1000) HVRREL,HVRSPEC,HVRMON,HVRMODM,HVRSUB,HVRATM  
 
 	!---Different formats
  924	FORMAT (1X,I1,I3,I5,F10.6,3A8) 
  972	FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2) 
  926	FORMAT (E15.7,F10.4,10X,I5,1X,F7.3,15X,F7.3,/,(1P8E15.7))    
  978	FORMAT (1P8E15.7)                                             
- 1000	FORMAT ('Modules versions used in this calculation:',/,/,5X,
-	1    'monortm.f     : ',4X,A15,10X,
-	2    'modm.f           :  ',4X,A15,/,5X,
-	2    'monortm_sub.f : ',4X,A15,10X,
-	3    'lblatm_monortm.f :  ',4X,A15)
+ 1000	FORMAT ('Modules and versions used in this calculation:',/,/,
+     &    A15,/,/,5X,
+     &    'spectral file :'     5X,A15,/,5X, 
+     &    'monortm.f     : ',4X,A15,10X,
+     &    'modm.f           :  ',4X,A15,/,5X,
+     &    'monortm_sub.f : ',4X,A15,10X,
+     &    'lblatm_monortm.f :  ',4X,A15)
  110	CONTINUE
 
 	!---Close all files

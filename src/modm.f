@@ -660,7 +660,10 @@ C-------------------------------------------------------------------------------
       REAL DELTNU(NNM,IIM),E(NNM,IIM),ALPS(NNM,IIM),ALPF(NNM,IIM)
       REAL X(NNM,IIM),XG(NNM,IIM),S0(NNM,IIM)
       INTEGER MOL(NNM),NBLM(NNM),ISO(NNM,IIM)
-      Character Q1*9,Q2*9,HFILE*80,CXID*1,CXIDLINE*100
+      Character Q1*9,Q2*9,HFILE*80,CXID*1,HVRSPEC*15
+      character(len=100) cxidline
+      character*25 cdate
+      COMMON /CVRSPEC/ HVRSPEC
       COMMON/HITR/MOL,NBLM,ISO,XNU0,DELTNU,S0,E,ALPS,ALPF,X,XG,NMOLEC
       COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,  
      $     NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
@@ -680,16 +683,29 @@ C-------------------------------------------------------------------------------
       NMOLEC=0
       OPEN(9,FILE=HFILE,form='formatted',status='old',ERR=20)
       !---We read comments /put them in LOG file
-      KOUNT = 0
-      WRITE(IPR,'(a80)') '--------------------------------'
-      WRITE(IPR,'(a80)') 'SPECTROSCOPIC INFORMATION USED'
-      WRITE(IPR,'(a80)') '--------------------------------'
-      WRITE(*,'(a80)') '--------------------------------'
-      WRITE(*,'(a80)') 'SPECTROSCOPIC INFORMATION USED'
-      WRITE(*,'(a80)') '--------------------------------'
+      IKOUNT = 0
+      WRITE(IPR,'(a80)') ' '
+      WRITE(IPR,'(a80)') ' '
+      WRITE(IPR,'(a80)') '********************************'
+      WRITE(IPR,'(a80)') ' SPECTROSCOPIC FILE INFORMATION '
+      WRITE(IPR,'(a80)') '********************************'
+      WRITE(*,'(a33)') '  '
+      WRITE(*,'(a33)') '********************************'
+      WRITE(*,'(a33)') ' SPECTROSCOPIC FILE INFORMATION '
+      WRITE(*,'(a33)') '********************************'
  23   READ (9,'(A100)',END=30,ERR=30) CXIDLINE
       WRITE(IPR,'(a100)') CXIDLINE
-      if (ikount.le.3) write (*,'(a80)') CXIDLINE
+      if (ikount.eq.2) then
+         read (CXIDLINE,'(12X,A15)') HVRSPEC
+         write(*,*) HVRSPEC
+      end if
+      if (ikount.eq.3) then
+         read (CXIDLINE,'(12X,A25)') CDATE
+         write(*,*) CDATE
+         write(*,*) ' '
+      endif
+      if (ikount.ge.12 .AND. ikount.le.14) 
+     &    write(*,'(a80)') cxidline(9:100)
       ikount = ikount + 1
       IF (CXID.NE.'$') GO TO 23                            
 
@@ -758,6 +774,8 @@ C-------------------------------------------------------------------------------
       GOTO 22
  3    CONTINUE
       MAXWN=NU0
+      WRITE(*,'(a33)') '***********************************'
+      WRITE(*,*) ' '
       IF (ISPD.EQ.1) THEN
          WRITE(*,*) '****************************************'
          WRITE(*,*) '*            W A R N I N G             *'
@@ -765,6 +783,7 @@ C-------------------------------------------------------------------------------
          WRITE(*,*) 'FAST VERSION IS RUNNING.'
          WRITE(*,*) 'CURRENTLY VALID IN THE MICROWAVE ONLY.'
       ENDIF
+      WRITE(*,*) ' '
       WRITE(*,*) '****************************************'
       WRITE(*,*) '* SPECTRAL LINES INFORMATION AVAILABLE *'
       WRITE(*,*) '****************************************'

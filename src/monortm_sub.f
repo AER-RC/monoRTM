@@ -253,7 +253,7 @@ C-------------------------------------------------------------------------------
 	CHARACTER CDOL*1,CPRCNT*1,CXID*1,CA*1,CB*1,CC*1
 	INTEGER IRD,IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,L,           
 	1    ISCAN,IFILTR,IPLOT,ITEST,IATM,ILAS,ILNFLG,      
-	2    IOD,IXSECT,IRAD,MPTS,NPTS,INFLAG,IOTFLG,JULDAT
+	2    IOD,IXSECT,MPTS,NPTS,INFLAG,IOTFLG,JULDAT
 	REAL SAMPLE,DVSET,ALFAL0,AVMASS,DPTMIN,DPTFAC,DVOUT 
 	REAL TMPBND,XVMID,EMITST,REFTST
 	INTEGER IBPROP,IBND,ICOEF,IMRG,LAYTOT,IFORM,NLAYRS,NMOL
@@ -309,7 +309,7 @@ C-------------------------------------------------------------------------------
 				!---record 1.2
 	READ(IRD,925,END=80,ERR=6000) IHIRAC,ILBLF4,             
 	1    ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,    
-	2    ITEST,IATM, CMRG,ILAS, IOD,IXSECT,IRAD,
+	2    ITEST,IATM, CMRG,ILAS, IOD,IXSECT,
 	3    MPTS,NPTS,INP,ISPD  
 	
 	IF ((INP.LE.1).OR.(INP.GE.4)) INP=1
@@ -633,7 +633,7 @@ C-------------------------------------------------------------------------------
  915	FORMAT (E15.7,F10.4,F10.4,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)
  916	FORMAT (3F10.4,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)         
  920	FORMAT (I3)                                                 
- 925	FORMAT (10(4X,I1),3X,2A1,3(4X,I1),I1,I4,1X,I4,1X,I4,1X,I4)    
+ 925	FORMAT (10(4X,I1),3X,2A1,3(4X,I1),1X,I4,1X,I4,1X,I4,1X,I4)    
  9255	FORMAT (8E15.7)
  927	FORMAT (8E10.3)                                          
  930	FORMAT (I1)                                               
@@ -1009,12 +1009,13 @@ C-------------------------------------------------------------------------------
 	END
 
 	SUBROUTINE START(nprof,INP)
-	CHARACTER*15 HVRMON
-	COMMON /CVRMON  / HVRMON
+	CHARACTER*15 HVRREL
+	COMMON /CVRREL  / HVRREL
+
 	
 	WRITE(*,'(a)') '**********************************'
 	WRITE(*,'(a)') '*        M O N O R T M           *'
-	WRITE(*,'(a)') '*        '//HVRMON//'         *'
+	WRITE(*,'(a)') '*        '//HVRREL//'         *'
 	WRITE(*,'(a)') '**********************************'
 	WRITE(*,*) 'NUMBER OF PROFILES:',nprof
 	IF (INP.EQ.1) WRITE(*,*) 'INPUTS FROM MONORTM.IN'

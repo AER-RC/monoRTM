@@ -76,6 +76,7 @@ C                                                                        FA00630
       Real*8               SECANT,       XALTZ
 C                                                                        FA00650
       COMMON /CVRATM/ HVRATM
+      COMMON /CVRREL/ HVRREL
       COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4),      FA00660
      *                WK(60),PZL,PZU,TZL,TZU,WN2   ,DV ,V1 ,V2 ,TBOUND,  FA00670
      *                EMISIV,FSCDID(17),NMOL,LAYER ,YI1,YID(10),LSTWDF   FA00680
@@ -87,7 +88,7 @@ C                                                                        FA00730
       COMMON /HMOLS/ HMOLS(MXMOL),JUNIT(MXMOL),WMOL(MXMOL),JUNITP,       FA00740
      *               JUNITT                                              FA00750
       COMMON /HMOLC/ HMOLC(MXMOL)                                        FA00760
-      CHARACTER*15 HVRATM
+      CHARACTER*15 HVRATM, HVRREL
       CHARACTER*8 HMOLC                                                  FA00770
       character*4 ht1,ht2
 C                                                                        FA00780
@@ -141,6 +142,8 @@ C                                                                        FA01130
 C                                                                        FA01190
       CALL LBLDAT(HDATE)                                                 FA01200
       CALL FTIME (HTIME)                                                 FA01210
+      WRITE (IPR,'(A15)') HVRREL
+      WRITE (IPR,*) ' '
       WRITE (IPR,900) HDATE,HTIME                                        FA01220
 C                                                                        FA01230
       DO 10 M = 1, MXMOL                                                 FA01240
@@ -540,7 +543,7 @@ C                                                                        FA04860
       IF (IPUNCH.EQ.1) then
 c        Tape7 only opened if ipu selected and first time through
          if (ipass.eq.0) 
-     *          OPEN (UNIT=IPU,FILE='TAPE7',STATUS='UNKNOWN') 
+     *          OPEN (UNIT=IPU,FILE='../out/TAPE7',STATUS='UNKNOWN') 
         ipass = ipass + 1
       if (ipunch .eq. 1)
      *  write (ipu,905) ipass, xid
