@@ -58,8 +58,9 @@
 	ligne=''
 	readf,1,ligne
 	readf,1,ligne
+	readf,1,format='(5x,I8)',nwn
 	i=long(0)
-	WHILE (not eof(1)) DO BEGIN
+	WHILE (not eof(1) and (i lt nwn)) DO BEGIN
 		readf,1,$
 		format='(3i5,2f9.3,E19.9,f9.5,2f8.4,3f8.2,f9.3,10E12.4)',$
 		IPR,NR,ich,FR,mo1,rad,mo2,W,cloud,TMPSFC,REFLC,EMISS,$
@@ -113,8 +114,8 @@
 	     print, ich,' CHANNELS PROCESSED WITH ',nr,' PROFILES'
 	     tb_vs_wv      =0
 	     tbspect       =1
-	     radspect      =1
-	     optspect_1    =1
+	     radspect      =0
+	     optspect_1    =0
 	   ENDIF
 
  imp:	   
@@ -126,9 +127,11 @@
 	
 	   ;---SELECT THE PROFILE TO BE PLOTTED: must be between 0 and nprof-1
 	   PROFILE2PLOT=0
-
+	   
 
 	   !p.font=1
+	   !x.thick=5
+	   !y.thick=5
 	   IF (tb_vs_wv eq 1) then begin
 	     erase
 	     !p.multi=1
@@ -140,9 +143,43 @@
 	   IF (tbspect eq 1) then begin
 	     erase
 	     !p.multi=1
+	     ;plot,freq,monortm(0,*,PROFILE2PLOT),xtitle='Frequency (GHz)',$
+	     ;ytitle='Brightness Temperature (K)',$
+	     ;charsize=1.3,charthick=4,thick=3,title='PROFILE #'+string(PROFILE2PLOT+1,'(I5)')
+	
+	     ;----test 
 	     plot,freq,monortm(0,*,PROFILE2PLOT),xtitle='Frequency (GHz)',$
 	     ytitle='Brightness Temperature (K)',$
-	     charsize=1.3,charthick=4,thick=3,title='PROFILE #'+string(PROFILE2PLOT+1,'(I5)')
+	     charsize=2,charthick=4,thick=3,$
+	     yrange=[min(monortm(0,*,PROFILE2PLOT)),max(monortm(0,*,PROFILE2PLOT))]
+	     ;yrange=[191,197],xrange=[21,24]
+	     ;---amsu
+	     ;df=0.01
+	     ;ind=where((freq le 23.8+df) and (freq ge 23.8-df))
+	     ;tbc=monortm(0,ind,PROFILE2PLOT)
+	     ;arrow,23.8-0.135,tbc,23.8+0.135,tbc,/data
+	     ;arrow,23.8+0.135,tbc,23.8-0.135,tbc,/data
+	     ;xyouts,23.8-3*0.135,tbc,'AMSU'
+	     ;plots,[23.8-0.135,23.8-0.135],[tbc-0.5,tbc+0.5]
+	     ;plots,[23.8+0.135,23.8+0.135],[tbc-0.5,tbc+0.5]
+	     ;---ssmi
+	     ;df=0.007
+	     ;ind=where((freq le 22.235+df) and (freq ge 22.235-df))
+	     ;tbc=monortm(0,ind,PROFILE2PLOT)
+	     ;arrow,22.235-0.120,tbc,22.235+0.120,tbc,/data
+	     ;arrow,22.235+0.120,tbc,22.235-0.120,tbc,/data
+	     ;xyouts,22.235-3*0.120,tbc,'SSM/I'
+	     ;plots,[22.235-0.120,22.235-0.120],[tbc-0.5,tbc+0.5]
+	     ;plots,[22.235+0.120,22.235+0.120],[tbc-0.5,tbc+0.5]
+	     ;---tmi
+	     ;df=0.007
+	     ;ind=where((freq le 21.3+df) and (freq ge 21.3-df))
+	     ;tbc=monortm(0,ind,PROFILE2PLOT)
+	     ;arrow,21.3-0.100,tbc,21.3+0.100,tbc,/data
+	     ;arrow,21.3+0.100,tbc,21.3-0.100,tbc,/data
+	     ;xyouts,21.3+2*0.100,tbc,'TMI'
+	     ;plots,[21.3-0.100,21.3-0.100],[tbc-0.5,tbc+0.5]
+	     ;plots,[21.3+0.100,21.3+0.100],[tbc-0.5,tbc+0.5]
 	   ENDIF
 
 	   IF (radspect eq 1) then begin
@@ -160,19 +197,24 @@
 	     col_wv=140.
 	     col_o2=230.
 	     col_n2=90.
+	     col_o3=60.
 	     lin_wv=0
 	     lin_o2=0
 	     lin_n2=0
+	     lin_o3=0
 	     plot,/ylog,freq,monortm(4,*,PROFILE2PLOT),xtitle='Frequency (GHz)',$
 	     ytitle='Optical Depth (Neper)',$
-	     yrange=[0.0001,100],charsize=1.2,charthick=3,title='PROFILE #'+$
+	     ;yrange=[0.0001,1000],$
+	     yrange=[min(monortm(5:8,*,PROFILE2PLOT)),max(monortm(5:8,*,PROFILE2PLOT))],$
+	     charsize=1.2,charthick=3,title='PROFILE #'+$
 	     string(PROFILE2PLOT+1,'(I5)')
 	     oplot,freq,monortm(5,*,PROFILE2PLOT),color=col_wv,linestyle=lin_wv
 	     oplot,freq,monortm(6,*,PROFILE2PLOT),color=col_o2,linestyle=lin_o2
 	     oplot,freq,monortm(7,*,PROFILE2PLOT),color=col_n2,linestyle=lin_n2
-	     plot_legend,4,min(freq),max(freq),0.000001,0.006,$
-	     [0,lin_wv,lin_o2,lin_n2],[0,col_wv,col_o2,col_n2],['All','H2O','O2','N2'],$
-	     [0,0,0,0],0.9
+	     oplot,freq,monortm(8,*,PROFILE2PLOT),color=col_o3,linestyle=lin_o3
+	     plot_legend,5,min(freq),max(freq),0.000001,0.006,$
+	     [0,lin_wv,lin_o2,lin_n2,lin_o3],[0,col_wv,col_o2,col_n2,col_o3],['All','H2O','O2','N2','O3'],$
+	     [0,0,0,0,0],0.9
 	   ENDIF
 
 
