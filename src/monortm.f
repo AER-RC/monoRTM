@@ -224,7 +224,7 @@ C**********************************************************************
 	SCLCPL= 1. !scaling factor (Line Coupling Parameters)
 	SCLHW=1. !scaling factor (Pressure Dependence of the halfwidth of the 0 band)
 	Y0RES=0. !Y0RES of the line coupling coeffs
-	SCALWV=2.857 !scaling of the WV profile
+	SCALWV=1.0 !scaling of the WV profile
 	IPUNCH=1 !flag to create (1) or not (0) TAPE7 in case INP=2
 
 	!---FILES NAMES ALL PUT HERE FOR CONVENIENCE
