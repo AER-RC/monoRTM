@@ -324,11 +324,12 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
 --------------
  
  
-  MODEL,ITYPE,IBMAX,NOZERO,NOPRNT,NMOL,IPUNCH,IFXTYP,MUNITS,   RE,HSPACE, VBAR,CO2MX
+
+  MODEL,ITYPE,IBMAX,NOZERO,NOPRNT,NMOL,IPUNCH,IFXTYP,MUNITS,   RE,HSPACE, VBAR,CO2MX,REF_LAT
  
-      5,   10,   15,    20,    25,  30,    35, 36-37, 39-40,41-50, 51-60,61-70,71-80
+      5,   10,   15,    20,    25,  30,    35, 36-37, 39-40,41-50, 51-60,61-70,71-80,81-90
  
-     I5,   I5,   I5,    I5,    I5,  I5,    I5,    I2,1X, I2,F10.3, F10.3,F10.3,F10.3
+     I5,   I5,   I5,    I5,    I5,  I5,    I5,    I2,1X, I2,F10.3, F10.3,F10.3,F10.3,F10.3
  
  
            MODEL -->  selects atmospheric profile
@@ -347,6 +348,8 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
                      = 0  MONORTM layers are generated internally (default)
                      > 0  IBMAX is the number of layer boundaries read in on Record 3.3B 
                           which are used to define the layers used in MONORTM calculation
+		          If IBMAX is set to a negative value, the layer boundaries are
+			  specified in PRESSURE (mbars). 
           NOZERO --> = 0  zeroes absorber amounts which are less than 0.1% of total (default)
                      = 1  suppresses zeroing of small amounts
           NOPRNT --> = 0  full printout
@@ -375,7 +378,13 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
                      (default:  VBAR = (V1+V2) / 2 )     (V1,V2 from Record 1.3)
            CO2MX --> mixing ratio for CO2 (ppm).  Default is 330 ppm.
  
+ 	 REF_LAT --> latitude of location of calculation (degrees)
+		     defaults for REF_LAT = 0:
+		     a) MODEL 0,2,3,6    REF_LAT = 45.0 degrees
+		     b) MODEL 1          REF_LAT = 15.0
+		     c) MODEL 4,5        REF_LAT = 60.0
  
+
  
  -----------------------------------------------------------------------------
  
@@ -395,9 +404,11 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
  
  
           H1    --> observer altitude (km)
+		    If IBMAX is negative, H1 is provided in pressure units (mbars)
           H2    --> for ITYPE = 2, H2 is the end point altitude (km)
                     ITYPE = 3, H2 is the tangent height (km) for H2 .GT. 0.
                     if H2 = 0. ANGLE determines tangent height
+		    If IBMAX is negative, H2 is provided in pressure units (mbars)
           ANGLE --> zenith angle at H1 (degrees)
           RANGE --> length of a straight path from H1 to H2 (km)
           BETA  --> earth centered angle from H1 to H2 (degrees)
@@ -449,6 +460,12 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
                 ZBND(I), I=1, IBMAX   altitudes of MONORTM layer boundaries
  
                (8F10.3)
+
+	            If IBMAX < 0 
+
+		PBND(I), I=1, ABS(IBMAX) pressures of LBLRTM layer boundaries
+
+               (8F10.3)
  
  
  
@@ -470,6 +487,8 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
               I5,    3A8
  
            IMMAX -->   number of atmospheric profile boundaries
+                       If IMMAX is set to a negative value, the level boundaries 
+                       are specified in PRESSURE (mbars).
             HMOD -->   24 character description of profile
  
 --------------
@@ -484,7 +503,11 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
     E10.3, E10.3, E10.3,   5x,  A1,     A1,  1x, A1,     1x,    28A1
  
  
-          ZM  -->     boundary altitude (km)
+          ZM  -->     boundary altitude (km). If IMMAX < 0, altitude levels are 
+		      computed from pressure levels PM. If any altitude levels are
+		      provided, they are ignored if  IMMAX < 0 (exception: The
+		      first input level must have an accompanying ZM for input
+	 	      into the hydrostatic equation)
           PM  -->     pressure (units and input options set by JCHARP)
           TM  -->     temperature (units and input options set by JCHART)
       JCHARP  -->     flag for units and input options for pressure (see Table I)
