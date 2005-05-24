@@ -199,20 +199,20 @@ C**********************************************************************
 	COMMON /CVRREL  / HVRREL
 	COMMON /CVRSPEC  / HVRSPEC
 	COMMON /PATHD/ P,T,WKL,WBRODL,DVL,WTOTL,ALBL,ADBL,AVBL,
-	2    H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,PZ,TZ
+     2     H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,PZ,TZ
 	COMMON /MANE/ P0,TEMP0,NLAYRS,DVXM,H2OSLF,WTOT,ALBAR,
-	1    ADBAR,AVBAR,  
-	1    AVFIX,LAYRFX,SECNT0,SAMPLE,DVSET,ALFAL0,AVMASS,      
-	2    DPTMIN,DPTFAC,ALTAV,AVTRAT,TDIFF1,TDIFF2,ALTD1,      
-	3    ALTD2,ANGLE,IANT,LTGNT,LH1,LH2,IPFLAG,PLAY,TLAY,     
-	4    EXTID(10)    
+     1    ADBAR,AVBAR,  
+     1    AVFIX,LAYRFX,SECNT0,SAMPLE,DVSET,ALFAL0,AVMASS,      
+     2    DPTMIN,DPTFAC,ALTAV,AVTRAT,TDIFF1,TDIFF2,ALTD1,      
+     3    ALTD2,ANGLE,IANT,LTGNT,LH1,LH2,IPFLAG,PLAY,TLAY,     
+     4    EXTID(10)    
 	COMMON /BNDPRP/ TMPSFC,BNDEMI(3),BNDRFL(3),IBPROP          
 	COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4), 
-	1    WK(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   
-	2    EMISIV,FSCDID(17),NMOL,LAYRS ,YI1,YID(10),LSTWDF    
+     1    WK(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   
+     2    EMISIV,FSCDID(17),NMOL,LAYRS ,YI1,YID(10),LSTWDF    
 	COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,  
-	1    NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
-	2    NLTEFL,LNFIL4,LNGTH4                                 
+     1    NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
+     2    NLTEFL,LNFIL4,LNGTH4                                 
 
 	!---INPUTS & GENERAL CONTROL PARAMETERS
 	IVC=2    !if=2->CKD2.4  MPMf87/s93 (if=3)
@@ -224,7 +224,7 @@ C**********************************************************************
 	SCLCPL= 1. !scaling factor (Line Coupling Parameters)
 	SCLHW=1. !scaling factor (Pressure Dependence of the halfwidth of the 0 band)
 	Y0RES=0. !Y0RES of the line coupling coeffs
-	SCALWV=1.0 !scaling of the WV profile
+	SCALWV=1.!scaling of the WV profile
 	IPUNCH=1 !flag to create (1) or not (0) TAPE7 in case INP=2
 
 	!---FILES NAMES ALL PUT HERE FOR CONVENIENCE
@@ -247,12 +247,12 @@ C**********************************************************************
 	HVRMON = '$Revision$' 
 
 	!---Release number of MonoRTM
-	HVRREL = 'Release 2.12'
+	HVRREL = 'Release 2.20'
 
 	!---GET THE PROFILES NUMBER
-	CALL GETPROFNUMBER(INP,FILEIN,fileARMlist,fileprof,
-	1    NPROF,filearmTAB)
 
+	CALL GETPROFNUMBER(INP,FILEIN,fileARMlist,fileprof,
+     1    NPROF,filearmTAB)
 	!---File Unit numbers/Open files
 	IPU  =7 
 	IPR  =66
@@ -262,19 +262,18 @@ C**********************************************************************
 	OPEN (IPR,FILE=FILELOG,STATUS='UNKNOWN',ERR=2000)        
 	OPEN (IRD,FILE=FILEIN,STATUS='UNKNOWN',ERR=3000)        
 	OPEN (IOT,file=FILEOUT,status='unknown',
-	1    form='formatted',ERR=4000)
+     1    form='formatted',ERR=4000)
 	IF (INP.EQ.3) OPEN(IPF,file=fileprof,status='old',
-	1    form='formatted',err=6000)
+     1    form='formatted',err=6000)
 
 	!---Get info about IBMAX/ZBND/H1/H2...
 	CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
-	1    ICNTNM,CLW,INP,IBMAX,ZBND,H1f,H2f,ISPD)
+     1    ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD)
 
 	!---Write header in output file
 	WRITE(IOT,'(a)') 'MONORTM RESULTS:'
 	WRITE(IOT,'(a)') '----------------' 
 	WRITE(IOT,'(a5,I8)') 'NWN :',NWN 
-
 
 	!---PRINT OUT MONORTM VERSION AND PROFILES NUMBER
 	CALL start(NPROF,INP)
@@ -296,30 +295,31 @@ C**********************************************************************
 		 IPASS=0
 	      ENDIF
 	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
-	1	   ICNTNM,CLW,INP,IBMAX,ZBND,H1f,H2f,ISPD)
+     1	         ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD)
 	   ENDIF
+
 	   !---Inputs: wave#/path/angle from MONORTM.IN, profiles from ARM sondes
 	   IF (INP.EQ.2) THEN
 	      IF (NPR.EQ.1) REWIND(IPU)
 	      CALL ARM2LBLATM(filearmTAB(NPR),IFLAG,ilaunchdate, 
-	1	   ilaunchtime,ibasetime,iserialnumber,isondeage,
-	2	   NWN,WN,V1,V2,DVSET,FILESONDE,NLAYRS,IBMAX,ZBND,
-	3	   ANGLE,H1F,H2F,NMOL,IPUNCH)
+     1  	   ilaunchtime,ibasetime,iserialnumber,isondeage,
+     2	           NWN,WN,V1,V2,DVSET,FILESONDE,NLAYRS,IBMAX,ZBND,
+     3  	   ANGLE,H1F,H2F,NMOL,IPUNCH)
 	      IF (IFLAG.EQ.2) THEN
 		 WRITE(*,'(a30,i5,a8)') 'PROCESSING PROFILE NUMBER:',
-	1	      NPR,' FLAG=2'
+     1	         NPR,' FLAG=2'
 		 GOTO 111
 	      ENDIF
 	      OPEN (IRD,FILE=FILESONDE,STATUS='UNKNOWN',ERR=5000)        
 	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILESONDE,
-	1	   ICNTNM,CLW,INP,IBMAX2,ZBND2,H1,H2,ISPD)
+     1             ICNTNM,    INP,IBMAX2,ZBND2,H1,H2,ISPD)
 	      CLOSE(IRD)
 	   ENDIF
 	   !---Inputs: MONORTM_PROF.IN (TAPE7 consistent)
 	   IF (INP.EQ.3) THEN
 	      READ (IPF,'(1x,i5,10a8)') ipass, xid
 	      READ (IPF,972,END=110,ERR=50) IFORM,NLAYRS,NMOL,SECNT0,
-	1	   HMOD,HMOD,H1,H2,ANGLE,LEN 
+     1             HMOD,HMOD,H1,H2,ANGLE,LEN 
 	      IF (ANGLE.GT.90.) IRT = 1 !space-based observer (looking down) 
 	      IF (ANGLE.LT.90.) IRT = 3 !ground-based observer (looking up)
 	      IF (ANGLE.EQ.90.) IRT = 2 !limb measurements
@@ -327,15 +327,15 @@ C**********************************************************************
 		 SECNTA(IL)=SECNT0
 		 IF (IL.EQ.1) THEN  
 		    READ (IPF,*,END=110,ERR=50) P(IL),T(IL),  
-	1		 IPATH,ALTZ(IL-1),PZ(IL-1),        
-	2		 TZ(IL-1),ALTZ(IL),  PZ(IL),  TZ(IL)  
+     1                   IPATH,ALTZ(IL-1),PZ(IL-1),        
+     2	                 TZ(IL-1),ALTZ(IL),  PZ(IL),  TZ(IL)  
 		    TMPSFC=TZ(IL-1)
 		 ELSE                                             
 		    READ (IPF,*,END=110,ERR=50) P(IL),T(IL),  
-	1		 IPATH,ALTZ(IL),PZ(IL),TZ(IL)   
+     1	                 IPATH,ALTZ(IL),PZ(IL),TZ(IL)   
 		 ENDIF                                              
 		 READ(IPF,978,END=110,ERR=50) (WKL(K,IL),K=1,7),
-	1	      WBRODL(IL)          
+     1	              WBRODL(IL)          
 		 IF (NMOL.GT.7) READ(IPF,978) (WKL(K,IL),K=8,NMOL)
 	      ENDDO 
 	   ENDIF
@@ -378,12 +378,10 @@ C**********************************************************************
 	   !***********************************************
 	   !* Third Step: OPTICAL DEPTHS COMPUTATION
 	   !***********************************************	
-           CALL MODM(IVC,ICPL,NWN,WN,NLAYRS,P,T,W_wv,
-	1	W_o2,W_o3,W_n2,W_n2O,W_co,W_so2,W_no2,
-	2	W_oh,W_other,CLW,O,OL_WV,OS_WV,OF_WV,OL_O2,
-	3	OL_O3,OL_N2,OC_N2,OL_N2O,OL_CO,OL_SO2,
-	4	OL_NO2,OL_OH,O_CLW,XSLF,XFRG,XCN2,
-	5	SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ISPD)
+
+           CALL MODM(IVC,ICPL,NWN,WN,NLAYRS,P,T,
+     4	                             XSLF,XFRG,XCN2,
+     5	        SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ISPD)
 	   
 	   !***********************************************
 	   !* Fourth Step: CORRECT FOR THE SLANT PATH
@@ -394,18 +392,18 @@ C**********************************************************************
 	   !***********************************************
 	   !* Fifth Step: RADIATIVE TRANSFER
 	   !***********************************************	   
+
 	   CALL RTM(IOUT,IRT,NWN,WN,NLAYRS,T,TZ,
-	1	TMPSFC,O,RUP,TRTOT,RDN,REFLC,EMISS,RAD,TB,IDU)				
+     1          TMPSFC,  RUP,TRTOT,RDN,REFLC,EMISS,RAD,TB,IDU)				
 
 	   !***********************************************
 	   !* Sixth Step: WRITE OUT THE RESULTS
 	   !***********************************************	   
 	   CALL STOREOUT(NWN,WN,RAD,TB,TRTOT,SCLCPL,SCLHW,NREC,
-	1	WVCOLMN,0,XSLF,0,Y0RES,0,INP,NPR,ilaunchdate,
-	1	ilaunchtime,ibasetime,iserialnumber,isondeage,
-	2	CLWCOLMN,TMPSFC,REFLC,EMISS,O,OL_WV,OS_WV,OF_WV,
-	3	OL_O2,OL_O3,OL_N2,OC_N2,OL_N2O,OL_CO,OL_SO2,
-	4	OL_NO2,OL_OH,O_CLW,NLAYRS,P,FILEOUT,ANGLE)
+     1          WVCOLMN,0,XSLF,0,Y0RES,0,INP,NPR,ilaunchdate,
+     1          ilaunchtime,ibasetime,iserialnumber,isondeage,
+     2          CLWCOLMN,TMPSFC,REFLC,EMISS,
+     4	                              NLAYRS,P,FILEOUT,ANGLE)
 
 	   WRITE(*,'(a30,i5)') 'PROCESSING PROFILE NUMBER:',NPR
 
@@ -456,17 +454,17 @@ C**********************************************************************
 	!---Block data to be consistent with LBLRTM/LBLATM
 	Block Data phys_consts
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-	1    RADCN1,RADCN2 
+     1       RADCN1,RADCN2 
         DATA PI / 3.1415926535897932 /   ! from http://www.cecm.sfu.ca/pi9
 
 c---------------------------------------------                
 c       Constants from NIST 01/11/2002
 c---------------------------------------------                
 	DATA PLANCK / 6.62606876E-27 /, BOLTZ  / 1.3806503E-16 /,
-	1    CLIGHT / 2.99792458E+10 /, 
-	2    AVOGAD / 6.02214199E+23 /, ALOSMT / 2.6867775E+19 /,
-	3    GASCON / 8.314472  E+07 /
-	4    RADCN1 / 1.191042722E-12 /, RADCN2 / 1.4387752    /
+     1       CLIGHT / 2.99792458E+10 /, 
+     2       AVOGAD / 6.02214199E+23 /, ALOSMT / 2.6867775E+19 /,
+     3       GASCON / 8.314472  E+07 /,
+     4       RADCN1 / 1.191042722E-12 /, RADCN2 / 1.4387752    /
 c---------------------------------------------                
 c       units are generally cgs
 c       The first and second radiation constants are taken from NIST.

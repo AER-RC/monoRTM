@@ -1,3 +1,18 @@
+
+****************************************************************
+
+This version of MonoRTM is substantially changed from previous
+versions, but only in terms of internal coding.  All results
+should be effectively the same as for version v2.12.
+
+The source code is now compatible with a wider range of compilers and 
+resolves ambiguities in subroutine arguments for a number of subroutine calls.
+Of particular significance, the code now runs properly in double precision on
+a MAC platform running OSX 10.4; results and makefiles are included here.
+
+sac 5/15/2005
+
+
 ****************************************************************
 *
 *      M O N O R T M       D I R E C T O R Y
@@ -8,7 +23,7 @@
 *      line shape theory, the continuum, the radiative transfer
 *      model, line coupling, etc,..), the user is therefore strongly 
 *      advised to register to the MonoRTM mailing list. For this, 
-*      simply send an email to sboukaba@aer.com or clough@aer.com.
+*      simply send an email to cadyp@aer.com or clough@aer.com.
 *      You will be notified each time there is an update.
 ****************************************************************
 
@@ -111,18 +126,18 @@ OTOT_OH	: 	Total column-integrated optical depth due to OH (in Nepers)
 
 QUESTIONS:
 ----------
-Any comments or questions should be forwarded to Sid Ahmed Boukabara  
+Any comments or questions should be forwarded to Karen Cady-Pereira
 or Tony Clough in AER at the address below:
 
 AER , Radiation and Climate Group
 131 Hartwell Avenue
 Lexington, MA 02421
 USA
-Tel: 1 781 761 2213
+Tel: 1 781 761 2216
 Fax: 1 781 761 2299
 
 By E-mail:
-sboukaba@aer.com
+cadyp@aer.com
 clough@aer.com
 
 

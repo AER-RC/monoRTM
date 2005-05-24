@@ -3,13 +3,9 @@ C     author:		$Author $
 C     revision:	        $Revision$
 C     created:	        $Date$
 
-      SUBROUTINE MODM(IVC,ICP,NWN,WN,NLAY,P,T,W_wv,
-     &     W_o2,W_o3,W_n2,W_n2O,W_co,W_so2,W_no2,
-     &     W_oh,W_other,CLW,O,OL_WV,OS_WV,OF_WV,OL_O2,
-     &     OL_O3,OL_N2,OC_N2,OL_N2O,OL_CO,OL_SO2,
-     &     OL_NO2,OL_OH,O_CLW,XSLF,XFRG,XCN2,SCLCPL,
-     &     SCLHW,Y0RES,HFILE,ICNTNM,ISPD)
-
+      SUBROUTINE MODM(IVC,ICP,NWN,WN,NLAY,P,T,
+     &                               XSLF,XFRG,XCN2,
+     &           SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ISPD)
 C-------------------------------------------------------------------------------
 C
 C     PROGRAM:  MODM
@@ -132,6 +128,7 @@ C     or Tony Clough (clough@aer.com).
 C
 C-------------------------------------------------------------------------------
       include "declar.incl"
+
       CHARACTER HFILE*80,HVRMODM*15
       COMMON /CVRMODM/ HVRMODM
       LOGICAL INIT
@@ -975,7 +972,7 @@ C     ***   REGION II
       U=T*T
       W4=T*(1.410474+U*.5641896)/(.75+U*(3.+U))
       RETURN
- 2    IF(Y.LT..195*ABS(X)-.176)GOTO 3
+ 2    IF(Y.LT. 0.195*ABS(X)-0.176)GOTO 3
 C     ***   REGION III
       W4=(16.4955+T*(20.20933+T*(11.96482+
      &     T*(3.778987+T*.5642236))))/

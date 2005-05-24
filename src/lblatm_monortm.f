@@ -75,7 +75,7 @@ C                                                                        FA00630
       CHARACTER*8      XID,       HMOLID,      YID   
       Real*8               SECANT,       XALTZ
 C                                                                        FA00650
-      COMMON /CVRATM/ HVRATM
+      COMMON /CVRATM/ HNAMATM,HVRATM
       COMMON /CVRREL/ HVRREL
       COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4),      FA00660
      *                WK(60),PZL,PZU,TZL,TZU,WN2   ,DV ,V1 ,V2 ,TBOUND,  FA00670
