@@ -208,7 +208,7 @@ c
 
 	SUBROUTINE RDLBLINP(IATM,IPLOT,IRT,NWN,WN,
      1       FILEIN,ICNTNM,    INP,IBMAXOUT,ZBNDOUT,
-     2       H1fout,H2fout,ISPD)
+     2       H1fout,H2fout,ISPD,i_in)
 C-------------------------------------------------------------------------------
 C
 C     SUBROUTINE:  RDLBLINP
@@ -263,6 +263,7 @@ C-------------------------------------------------------------------------------
 	REAL PATH1,PTHODT,SECNT0,ZH1,ZH2,ZANGLE,PAVE,TAVE,SECNTK
 	CHARACTER HEAD20*20,HEAD7*7,HEAD5*5,HEAD4*4,CINP*3
 	CHARACTER*60 FILEOUT,FILEIN
+	character*1 hmol_scal
 	REAL SECL(64),WDNSTY,WMXRAT,WDRAIR(MXLAY)
 	REAL ZBNDOUT(MXFSC)
 	INTEGER IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,        
@@ -280,6 +281,8 @@ C-------------------------------------------------------------------------------
 	COMMON /PATHD/ P,T,WKL,WBRODL,DVL,WTOTL,ALBL,
      1       ADBL,AVBL,H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,         
      2       PZ,TZ                          
+	common /profil_scal/ nmol_scal,hmol_scal(64),xmol_scal(64)
+
 	COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,  
      1       NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
      2       NLTEFL,LNFIL4,LNGTH4                                 
@@ -299,16 +302,17 @@ C-------------------------------------------------------------------------------
 	CHARACTER CEX*2,CEXST*2,CPRGID*60    
 	DATA CEXST/'EX'/
 	EQUIVALENCE (CXID,CXIDLINE)                    
-				!---record 1.1
- 20	READ (IRD,905,END=80,ERR=6000) CXIDLINE 
+			
+ 20	READ (IRD,905,END=80,ERR=6000) CXIDLINE         	!---record 1.1
 	IF (CXID.EQ.CPRCNT) THEN
 	   WRITE(*,*) '-END OF FILE:',FILEIN
 	   RETURN 
 	ENDIF                       
 	IF (CXID.NE.CDOL) GO TO 20                            
 	READ (CXIDLINE,'(1x,10A8)') (XID(I),I=1,10)     
-				!---record 1.2
-	READ(IRD,925,END=80,ERR=6000) IHIRAC,ILBLF4,             
+
+			
+	READ(IRD,925,END=80,ERR=6000) IHIRAC,ILBLF4,    	!---record 1.2           
      1       ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,    
      2       ITEST,IATM, CMRG,ILAS, IOD,IXSECT,
      3       MPTS,NPTS,INP,ISPD  
@@ -386,19 +390,30 @@ C-------------------------------------------------------------------------------
 	   IF (CMRG(1).EQ.CFOUR) IMRG = IMRG+40
 	ENDIF                                                  
 	!------END CHECKING RECORD 1.2
-				!---record 1.2.1
+			
 	IF (IEMIT.EQ.2) THEN
-	   READ(IRD,1010,ERR=6000) INFLAG,IOTFLG,JULDAT
+	   READ(IRD,1010,ERR=6000) INFLAG,IOTFLG,JULDAT         	!---record 1.2.1
 	ENDIF
 	IF (IEMIT.EQ.3) THEN
 	   WRITE(*,*) 'CURRENTLY MONORTM DOES NOT HANDLE DERIVATIVES'
 	   WRITE(*,*) 'CHECK YOUR INPUT FILE: ',FILEIN
 	   STOP
 	ENDIF	
-				!---record 1.3
-	IF ((IHIRAC+IAERSL+IEMIT+IATM+ILAS).GT.0) THEN   
+			
+	IF ((IHIRAC+IAERSL+IEMIT+IATM+ILAS).GT.0) THEN                	!---record 1.3
 	   READ (IRD,970,END=80,ERR=6000) V1,V2,SAMPLE,DVSET, 
-     1          ALFAL0,AVMASS,DPTMIN,DPTFAC,ILNFLG,DVOUT 
+     1        ALFAL0,AVMASS,DPTMIN,DPTFAC,ILNFLG,DVOUT,nmol_scal
+
+c       read in the profile scaling parameters
+c
+	   if (nmol_scal .gt. 0 ) then
+	      if (nmol_scal .gt. 38) stop ' nmol_scal .gt. 38 '
+	      read (ird,9701) (hmol_scal(m),m=1,nmol_scal)
+	      read (ird,9702) (xmol_scal(m),m=1,nmol_scal)
+ 9701	      FORMAT (64a1)
+ 9702	      FORMAT (7e15.7,/,(8e15.7,/))
+	   endif
+
 	   !---CHECKING RECORD 1.3
 	   IF (SAMPLE.GT.0) THEN
 	      WRITE(*,*) '----------------------------------------'
@@ -443,8 +458,9 @@ C-------------------------------------------------------------------------------
 	      WRITE(*,*) 'CHECK YOUR INPUT FILE: ',FILEIN,V1,V2,DVSET
 	      STOP
 	   ENDIF
-	   !---record 1.3.1
-	   IF ((V1.LT.0.).OR.(V2.LT.0.)) THEN
+
+
+	   IF ((V1.LT.0.).OR.(V2.LT.0.)) THEN                       !---record 1.3.1
 	      READ(IRD,'(I8)',ERR=6000)NWN
 	      IF (NWN.GT.NWNMX) THEN
 		 WRITE(*,*) 'STOP: NUMBER OF WAVENUMBERS ',
@@ -452,9 +468,9 @@ C-------------------------------------------------------------------------------
 		 WRITE(*,*) 'FIX: EXTEND NWNMX IN DECLAR.INCL'
 		 STOP
 	      ENDIF
-	      !---record 1.3.2
+	     
 	      DO IWN=1,NWN
-		 READ(IRD,'(E19.7)',ERR=6000) WN(IWN)
+		 READ(IRD,'(E19.7)',ERR=6000) WN(IWN)               !---record 1.3.2
 	      ENDDO
 	   ELSE
 	      IF (DVSET.NE.0.) THEN 
@@ -524,6 +540,7 @@ C-------------------------------------------------------------------------------
 	IF (IATM.EQ.0) THEN 
 	   READ (IRD,901,ERR=6000) IFORM,NLAYRS,NMOL,SECNT0,HEAD20,ZH1,
      1          HEAD4,ZH2,HEAD5,ANGLE,HEAD7    
+
 				!---record 2.1.1
 	   DO 30 L = 1, NLAYRS                                      
 	      IF (L.EQ.1) THEN                                       
@@ -650,7 +667,7 @@ c
  930	FORMAT (I1)                                               
  945	FORMAT (A55,1X,I4)
  946	FORMAT (A55)
- 970	FORMAT (8E10.3,4X,I1,5x,e10.3)                           
+ 970	FORMAT (8E10.3,4X,I1,5x,e10.3,i5)                           
  990	FORMAT (F20.8)                                   
  1000	FORMAT ('Layer',I2,': Changing molecule ',I2,' from ',E10.3,
      1       ' to 1.000E+20.')
@@ -806,7 +823,8 @@ c
      2          OTOT,OTOT_WV,OTOT_O2,OTOT_N2,OTOT_O3,
      3          OTOT_N2O,OTOT_CO,OTOT_SO2,OTOT_NO2,OTOT_OH
 	ENDDO
- 21	format(3i5,f9.3,f11.5,1p,E17.9,0p,f9.5,2f8.4,3f8.2,f9.3,1p,10E12.4)
+ 21	format (3i5,f9.3,f11.5,1p,E17.9,0p,f9.5,2f8.4,3f8.2,f9.3,
+     1                                                  1p,10E12.4)
 	RETURN
  1000	WRITE(*,*) 'ERROR OPENING FILE:',FILEOUT
 	STOP
@@ -849,7 +867,8 @@ c
 	   WVCOLMN=WVCOLMN+W(I)
 	   CLWCOLMN=CLWCOLMN+CLW(I)
 	ENDDO 
-	WVCOLMN=WVCOLMN*(18./6.022e+23)
+c       value from vpayne 2006/07/23
+	WVCOLMN=WVCOLMN*(2.99150e-23)
 	RETURN
 	END
 
@@ -886,6 +905,10 @@ c
 	CHARACTER*1 JCHARP,JCHART,JCHAR(35)
 	INTEGER ilaunchdate,ilaunchtime,iserialnumber,ibasetime
 	INTEGER isondeage
+
+	character*1 hmol_scal
+	common /profil_scal/ nmol_scal,hmol_scal(64),xmol_scal(64)
+
 	data 	JCHAR /'H','6','6','6','6','6','6','6','6','6','6','6',
      1       '6','6','6','6','6','6','6','6','6','6','6','6','6','6',
      2       '6','6','6','6','6','6','6','6','6'/
@@ -975,13 +998,24 @@ c
 	write(33,13) IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,             
      1       ISCAN,IFILTR,IPLOT,ITEST,IATM,ILAS,      
      2       IOD,IXSECT,MPTS,NPTS,INP 
-	write(33,14) V1,V2,0.,DVSET,0.,0.,0.,0.,0,0. 
+	write(33,14) V1,V2,0.,DVSET,0.,0.,0.,0.,0,0.,nmol_scal 
 	IF ((V1.LT.0.).OR.(V2.LT.0.)) THEN
 	   write(33,'(I8)') NWN
 	   DO I=1,NWN
 	      WRITE(33,'(E19.7)') WN(I)
 	   ENDDO
 	ENDIF
+	
+c       write scaling information to file 33!
+
+	if (nmol_scal .gt.0) then
+	   if (nmol_scal .gt. 38) stop ' nmol_scal .gt. 38 '
+	   write (33,9701) (hmol_scal(m),m=1,nmol_scal)
+	   write (33,9702) (xmol_scal(m),m=1,nmol_scal)
+ 9701	   FORMAT (64a1)
+ 9702	   FORMAT (7e15.7,/,(8e15.7,/))
+	endif
+
 	write(33,14) TMPBND,1.,0.,0.,0.,0.,0.  
 	write(33,15) model,itype,ibmaxselect-IBMINSELECT+1,nozero,
      1       noprnt,nmol,ipunch
@@ -1003,7 +1037,7 @@ c
  11	format(19x,f12.3)
  12	format(i8,f13.1,f10.1,f9.1,f11.1,f13.5,f12.5,i8)
  13	FORMAT (10(4X,I1),3X,2X ,3(4X,I1),1X,I4,1X,I4,1X,I4)    
- 14	FORMAT (8E10.3,4X,I1,5x,e10.3)                         
+ 14	FORMAT (8E10.3,4X,I1,5x,e10.3,i5)                         
  15	FORMAT (7I5)                                      
  16	FORMAT (3f10.3)                                      
  17	FORMAT (8f10.3)                                      
@@ -1112,6 +1146,292 @@ c
 	ENDIF
 	RETURN
 	END
+
+c******************************************************************************
+c___________________________________________________________________
+c___________________________________________________________________
+
+	subroutine profil_scal_sub(nlayrs)
+
+	include "declar.incl"
+
+	REAL*8 V1,V2,SECANT,XALTZ 
+	character*1 hmol_scal
+	character*10 holn2
+	character*8 XID,HMOLID,YID,HDATE,HTIME
+
+
+	COMMON /PATHD/ P,T,WKL,WBRODL,DVL,WTOTL,ALBL,ADBL,AVBL,
+     &     H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,PZ,TZ
+	common /profil_scal/ nmol_scal,hmol_scal(64),xmol_scal(64)
+
+	COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4), 
+     1    WK(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   
+     2    EMISIV,FSCDID(17),NMOL,LAYRS ,YI1,YID(10),LSTWDF    
+	COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,  
+     1    NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
+     2    NLTEFL,LNFIL4,LNGTH4                                 
+
+	DIMENSION WMT(64)
+
+c  *** It should be noted that no attempt has been made to keep the 
+c      mass in a given layer constant, i.e. level pressure nor retained ***
+
+c      obtain accumulated amounts by molecule
+
+	do m = 1, nmol
+	   wmt(m) = 0.
+	   do l = 1, nlayrs
+	      wmt(m) = wmt(m) + wkl(m,l)
+	   enddo
+	enddo
+
+	wsum_brod = 0.
+	do l = 1, nlayrs
+	   wsum_brod = wsum_brod + wbrodl(l)
+	enddo
+
+c        obtain dry air sum
+c             check to see if nitrogen is included in the selected molecules
+
+	if (nmol.ge.22) then
+	   wsum_drair = 0.
+	else
+	   wsum_drair = wsum_brod
+	endif
+
+	do m = 2, nmol
+	   wsum_drair = wsum_drair + wmt(m)
+	enddo
+
+	write (ipr,*)
+	write (ipr,*) '   ',
+     1          '*****************************************************'
+	write (ipr,*)
+	write (ipr,*) '               Profile Scaling          '  
+
+	write (ipr,956) 
+ 956	format (/,4x,' molecule',2x, 
+     1           'hmol_scale',3x, ' xmol_param ',3x, 'scale factor',/)
+
+	do m = 1, nmol_scal
+
+	   xmol_scal_m = xmol_scal(m)
+	   if (hmol_scal(m).eq.' ') xmol_scal(m) = 1.
+	   if (hmol_scal(m).eq.'0') xmol_scal(m) = 0.
+	   if (hmol_scal(m).eq.'1') xmol_scal(m) = xmol_scal_m              ! Scale factor
+
+	   if (hmol_scal(m).eq.'C' .or. hmol_scal(m).eq.'c')                ! Column Amount (molec/cm^2)
+     1              xmol_scal(m) = xmol_scal_m/wmt(m)     
+
+	   if (hmol_scal(m).eq.'M' .or. hmol_scal(m).eq.'m') then           ! Mixing ratio (molec/molec(dry_air))
+	      if (wsum_drair.gt.0.) then
+		 xmol_scal(m) = xmol_scal_m/(wmt(m)/wsum_drair)      
+	      else
+		 stop 'mixing ratio failure: wsum_drair = 0.'
+	      endif
+	   endif
+
+	   if (hmol_scal(m).eq.'P' .or .hmol_scal(m).eq.'p') then           ! PWV for water vapor (cm)
+	      if (m.eq.1) then 
+c                value from vpayne 2006/07/23
+		 xmol_scal(1) = (xmol_scal_m/2.99150e-23)/wmt(1)
+	      else
+		 write (ipr,*) 'm = ', m
+		 stop ' (hmol_scal(m).eq."P" .and. m.ne.1) '
+	      endif
+	   endif
+
+	   if (hmol_scal(m).eq.'D' .or. hmol_scal(m).eq.'d') ! Dobson Units (du)
+     1              xmol_scal(m) =  (xmol_scal_m*2.68678e16)/wmt(m)
+
+	   write (ipr,957) m, hmol_scal(m), xmol_scal_m, xmol_scal(m)
+ 957	   format (5x,i5,9x,a1,5x,1p, 4e15.7)
+
+c                scale the amounts and recalculate the total
+
+	   wmt(m) = 0.
+	   do l = 1, nlayrs
+	      wkl(m,l) = wkl(m,l) * xmol_scal(m)
+	      wmt(m)   = wmt(m) +wkl(m,l)
+	   enddo
+	enddo
+
+	write (ipr,*)
+	write (ipr,*) '   ',
+     1          '*****************************************************'
+	write (ipr,*)
+
+c       write  modified column amounts to ipr in lblatm format
+C
+	WRITE (IPR,970)    
+C
+C     --------------------------------------------------------------
+C
+C     Write out column densities for molecules to TAPE6
+C
+	iform = 1
+
+	data holn2/'  OTHER  '/
+C
+	IF (IFORM.EQ.1) THEN                                             
+	   WRITE (IPR,974) (HMOLID(I),I=1,7),HOLN2                       
+	   DO L = 1, NLAYRS
+	      WRITE (IPR,980) L,P(L),T(L),
+     *                 (WKL(M,L),M=1,7),WBRODL(L)                            
+	   enddo
+	   IF (NLAYRS.GT.1) THEN                                         
+	      WRITE (IPR,985)                                            
+	      L = NLAYRS                                                 
+	      WRITE (IPR,980) L,PWTD,TWTD,
+     *                 (WMT(M),M=1,7),SUMN2    
+	   ENDIF                                                       
+	ELSE
+	   WRITE (IPR,975) (HMOLID(I),I=1,7),HOLN2
+	   DO  L = 1, NLAYRS
+	      WRITE (IPR,982) L,P(L),T(L),
+     *                 (WKL(M,L),M=1,7),WBRODL(L)
+	   enddo
+	   IF (NLAYRS.GT.1) THEN
+	      WRITE (IPR,985)
+	      L = NLAYRS
+	      WRITE (IPR,991) L,PWTD,TWTD,
+     *                  (WMT(M),M=1,7),SUMN2
+	   ENDIF
+	ENDIF
+C
+	IF (NMOL.GT.7) THEN                                            
+	   DO MLO = 8, NMOL, 8                                         
+	      MHI = MLO+7                                             
+	      MHI = MIN(MHI,NMOL)                              
+	      WRITE (IPR,970)                                  
+	      IF (IFORM.EQ.1) THEN
+		 WRITE (IPR,974) (HMOLID(I),I=MLO,MHI)            
+		 DO L = 1, NLAYRS                                 
+		    WRITE (IPR,980) L,P(L),T(L),
+     *                       (WKL(M,L),M=MLO,MHI)                       
+		 enddo
+		 IF (NLAYRS.GT.1) THEN
+		    WRITE (IPR,985)
+		    L = NLAYRS
+		    WRITE (IPR,990) L,PWTD,TWTD,
+     *                       (WMT(M),M=MLO,MHI)
+		 ENDIF
+	      ELSE
+		 WRITE (IPR,975) (HMOLID(I),I=MLO,MHI)              
+		 DO L = 1, NLAYRS                                   
+		    WRITE (IPR,982) L,P(L),T(L),
+     *                       (WKL(M,L),M=MLO,MHI) 
+		 enddo
+		 IF (NLAYRS.GT.1) THEN                              
+		    WRITE (IPR,985)
+		    L = NLAYRS
+		    WRITE (IPR,991) L,PWTD,TWTD,
+     *                            (WMT(M),M=MLO,MHI)
+		 ENDIF
+	      ENDIF                                                 
+C       
+	   enddo                                                 
+	ENDIF                                                       
+C
+C     --------------------------------------------------------------
+C
+C     Write out mixing ratios for molecules to TAPE6 in either
+C     15.7 format (IFORM = 1) or 10.4 format (IFORM = 0).
+C
+C           Reset WDRAIR(L) for each layer
+C           (WKL(M,L) now in column density)
+C
+C
+	IF (IFORM.EQ.1) THEN
+	   WRITE (IPR,976) (HMOLID(I),I=1,7),HOLN2
+	   DO L = 1, NLAYRS
+	      WDRAIR_l = WBRODL(L)
+	      DO M = 2,NMOL
+		 WDRAIR_l = WDRAIR_l + WKL(M,L)
+	      enddo
+	      IF (WDRAIR_l.EQ.0.0) THEN
+		 WRITE(IPR,979)
+	      ELSE
+		 WRITE (IPR,980) L,P(L),T(L),
+     *              (WKL(M,L)/WDRAIR_l,M=1,7),WBRODL(L)
+	      ENDIF
+	   enddo
+	ELSE
+	   WRITE (IPR,977) (HMOLID(I),I=1,7),HOLN2
+	   DO L = 1, NLAYRS
+	      WDRAIR_l = WBRODL(L)
+	      DO M = 2,NMOL
+		 WDRAIR_l = WDRAIR_l + WKL(M,L)
+	      enddo
+	      IF (WDRAIR_l.EQ.0.0) THEN
+		 WRITE(IPR,979)
+	      ELSE
+		 WRITE (IPR,982) L,P(L),T(L),
+     *                 (WKL(M,L)/WDRAIR_l,M=1,7),WBRODL(L)
+	      ENDIF
+	   enddo
+	ENDIF
+C
+C
+	IF (NMOL.GT.7) THEN
+	   DO MLO = 8, NMOL, 8
+	      MHI = MLO+7
+	      MHI = MIN(MHI,NMOL)
+	      IF (NLAYRS.LT.5) THEN
+		 WRITE (IPR,970)
+c       ELSE
+c       WRITE (IPR,945) XID,(YID(M),M=1,2)
+	      ENDIF
+	      IF (IFORM.EQ.1) THEN
+		 WRITE (IPR,976) (HMOLID(I),I=MLO,MHI)
+		 DO L = 1, NLAYRS
+		    IF (WDRAIR_l.EQ.0.0) THEN
+		       WRITE(IPR,979)
+		    ELSE
+		       WRITE (IPR,980) L,P(L),T(L),
+     *                       (WKL(M,L)/WDRAIR_l,M=MLO,MHI)
+		    ENDIF
+		 enddo
+	      ELSE
+		 WRITE (IPR,977) (HMOLID(I),I=MLO,MHI)
+		 DO L = 1, NLAYRS
+		    IF (WDRAIR_l.EQ.0.0) THEN
+		       WRITE(IPR,979)
+		    ELSE
+		       WRITE (IPR,982) L,P(L),T(L),
+     *                    (WKL(M,L)/WDRAIR_l,M=MLO,MHI)
+		    ENDIF
+		 enddo
+	      ENDIF
+	   enddo
+	ENDIF
+C
+  970 FORMAT (////)                                                       A24360
+  974 FORMAT ('0',53X,'MOLECULAR AMOUNTS (MOL/CM**2) BY LAYER ',/,13X,
+     *        'P(MB)',6X,'T(K)',5X,8(A10,5X))
+  975 FORMAT ('0',53X,'MOLECULAR AMOUNTS (MOL/CM**2) BY LAYER ',/,10X,    A24370
+     *        'P(MB)',6X,'T(K)',3X,8(1X,A6,3X))
+  976 FORMAT (/,'1',54X,'----------------------------------',
+     *         /,'0',60X,'MIXING RATIOS BY LAYER ',/,10X,
+     *        'P(MB)',6X,'T(K)',5X,8(A10,5X))                             A24380
+  977 FORMAT (/,'1',54X,'----------------------------------',
+     *         /,'0',60X,'MIXING RATIOS BY LAYER ',/,210X,
+     *        'P(MB)',6X,'T(K)',3X,8(1X,A6,3X))
+  979 FORMAT (/,'0','  MIXING RATIO IS UNDEFINED. DRYAIR DENSITY=0.0')
+  980 FORMAT ('0',I3,F15.7,F9.2,2X,1P,8E15.7,0P)
+  982 FORMAT ('0',I3,F12.5,F9.2,2X,1P,8E10.3,0P)                          A24390
+  985 FORMAT ('0',54X,'ACCUMULATED MOLECULAR AMOUNTS FOR TOTAL PATH')     A24400
+  990 FORMAT ('0',I3,F15.7,F9.2,2X,1P,8E15.7,0P,/,
+     *         55X,1P,8E15.7,0P)
+  991 FORMAT ('0',I3,F12.5,F9.2,2X,1P,8E10.3,0P)                          A24410
+C     --------------------------------------------------------------
+
+	return
+
+	end
+c___________________________________________________________________
+c___________________________________________________________________
 
 	SUBROUTINE EXPINT (X,X1,X2,A)                                   
 C********************************************************************

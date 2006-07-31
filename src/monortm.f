@@ -191,6 +191,8 @@ C**********************************************************************
 	CHARACTER fileprof*80,HFILE*80,FILEOUT*60,ht1*4,ht2*4
 	CHARACTER*60 FILEIN,FILESONDE,FILELOG
 	character*8 XID,HMOLID,YID,HDATE,HTIME
+	character*1 hmol_scal
+	character*10 holn2
 	real tarray(2)
 	COMMON /CVRMON  / HVRMON
         COMMON /CVRATM  / HVRATM
@@ -199,7 +201,9 @@ C**********************************************************************
 	COMMON /CVRREL  / HVRREL
 	COMMON /CVRSPEC  / HVRSPEC
 	COMMON /PATHD/ P,T,WKL,WBRODL,DVL,WTOTL,ALBL,ADBL,AVBL,
-     2     H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,PZ,TZ
+     &     H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,PZ,TZ
+	common /profil_scal/ nmol_scal,hmol_scal(64),xmol_scal(64)
+
 	COMMON /MANE/ P0,TEMP0,NLAYRS,DVXM,H2OSLF,WTOT,ALBAR,
      1    ADBAR,AVBAR,  
      1    AVFIX,LAYRFX,SECNT0,SAMPLE,DVSET,ALFAL0,AVMASS,      
@@ -214,6 +218,8 @@ C**********************************************************************
      1    NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
      2    NLTEFL,LNFIL4,LNGTH4                                 
 
+	DIMENSION WMT(64)
+
 	!---INPUTS & GENERAL CONTROL PARAMETERS
 	IVC=2    !if=2->CKD2.4  MPMf87/s93 (if=3)
 	ICPL=1   !=1->cpl =0->nocpl
@@ -224,7 +230,6 @@ C**********************************************************************
 	SCLCPL= 1. !scaling factor (Line Coupling Parameters)
 	SCLHW=1. !scaling factor (Pressure Dependence of the halfwidth of the 0 band)
 	Y0RES=0. !Y0RES of the line coupling coeffs
-	SCALWV=1.!scaling of the WV profile
 	IPUNCH=1 !flag to create (1) or not (0) TAPE7 in case INP=2
 
 	!---FILES NAMES ALL PUT HERE FOR CONVENIENCE
@@ -268,7 +273,7 @@ C**********************************************************************
 
 	!---Get info about IBMAX/ZBND/H1/H2...
 	CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
-     1    ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD)
+     1    ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD,1)
 
 	!---Write header in output file
 	WRITE(IOT,'(a)') 'MONORTM RESULTS:'
@@ -287,6 +292,8 @@ C**********************************************************************
 	   !*********************************************
 	   !* First Step: Read in the inputs
 	   !*********************************************	   
+
+
 	   !---Inputs: MONORTM.IN (TAPE5-type of file)
 	   IF (INP.EQ.1) THEN
 	      IF (NPR.EQ.1) THEN
@@ -295,8 +302,9 @@ C**********************************************************************
 		 IPASS=0
 	      ENDIF
 	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
-     1	         ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD)
+     1	         ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD,2)
 	   ENDIF
+
 
 	   !---Inputs: wave#/path/angle from MONORTM.IN, profiles from ARM sondes
 	   IF (INP.EQ.2) THEN
@@ -305,6 +313,7 @@ C**********************************************************************
      1  	   ilaunchtime,ibasetime,iserialnumber,isondeage,
      2	           NWN,WN,V1,V2,DVSET,FILESONDE,NLAYRS,IBMAX,ZBND,
      3  	   ANGLE,H1F,H2F,NMOL,IPUNCH)
+
 	      IF (IFLAG.EQ.2) THEN
 		 WRITE(*,'(a30,i5,a8)') 'PROCESSING PROFILE NUMBER:',
      1	         NPR,' FLAG=2'
@@ -312,13 +321,19 @@ C**********************************************************************
 	      ENDIF
 	      OPEN (IRD,FILE=FILESONDE,STATUS='UNKNOWN',ERR=5000)        
 	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILESONDE,
-     1             ICNTNM,    INP,IBMAX2,ZBND2,H1,H2,ISPD)
+     1             ICNTNM,    INP,IBMAX2,ZBND2,H1,H2,ISPD,3)
 	      CLOSE(IRD)
 	   ENDIF
+
+
 	   !---Inputs: MONORTM_PROF.IN (TAPE7 consistent)
 	   IF (INP.EQ.3) THEN
-	      READ (IPF,'(1x,i5,10a8)') ipass, xid
-	      READ (IPF,972,END=110,ERR=50) IFORM,NLAYRS,NMOL,SECNT0,
+
+c	      READ (IPF,'(1x,i5,10a8)') ipass, xid
+
+	      READ (IPF,925,END=110,ERR=50) IFORM,NLAYRS,NMOL,SECNT0,
+     1             HMOD,HMOD,H1,H2,ANGLE,LEN 
+	      write (*,925)                 IFORM,NLAYRS,NMOL,SECNT0,
      1             HMOD,HMOD,H1,H2,ANGLE,LEN 
 	      IF (ANGLE.GT.90.) IRT = 1 !space-based observer (looking down) 
 	      IF (ANGLE.LT.90.) IRT = 3 !ground-based observer (looking up)
@@ -339,10 +354,18 @@ C**********************************************************************
 		 IF (NMOL.GT.7) READ(IPF,978) (WKL(K,IL),K=8,NMOL)
 	      ENDDO 
 	   ENDIF
+ 
+c_______________________________________________________________________
+c
+c     at this point scale profile if option selected
+c
+	   if (nmol_scal .gt. 0 ) call profil_scal_sub(nlayrs)
 
+c_______________________________________________________________________
+C
 	   !---PREPARE THE INPUTS FOR MODM
 	   DO IL=1,NLAYRS
-	      W_wv0(IL)=WKL(1,IL)
+	      W_wv(IL)=WKL(1,IL)
 	      W_o2(IL)=WKL(7,IL)
 	      IF (NMOL.GE.22) THEN
 		 W_n2(IL)=WKL(22,IL)
@@ -366,11 +389,6 @@ C**********************************************************************
 	   CALL EMISS_REFLEC(NWN,EMISS,REFLC,WN) 
 
 	   NREC=NREC+1
-
-	   !---SCALE THE WATER VAPOR PROFILE
-	   DO L=1,NLAYRS
-	      W_wv(L)=W_wv0(L)*SCALWV
-	   ENDDO
 
 	   !---COLUMN WATER VAPOR/LIQUID WATER
 	   CALL INTEGR(W_wv,CLW,NLAYRS,WVCOLMN,CLWCOLMN)
@@ -416,8 +434,10 @@ C**********************************************************************
 
 	!---Different formats
  924	FORMAT (1X,I1,I3,I5,F10.6,3A8) 
- 972	FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2) 
+ 925	FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2) 
  926	FORMAT (E15.7,F10.4,10X,I5,1X,F7.3,15X,F7.3,/,(1P8E15.7))    
+ 972	FORMAT (64a1)
+ 973	FORMAT (7e15.7,/,(8e15.7,/))
  978	FORMAT (1P8E15.7)                                             
  1000	FORMAT ('Modules and versions used in this calculation:',/,/,
      &    A15,/,/,5X,
@@ -473,5 +493,8 @@ c       RADCN1 = 2.*PLANCK*CLIGHT*CLIGHT*1.E-07
 c       RADCN2 = PLANCK*CLIGHT/BOLTZ 
 c---------------------------------------------                
 	end
+c___________________________________________________________________
+c___________________________________________________________________
+c___________________________________________________________________
 
 
