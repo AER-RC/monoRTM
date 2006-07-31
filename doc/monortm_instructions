@@ -114,11 +114,11 @@ IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  I
 	       wavenumbers, we can set V1 or V2 (or both ) to any negative value. MONORTM 
 	       will then expect record 1.3.1 and record 1.3.2
  
-             V1,     V2,  SAMPLE,  DVSET, ALFAL0,  AVMASS,  DPTMIN, DPTFAC, ILNFLG,    DVOUT
+             V1,     V2,  SAMPLE,  DVSET, ALFAL0,  AVMASS,  DPTMIN, DPTFAC, ILNFLG,    DVOUT NMOL_SCAL
  
-           1-10,  11-20,   21-30,  31-40,  41-50,   51-60,   61-70,  71-80,     85,   90-100
+           1-10,  11-20,   21-30,  31-40,  41-50,   51-60,   61-70,  71-80,     85,   90-100   105
  
-          E10.3,  E10.3,   E10.3,  E10.3,  E10.3,   E10.3,   E10.3,  E10.3,  4X,I1, 5X,E10.3
+          E10.3,  E10.3,   E10.3,  E10.3,  E10.3,   E10.3,   E10.3,  E10.3,  4X,I1, 5X,E10.3 3X,I2
  
  
                   V1 -->   beginning wavenumber value for the calculation
@@ -135,8 +135,69 @@ IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  I
               DPTFAC -->   Not used in MONORTM.
               ILNFLG -->   Not used in MONORTM. 
                DVOUT -->   Not used in MONORTM.
+           NMOL_SCAL  -->  Enables the scaling of the atmospheric profile for selected species
+                           NMOL_SCAL is the highest molecule number for which scaling will be applied
+                           See Record(s) 1.3.a/1.3.b.n
 
+--------------   
+ RECORD 1.3.a    (required if NMOL_SCAL > 0;  otherwise omit)
+--------------
+
+
+          HMOL_SCAL(M=1,38)
    
+                      1-38
+   
+                      38A1
+   
+  
+          HMOL_SCAL(M)   for molecule M (column M in Record 1.3.a: 
+
+          HMOL_SCAL(M)    XMOL_SCAL(M) from Record 1.3.b interpreted and used as follows:
+
+                   ‘ ‘    no scaling applied       (overrides any value on Record 1.3.b)
+                   ‘0’    scaling factor is zero   (layer column amounts are set to 0. for all levels)
+                   ‘1’    scaling factor used directly to scale profile
+            ‘c’ or ‘C’    column amount to which the profile is to be scaled (molec/cm^2)
+            ‘d’ or ‘D’    column amount in Dobson units to which the profile is to be scaled
+            ‘m’ or ‘M’    volume mixing ratio wrt dry air for the total column to which the profile will be scaled
+            ‘p’ or ‘P’    value of Precipitable Water Vapor (cm) to which the profile will be scaled (water vapor only)
+
+                          The scaling factor is the same at all levels
+
+                     M    Molecule number as indicated in the following Table:
+
+                           1:  H2O   2:  CO2   3:    O3  4:   N2O  5:    CO  6:   CH4  7:    O2
+                           8:   NO   9:  SO2  10:   NO2 11:   NH3 12:  HNO3 13:    OH 14:    HF 15:  HCL
+                          16:  HBR  17:    HI 18:   CLO 19:   OCS 20:  H2CO 21:  HOCL 22:    N2 23:  HCN
+                          24: CH3CL 25:  H2O2 26:  C2H2 27:  C2H6 28:   PH3 29:  COF2 30:   SF6 31:  H2S
+                          32: HCOOH 33:   HO2 34:     O 35:CLONO2 36:   NO+ 37:  HOBR 38:  C2H4
+
+
+
+-------------------
+ RECORD 1.3.b.(1/n)    (only if NMOL_SCAL > 0;  otherwise omit)    # records depends on NMOL_SCAL
+-------------------
+
+
+        ---------------
+         RECORD 1.3.b.1
+        ---------------
+
+               (XMOL_SCAL, M=1,mol_max)        mol_max = 7 or nmol_scal    resolved in code
+ 
+                     (7E15.7)
+ 
+        --------------
+         RECORD 1.3.b. (8 - NMOL_SCAL)          repeat record as required to satisfy NMOL_SCAL
+        --------------
+
+               (XMOL_SCAL, M=8,NMOL_SCAL)      
+ 
+                     (8E15.7)
+ 
+                          The number of molecules per record is consistent with Records 2.1.2 and 2.1.3
+
 --------------
  RECORD 1.3.1 (required only if V1<0 or V2<0) 
 --------------
@@ -328,11 +389,11 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
  
  
 
-  MODEL,ITYPE,IBMAX,NOZERO,NOPRNT,NMOL,IPUNCH,IFXTYP,MUNITS,   RE,HSPACE, VBAR,CO2MX,REF_LAT
+  MODEL,ITYPE,IBMAX,NOZERO,NOPRNT,NMOL,IPUNCH,IFXTYP,MUNITS,   RE,HSPACE, VBAR,   REF_LAT
  
-      5,   10,   15,    20,    25,  30,    35, 36-37, 39-40,41-50, 51-60,61-70,71-80,81-90
+      5,   10,   15,    20,    25,  30,    35, 36-37, 39-40,41-50, 51-60,61-70     ,81-90
  
-     I5,   I5,   I5,    I5,    I5,  I5,    I5,    I2,1X, I2,F10.3, F10.3,F10.3,F10.3,F10.3
+     I5,   I5,   I5,    I5,    I5,  I5,    I5,    I2,1X, I2,F10.3, F10.3,F10.3, 10x,F10.3
  
  
            MODEL -->  selects atmospheric profile
@@ -379,7 +440,6 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
                      internal models defined to 120 km
            VBAR  --> frequency for refractive geometry calculation
                      (default:  VBAR = (V1+V2) / 2 )     (V1,V2 from Record 1.3)
-           CO2MX --> mixing ratio for CO2 (ppm).  Default is 330 ppm.
  
  	 REF_LAT --> latitude of location of calculation (degrees)
 		     defaults for REF_LAT = 0:
