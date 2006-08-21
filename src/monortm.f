@@ -127,13 +127,9 @@ C**********************************************************************
 	!     XFRG   : scaling factor for foreign continuum (default=1)
 	!     XCN2   : scaling factor for N2 continuum (default =1)
 	!     SCLCPL : scaling factor for Line Coupling Parameters
-	!     SCLHW  : scaling factor for the ressure Dependence of the 
+	!     SCLHW  : scaling factor for the pressure Dependence of the 
 	!              halfwidth of the O2 0-zero band
 	!     Y0RES  : Y0RES of the line coupling coeffs.
-	!
-	!   - scale the water vapor profile. Useful when we try to scale
-	!     the sondes profiles or when we perform the retrievals.
-	!     SCALWV : factor by which the WV profile will be multiplied.
 	!
 	!   - output the simulations in radiances or in brightness
 	!     temperatures. Note that the internal calculations are first
@@ -252,7 +248,7 @@ C**********************************************************************
 	HVRMON = '$Revision$' 
 
 	!---Release number of MonoRTM
-	HVRREL = 'Release 2.20'
+	HVRREL = 'Release  3.1'
 
 	!---GET THE PROFILES NUMBER
 
@@ -273,7 +269,7 @@ C**********************************************************************
 
 	!---Get info about IBMAX/ZBND/H1/H2...
 	CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
-     1    ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD,1)
+     1    ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD)
 
 	!---Write header in output file
 	WRITE(IOT,'(a)') 'MONORTM RESULTS:'
@@ -302,7 +298,7 @@ C**********************************************************************
 		 IPASS=0
 	      ENDIF
 	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
-     1	         ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD,2)
+     1	         ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD)
 	   ENDIF
 
 
@@ -321,7 +317,7 @@ C**********************************************************************
 	      ENDIF
 	      OPEN (IRD,FILE=FILESONDE,STATUS='UNKNOWN',ERR=5000)        
 	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILESONDE,
-     1             ICNTNM,    INP,IBMAX2,ZBND2,H1,H2,ISPD,3)
+     1             ICNTNM,    INP,IBMAX2,ZBND2,H1,H2,ISPD)
 	      CLOSE(IRD)
 	   ENDIF
 
@@ -333,8 +329,7 @@ c	      READ (IPF,'(1x,i5,10a8)') ipass, xid
 
 	      READ (IPF,925,END=110,ERR=50) IFORM,NLAYRS,NMOL,SECNT0,
      1             HMOD,HMOD,H1,H2,ANGLE,LEN 
-	      write (*,925)                 IFORM,NLAYRS,NMOL,SECNT0,
-     1             HMOD,HMOD,H1,H2,ANGLE,LEN 
+
 	      IF (ANGLE.GT.90.) IRT = 1 !space-based observer (looking down) 
 	      IF (ANGLE.LT.90.) IRT = 3 !ground-based observer (looking up)
 	      IF (ANGLE.EQ.90.) IRT = 2 !limb measurements

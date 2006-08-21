@@ -208,7 +208,7 @@ c
 
 	SUBROUTINE RDLBLINP(IATM,IPLOT,IRT,NWN,WN,
      1       FILEIN,ICNTNM,    INP,IBMAXOUT,ZBNDOUT,
-     2       H1fout,H2fout,ISPD,i_in)
+     2       H1fout,H2fout,ISPD)
 C-------------------------------------------------------------------------------
 C
 C     SUBROUTINE:  RDLBLINP
@@ -896,7 +896,7 @@ c       value from vpayne 2006/07/23
 	!Sid Ahmed Boukabara
 	include "declar.incl"	
 	INTEGER ibmax
-	PARAMETER (MXLEV=3400)
+	PARAMETER (MXLEV=4000)
 	REAL PRESS(MXLEV),TEMP(MXLEV),HUMID(MXLEV),ALTIT(MXLEV)
 	real ZBND(IBMAX)
 	REAL*8 V1,V2
