@@ -999,13 +999,7 @@ c       value from vpayne 2006/07/23
      1       ISCAN,IFILTR,IPLOT,ITEST,IATM,ILAS,      
      2       IOD,IXSECT,MPTS,NPTS,INP 
 	write(33,14) V1,V2,0.,DVSET,0.,0.,0.,0.,0,0.,nmol_scal 
-	IF ((V1.LT.0.).OR.(V2.LT.0.)) THEN
-	   write(33,'(I8)') NWN
-	   DO I=1,NWN
-	      WRITE(33,'(E19.7)') WN(I)
-	   ENDDO
-	ENDIF
-	
+
 c       write scaling information to file 33!
 
 	if (nmol_scal .gt.0) then
@@ -1015,6 +1009,14 @@ c       write scaling information to file 33!
  9701	   FORMAT (64a1)
  9702	   FORMAT (7e15.7,/,(8e15.7,/))
 	endif
+
+	IF ((V1.LT.0.).OR.(V2.LT.0.)) THEN
+	   write(33,'(I8)') NWN
+	   DO I=1,NWN
+	      WRITE(33,'(E19.7)') WN(I)
+	   ENDDO
+	ENDIF
+	
 
 	write(33,14) TMPBND,1.,0.,0.,0.,0.,0.  
 	write(33,15) model,itype,ibmaxselect-IBMINSELECT+1,nozero,
