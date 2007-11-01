@@ -1449,7 +1449,7 @@ c**%%$$
             p_h2o = p_h2o + pbar(l)*amount(1,l)
             t_h2o = t_h2o + tbar(l)*amount(1,l)
 
-            write (  *,*) '  p_h2o: ', p_h2o, ' t_h2o: ',t_h2o
+c            write (  *,*) '  p_h2o: ', p_h2o, ' t_h2o: ',t_h2o
             write (ipr,*) '  p_h2o: ', p_h2o, ' t_h2o: ',t_h2o
 
 

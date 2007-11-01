@@ -89,20 +89,15 @@ C-------------------------------------------------------------------------------
 	beta= RADCN2/TMPSFC
 	alph= RADCN2/TSKY
 
-	if (irt.eq.3 .and. tmpsfc.gt.0.001) then
-	   print *
+	if (irt.eq.3) then
+	   print *, '     '
            print *, '***********************************'
-	   print *
 	   print *,
-     *        'For Downwelling Radiance the Boundary is ',
+     *        'NB: for Downwelling Radiance the Boundary is ',
      *        'Internally Set to the Cosmic Value: 2.75K'
-	   print *
-	   print *, 'Set TBOUND to Zero and Rerun'
-	   print *
+
            print *, '***********************************'
 
-
-	   stop '**************************************'
 	endif
 
 	DO I=1,NWN
@@ -332,7 +327,6 @@ C-------------------------------------------------------------------------------
 	IF (CXID.NE.CDOL) GO TO 20                            
 	READ (CXIDLINE,'(1x,10A8)') (XID(I),I=1,10)     
 
-			
 	READ(IRD,925,END=80,ERR=6000) IHIRAC,ILBLF4,    	!---record 1.2           
      1       ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,    
      2       ITEST,IATM, CMRG,ILAS, IOD,IXSECT,
@@ -534,7 +528,7 @@ c
 	   READ (IRD,970,END=80,ERR=6000) TMPBND,
      1          (BNDEMI(IBND),IBND=1,3),            
      1          (BNDRFL(IBND),IBND=1,3)                    
-	   WRITE (IPR,985)                TBOUND,
+	   WRITE (IPR,985)                TMPBND,
      *          (BNDEMI(IBND),IBND=1,3), 
      *          (BNDRFL(IBND),IBND=1,3)          ! surf_refl
  985  FORMAT (5(/),'0*********** BOUNDARY PROPERTIES ***********',/,      A07510
@@ -1138,7 +1132,7 @@ c       write scaling information to file 33!
 	ENDIF
 	IF (INP.EQ.2) THEN
 	   open(90,file=fileARMlist,status='old',
-     1          form='formatted',err=1000)
+     1          form='formatted',err=2000)
 	   DO WHILE (.true.)
 	      read(90,'(a)',end=80,err=1000) filearm
 	      NPROF=NPROF+1
@@ -1163,6 +1157,7 @@ c       write scaling information to file 33!
 	   CLOSE(90)
 	   RETURN
 	ENDIF
+ 2000	WRITE(*,*) 'ERROR OPENING ARM FILE'
  1000	WRITE(*,*) 'ERROR OPENING OR READING FILE in GETPROFNUMBER'
  924	FORMAT (1X,I1,I3,I5,F10.6,A24) 
  972	FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2) 
