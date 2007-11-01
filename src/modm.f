@@ -691,6 +691,7 @@ C-------------------------------------------------------------------------------
       WRITE(*,'(a33)') ' SPECTROSCOPIC FILE INFORMATION '
       WRITE(*,'(a33)') '********************************'
  23   READ (9,'(A100)',END=30,ERR=30) CXIDLINE
+ 
       WRITE(IPR,'(a100)') CXIDLINE
       if (ikount.eq.2) then
          read (CXIDLINE,'(12X,A15)') HVRSPEC
@@ -701,9 +702,12 @@ C-------------------------------------------------------------------------------
          write(*,*) CDATE
          write(*,*) ' '
       endif
-      if (ikount.ge.12 .AND. ikount.le.14) 
-     &    write(*,'(a80)') cxidline(9:100)
+c      if (ikount.ge.12 .AND. ikount.le.14) then
+c         write(*,'(a100)') cxidline(2:100)
+c      endif
+
       ikount = ikount + 1
+
       IF (CXID.NE.'$') GO TO 23                            
 
       ILINE=0

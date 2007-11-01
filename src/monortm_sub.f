@@ -88,13 +88,30 @@ C-------------------------------------------------------------------------------
 	TSKY=2.75 !Cosmic background in Kelvin
 	beta= RADCN2/TMPSFC
 	alph= RADCN2/TSKY
+
+	if (irt.eq.3 .and. tmpsfc.gt.0.001) then
+	   print *
+           print *, '***********************************'
+	   print *
+	   print *,
+     *        'For Downwelling Radiance the Boundary is ',
+     *        'Internally Set to the Cosmic Value: 2.75K'
+	   print *
+	   print *, 'Set TBOUND to Zero and Rerun'
+	   print *
+           print *, '***********************************'
+
+
+	   stop '**************************************'
+	endif
+
 	DO I=1,NWN
 	   SURFRAD  = bb_fn(WN(I),beta)
 	   COSMOS   = bb_fn(WN(I),alph)
 	   ESFC=EMISS(I)
 	   RSFC=REFLC(I)
 	   IF (IRT.EQ.1) RAD(I)=RUP(I)+
-     1      trtot(i)*( (rsfc*(trtot(i)*COSMOS)+rdn(i))+esfc*SURFRAD ) ! sac 06/04/02
+     1      trtot(i)*( rsfc*(trtot(i)*COSMOS+rdn(i))+esfc*SURFRAD) ! vhp 11/01/07
 c
 	   IF (IRT.EQ.3) RAD(I)=RDN(I)+(trtot(i)*COSMOS)
 c
@@ -299,6 +316,10 @@ C-------------------------------------------------------------------------------
 	DATA CDOL / '$'/,CPRCNT / '%'/
 	DATA CONE / '1'/,CTWO / '2'/,CTHREE / '3'/,CFOUR / '4'/,       
      1       CA / 'A'/,CB / 'B'/,CC / 'C'/                   
+	character*6 idcntl(15)
+	DATA IDCNTL / ' HIRAC',' LBLF4',' CNTNM',' AERSL',' EMISS', 
+     *                ' SCNFN',' FILTR','  PLOT','  TEST','  IATM',    
+     *                'CMRG_1','CMRG_2','  ILAS','   INP','  ISPD' /            
 	CHARACTER CEX*2,CEXST*2,CPRGID*60    
 	DATA CEXST/'EX'/
 	EQUIVALENCE (CXID,CXIDLINE)                    
@@ -317,6 +338,15 @@ C-------------------------------------------------------------------------------
      2       ITEST,IATM, CMRG,ILAS, IOD,IXSECT,
      3       MPTS,NPTS,INP,ISPD  
 	
+	WRITE (IPR,935) (IDCNTL(I),I=1,15)  
+ 935	FORMAT (15(A6,3X)) 
+ 	Write(ipr,940)                 IHIRAC,ILBLF4,          	!---record 1.2           
+     1       ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,    
+     2       ITEST,IATM,CMRG(1),CMRG(2),ILAS,
+     3       INP,ISPD  
+	
+ 940	FORMAT (1X,I4,9I9,2(8x,a1),3I9)
+
 	IF ((INP.LE.1).OR.(INP.GE.4)) INP=1
 	!---IF INP=1 !MONORTM.IN INPUT
 	!---IF INP=2 !ARM SONDES INPUTS
@@ -504,6 +534,14 @@ c
 	   READ (IRD,970,END=80,ERR=6000) TMPBND,
      1          (BNDEMI(IBND),IBND=1,3),            
      1          (BNDRFL(IBND),IBND=1,3)                    
+	   WRITE (IPR,985)                TBOUND,
+     *          (BNDEMI(IBND),IBND=1,3), 
+     *          (BNDRFL(IBND),IBND=1,3)          ! surf_refl
+ 985  FORMAT (5(/),'0*********** BOUNDARY PROPERTIES ***********',/,      A07510
+     *        '0 TBOUND   = ',F12.4,5X,'BOUNDARY EMISSIVITY   = ',        A07530
+     *        3(1PE11.3),/,'0',29X,'BOUNDARY REFLECTIVITY = ',            A07540
+     *        3(1PE11.3),/,'0',29X,' SURFACE REFLECTIVITY = ', A1)
+C
 	ENDIF   
 				!---record 1.4 (continued: manual emissivities)
 	ICOEF = 13
