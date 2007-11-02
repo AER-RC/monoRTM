@@ -248,7 +248,7 @@ C**********************************************************************
 	HVRMON = '$Revision$' 
 
 	!---Release number of MonoRTM
-	HVRREL = 'Release  3.2'
+	HVRREL = 'Release  3.3'
 
 	!---GET THE PROFILES NUMBER
 

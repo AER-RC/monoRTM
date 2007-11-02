@@ -105,13 +105,18 @@ C-------------------------------------------------------------------------------
 	   COSMOS   = bb_fn(WN(I),alph)
 	   ESFC=EMISS(I)
 	   RSFC=REFLC(I)
-	   IF (IRT.EQ.1) RAD(I)=RUP(I)+
-     1      trtot(i)*( rsfc*(trtot(i)*COSMOS+rdn(i))+esfc*SURFRAD) ! vhp 11/01/07
 c
-	   IF (IRT.EQ.3) RAD(I)=RDN(I)+(trtot(i)*COSMOS)
+c     Upwelling Case
+	   IF (IRT.EQ.1) RAD(I) = RUP(I) +
+     1       trtot(i) * (esfc*SURFRAD + rsfc*(rdn(i)+trtot(i)*COSMOS)) ! kcp 09/21/07
 c
-	   IF (IRT.EQ.2) RAD(I)=RUP(I)+ 
-     1      trtot(i)*( (trtot(i)*COSMOS)+rdn(i) )  !sac 06/04/02
+c     Limb Case      trtot is taken as the transmittance from the tangent point to h1 (SAC)
+	   IF (IRT.EQ.3) RAD(I) = RUP(I) +
+     1       trtot(i) * (rdn(i)+trtot(i)*COSMOS)
+c
+c     Downwelling Case
+	   IF (IRT.EQ.2) RAD(I) = RUP(I)+ 
+     1       trtot(i) *( (trtot(i)*COSMOS))  !sac 06/04/02
 c
 	   IF (IOUT.EQ.1) THEN
 	      X=RADCN1*(WN(I)**3)/RAD(I)+1.
@@ -850,7 +855,7 @@ c
 	      OTOT_OH=OTOT_OH+OL_OH(I,J)
 	   ENDDO
 	   WRITE(1,21) NPR,NR,i,FREQ,TB(I),RAD(I),TRTOT(I),
-     2          WVCOLMN,CLWCOLMN,TMPSFC,REFLC(I),EMISS(I),
+     2          WVCOLMN,CLWCOLMN,TMPSFC,EMISS(I),REFLC(I),
      3          ANGLE,
      2          OTOT,OTOT_WV,OTOT_O2,OTOT_N2,OTOT_O3,
      3          OTOT_N2O,OTOT_CO,OTOT_SO2,OTOT_NO2,OTOT_OH
@@ -1090,10 +1095,10 @@ c       write scaling information to file 33!
 	COMMON /CVRREL  / HVRREL
 
 	
-	WRITE(*,'(a)') '**********************************'
-	WRITE(*,'(a)') '*        M O N O R T M           *'
-	WRITE(*,'(a)') '*        '//HVRREL//'         *'
-	WRITE(*,'(a)') '**********************************'
+	WRITE(*,'(a40)') '**********************************'
+	WRITE(*,'(a40)') '*        M O N O R T M           *'
+	WRITE(*,'(a40)') '*        '//HVRREL//'         *'
+	WRITE(*,'(a40)') '**********************************'
 	WRITE(*,*) 'NUMBER OF PROFILES:',nprof
 	IF (INP.EQ.1) WRITE(*,*) 'INPUTS FROM MONORTM.IN'
 	IF (INP.EQ.2) WRITE(*,*) 'INPUTS FROM ARM.IN'

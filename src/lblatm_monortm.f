@@ -1449,9 +1449,6 @@ c**%%$$
             p_h2o = p_h2o + pbar(l)*amount(1,l)
             t_h2o = t_h2o + tbar(l)*amount(1,l)
 
-c            write (  *,*) '  p_h2o: ', p_h2o, ' t_h2o: ',t_h2o
-            write (ipr,*) '  p_h2o: ', p_h2o, ' t_h2o: ',t_h2o
-
 
          L = LMAX                                                        FA10150
          if (noprnt .ge. 0) then
@@ -3297,14 +3294,14 @@ C     Read in moleclar information at E15.8 format for flag JLONG='L'
       IF (IM.EQ.0) WRITE (IPR,910)                                       FA27090
 C                                                                        FA27100
 c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-c      do 15 k=1,nmol
-c         wmol(k) = 0.
-c 15   continue
-c
-cc   set water to wm(im)
-c
-c      wmol(1) = wm(im)
-c
+      do 15 k=1,nmol
+         wmol(k) = 0.
+ 15   continue
+
+c   set water to wm(im)
+
+      wmol(1) = wm(im)
+
 c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       if (noprnt .ge. 0) then
          
