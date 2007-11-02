@@ -34,6 +34,8 @@ run    -> Contains files required to run MonoRTM.
 	  .  run_monortm_example is a script to run some examples
 	  .  spectral_lines.dat contains the spectral line information
 	  -> subdirectory run/in contains sample input files
+	     '_dn' denotes sample input files for downwelling radiance calculations
+	     '_up' denotes sample input files for upwelling radiance calculations
 		. MONORTM.IN         : input compatible with lblrtm (ex-TAPE5). INP=1
 	        . ARM.IN             : List of ARM sondes. INP=2
 	        . MONORTM_PROF.IN    : contains layer data, INP=3 (this is a copy of TAPE7
