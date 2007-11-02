@@ -4,7 +4,7 @@
 ;
 ;To run it, type: IDL>.run monortm.pro
 ;It will automatically look for a file
-;in: out/MONORTM.OUT.
+;in: run/out/MONORTM.OUT.
 ;Caution: If we run more profiles or more
 ;channels than this code is expecting
 ;('nprof' profiles and 'nchan' channels), 
@@ -52,7 +52,7 @@
 
 ;----File opening MONORTM----
 	
-	fic0='../out/MONORTM.OUT'
+	fic0='../run/out/MONORTM.OUT'
         print, 'FILE ',fic0,' OPEN FOR READ ....'
 	OPENR,1,fic0
 	ligne=''
