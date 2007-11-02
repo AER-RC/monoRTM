@@ -115,7 +115,7 @@ c     Limb Case      trtot is taken as the transmittance from the tangent point 
      1       trtot(i) * (rdn(i)+trtot(i)*COSMOS)
 c
 c     Downwelling Case
-	   IF (IRT.EQ.2) RAD(I) = RUP(I)+ 
+	   IF (IRT.EQ.2) RAD(I) = RDN(I)+ 
      1       trtot(i) *( (trtot(i)*COSMOS))  !sac 06/04/02
 c
 	   IF (IOUT.EQ.1) THEN
