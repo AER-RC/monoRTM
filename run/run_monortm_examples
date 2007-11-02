@@ -79,6 +79,7 @@ time ../monortm_v3.2_pgf90_sgl
 
 \rm   MONORTM.IN
 \rm   ARM.IN
+\rm   SONDE.IN
 mv    MONORTM.OUT     out/$prefix{MONORTM.OUT_NOSCALE_INP2_dn}
 mv    MONORTM.LOG     out/$prefix{MONORTM.LOG_NOSCALE_INP2_dn}
 mv    TAPE7           out/$prefix{MONORTM.TAPE7_NOSCALE_INP2_dn}
@@ -136,6 +137,7 @@ time ../monortm_v3.2_pgf90_sgl
 
 \rm   MONORTM.IN
 \rm   ARM.IN
+\rm   SONDE.IN	
 mv    MONORTM.OUT     out/$prefix{MONORTM.OUT_SCALE_INP2_HMOL1_dn}
 mv    MONORTM.LOG     out/$prefix{MONORTM.LOG_SCALE_INP2_HMOL1_dn}
 mv    TAPE7           out/$prefix{MONORTM.TAPE7_SCALE_INP2_HMOL1_dn}
