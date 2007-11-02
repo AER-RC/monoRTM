@@ -63,7 +63,7 @@
 	WHILE (not eof(1) and (i lt nwn)) DO BEGIN
 		readf,1,$
 		format='(3i5,2f9.3,E19.9,f9.5,2f8.4,3f8.2,f9.3,10E12.4)',$
-		IPR,NR,ich,FR,mo1,rad,mo2,W,cloud,TMPSFC,REFLC,EMISS,$
+		IPR,NR,ich,FR,mo1,rad,mo2,W,cloud,TMPSFC,EMISS,REFLC,$
 	 	ANGLE,OTOT,OTOT_WV,OTOT_O2,OTOT_N2,OTOT_O3,$
 	 	OTOT_N2O,OTOT_CO,OTOT_SO2,OTOT_NO2,$
 		OTOT_OH
