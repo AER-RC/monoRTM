@@ -229,13 +229,13 @@ C**********************************************************************
 	IPUNCH=1 !flag to create (1) or not (0) TAPE7 in case INP=2
 
 	!---FILES NAMES ALL PUT HERE FOR CONVENIENCE
-	FILEIN      ='../in/MONORTM.IN'
-	FILESONDE   ='../in/SONDE.IN'
-	fileARMlist ='../in/ARM.IN'
-	fileprof    ='../in/MONORTM_PROF.IN'
-	HFILE       ='../in/spectral_lines.dat'
-	FILEOUT     ='../out/MONORTM.OUT'
-	FILELOG     ='../out/MONORTM.LOG'
+	FILEIN      ='MONORTM.IN'
+	FILESONDE   ='SONDE.IN'
+	fileARMlist ='ARM.IN'
+	fileprof    ='MONORTM_PROF.IN'
+	HFILE       ='spectral_lines.dat'
+	FILEOUT     ='MONORTM.OUT'
+	FILELOG     ='MONORTM.LOG'
 
 	!---Initializations of the version numbers
 	HVRMON      ='NOT USED       ' 
@@ -248,7 +248,7 @@ C**********************************************************************
 	HVRMON = '$Revision$' 
 
 	!---Release number of MonoRTM
-	HVRREL = 'Release  3.1'
+	HVRREL = 'Release  3.2'
 
 	!---GET THE PROFILES NUMBER
 
@@ -435,12 +435,12 @@ C
  973	FORMAT (7e15.7,/,(8e15.7,/))
  978	FORMAT (1P8E15.7)                                             
  1000	FORMAT ('Modules and versions used in this calculation:',/,/,
-     &    A15,/,/,5X,
-     &    'spectral file :',    5X,A15,/,5X, 
-     &    'monortm.f     : ',4X,A15,10X,
-     &    'modm.f           :  ',4X,A15,/,5X,
-     &    'monortm_sub.f : ',4X,A15,10X,
-     &    'lblatm_monortm.f :  ',4X,A15)
+     &    A15,/,/,
+     &    5x,  'spectral file :',          5X,A15,/, 
+     &    5x,  'monortm.f     : ',         4X,A15,10X,
+     &             'modm.f           :  ', 4X,A15,/,
+     &    5x,'monortm_sub.f : ',           4X,A15,10X,
+     &             'lblatm_monortm.f :  ', 4X,A15)
  110	CONTINUE
 
 	!---Close all files

@@ -3,25 +3,25 @@
 
 SHELL = /bin/sh
 
+include make.vers_no
+
 ###############################
 # Set variables
 ###############################
 
 PLATFORM = OS_X (IBM Compiler)
 
-FC =xlf90
-#FCFLAG = -qfixed -s -O -qrealsize=8 -qintsize=8 -qmaxmem=-1
-FCFLAG = -qfixed -s -O -qrealsize=8  -qmaxmem=-1
-vers=2.20
-OUTPUT =../bin/monortm_v$(vers)_OS_X_ibm_xlf90_dbl
-#CPATH = src
-CPATH  = 
-CDOTO  = os_x_ibm_dbl.o
+FC     = xlf90
+FCFLAG = -qfixed  -O -qrealsize=8 -qintsize=8 -qmaxmem=-1
+
+OUTPUT = ../monortm_v$(vers)_OS_X_ibm_xlf90_dbl
+CPATH  = ../src/
+CDOTO  = os_x_ibm_dbl.o/
 
 CMONO  = monortm
+CATM   = lblatm_monortm
 CM_SUB = monortm_sub
 CMODM  = modm
-CATM   = lblatm_monortm
 
 OBJFIL = $(CMONO).o \
          $(CM_SUB).o \
@@ -36,38 +36,35 @@ OBPATH = $(CDOTO)/$(CMONO).o \
 MODULE = $(CPATH)$(CMONO).f \
          $(CPATH)$(CM_SUB).f \
          $(CPATH)$(CMODM).f \
-         $(CPATH)$(CATM).f \
+         $(CPATH)$(CATM).f 
 
 ###############################
 # Load line
 ###############################
 
 $(OUTPUT) : \
-	intro makedir $(OBPATH) conclude
-	$(FC) $(FCFLAG) -o $(OUTPUT) $(OBPATH)  -L/Applications/Absoft/lib/ -lU77
-
+	  intro makedir $(OBPATH) conclude
+	  $(FC) $(FCFLAG) -o $(OUTPUT) $(OBPATH)
 
 ###############################
 # Object compile lines
 ###############################
 
-
 $(CDOTO)/$(CMONO).o : $(CPATH)$(CMONO).f
-	$(FC) $(FCFLAG) -c $(CPATH)$(CMONO).f
-	\mv $(CMONO).o $(CDOTO)
+		    $(FC) $(FCFLAG) -c $(CPATH)$(CMONO).f
+		    \mv $(CMONO).o $(CDOTO)
 
 $(CDOTO)/$(CATM).o : $(CPATH)$(CATM).f
-	$(FC) $(FCFLAG) -c $(CPATH)$(CATM).f
-	\mv $(CATM).o $(CDOTO)
+		   $(FC) $(FCFLAG) -c $(CPATH)$(CATM).f
+		   \mv $(CATM).o $(CDOTO)
 
 $(CDOTO)/$(CM_SUB).o : $(CPATH)$(CM_SUB).f
-	$(FC) $(FCFLAG) -c $(CPATH)$(CM_SUB).f
-	\mv $(CM_SUB).o $(CDOTO)
+		     $(FC) $(FCFLAG) -c $(CPATH)$(CM_SUB).f
+		     \mv $(CM_SUB).o $(CDOTO)
 
 $(CDOTO)/$(CMODM).o : $(CPATH)$(CMODM).f
-	$(FC) $(FCFLAG) -c $(CPATH)$(CMODM).f
-	\mv $(CMODM).o $(CDOTO)
-
+		    $(FC) $(FCFLAG) -c $(CPATH)$(CMODM).f
+		    \mv $(CMODM).o $(CDOTO)
 
 ###############################
 # Create object file directory

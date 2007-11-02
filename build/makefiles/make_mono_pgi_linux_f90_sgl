@@ -9,15 +9,15 @@ include make.vers_no
 # Set variables
 ###############################
 
-PLATFORM = SGI 
+PLATFORM = OS_X (SGI Compiler)
 
-FC     =f90
-FCFLAG = -mips4 -r10000 -lfastm -O3 -r8 -TENV:X=0
+FC     =pgf90
+FCFLAG = 
 
-OUTPUT = ../bin/monortm_v$(vers)_f90_dbl
-#CPATH = src
-CPATH  = 
-CDOTO  = f90_dbl.o
+OUTPUT = ../monortm_v$(vers)_$(FC)_sgl
+CPATH  = ../src/
+
+CDOTO  = $(FC)_sgl.o
 
 CMONO  = monortm
 CM_SUB = monortm_sub
