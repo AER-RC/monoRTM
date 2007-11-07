@@ -111,12 +111,11 @@ c     Upwelling Case
      1       trtot(i) * (esfc*SURFRAD + rsfc*(rdn(i)+trtot(i)*COSMOS)) ! kcp 09/21/07
 c
 c     Limb Case      trtot is taken as the transmittance from the tangent point to h1 (SAC)
-	   IF (IRT.EQ.3) RAD(I) = RUP(I) +
+	   IF (IRT.EQ.2) RAD(I) = RUP(I) +
      1       trtot(i) * (rdn(i)+trtot(i)*COSMOS)
 c
 c     Downwelling Case
-	   IF (IRT.EQ.2) RAD(I) = RDN(I)+ 
-     1       (trtot(i)*COSMOS)
+	   IF (IRT.EQ.3) RAD(I)=RDN(I)+(trtot(i)*COSMOS)
 c
 	   IF (IOUT.EQ.1) THEN
 	      X=RADCN1*(WN(I)**3)/RAD(I)+1.
