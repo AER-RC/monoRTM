@@ -3293,16 +3293,6 @@ C     Read in moleclar information at E15.8 format for flag JLONG='L'
       ENDIF
       IF (IM.EQ.0) WRITE (IPR,910)                                       FA27090
 C                                                                        FA27100
-c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      do 15 k=1,nmol
-         wmol(k) = 0.
- 15   continue
-
-c   set water to wm(im)
-
-      wmol(1) = wm(im)
-
-c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       if (noprnt .ge. 0) then
          
          IF (JLONG.EQ.'L') THEN
