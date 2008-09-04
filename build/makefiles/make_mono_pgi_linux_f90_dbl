@@ -12,7 +12,9 @@ include make.vers_no
 PLATFORM = pgi linux
 
 FC     =pgf90
-FCFLAG = -fast -r8 -i8
+#FCFLAG = -fast -r8 -i8 -C
+#FCFLAG = -C -r8 -i8 
+FCFLAG = -C -r8 -i8 
 
 OUTPUT = ../monortm_v$(vers)_$(FC)_dbl
 CPATH  = ../src/
@@ -23,22 +25,25 @@ CMONO  = monortm
 CM_SUB = monortm_sub
 CMODM  = modm
 CATM   = lblatm_monortm
-
+CLBL   = lblrtm_sub
+CCONT  = contnm
+CTIPS  = tips_2003
 
 OBJFIL = $(CMONO).o \
          $(CM_SUB).o \
          $(CMODM).o \
-         $(CATM).o 
+         $(CATM).o \
+         $(CLBL).o \
+         $(CCONT).o \
+         $(CTIPS).o 
 
 OBPATH = $(CDOTO)/$(CMONO).o \
-         $(CDOTO)/$(CM_SUB).o \
-         $(CDOTO)/$(CMODM).o \
-         $(CDOTO)/$(CATM).o 
-
-MODULE = $(CPATH)$(CMONO).f \
-         $(CPATH)$(CM_SUB).f \
-         $(CPATH)$(CMODM).f \
-         $(CPATH)$(CATM).f \
+	$(CDOTO)/$(CM_SUB).o \
+	$(CDOTO)/$(CMODM).o \
+	$(CDOTO)/$(CATM).o \
+	$(CDOTO)/$(CLBL).o \
+	$(CDOTO)/$(CCONT).o \
+	$(CDOTO)/$(CTIPS).o 
 
 ###############################
 # Load line
@@ -66,9 +71,21 @@ $(CDOTO)/$(CMODM).o : $(CPATH)$(CMODM).f
 	$(FC) $(FCFLAG) -c $(CPATH)$(CMODM).f
 	\mv $(CMODM).o $(CDOTO)
 
+$(CDOTO)/$(CCONT).o : $(CPATH)$(CCONT).f
+	$(FC) $(FCFLAG) -c $(CPATH)$(CCONT).f
+	\mv $(CCONT).o $(CDOTO)
+
+$(CDOTO)/$(CTIPS).o : $(CPATH)$(CTIPS).f
+	$(FC) $(FCFLAG) -c $(CPATH)$(CTIPS).f
+	\mv $(CTIPS).o $(CDOTO)
+
 $(CDOTO)/$(CATM).o : $(CPATH)$(CATM).f
 	$(FC) $(FCFLAG) -c $(CPATH)$(CATM).f
 	\mv $(CATM).o $(CDOTO)
+
+$(CDOTO)/$(CLBL).o : $(CPATH)$(CLBL).f
+	$(FC) $(FCFLAG) -c $(CPATH)$(CLBL).f
+	\mv $(CLBL).o $(CDOTO)
 
 
 
@@ -101,7 +118,7 @@ intro :
 	echo
 	echo 'The object files used are as follows:'
 	echo
-	echo '      $(OBJ)'
+	echo '      $(OBJFIL)'
 	echo
 	echo
 	echo '$(OUTPUT) make in progress ...'
