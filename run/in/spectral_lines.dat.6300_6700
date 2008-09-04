@@ -1,0 +1,1942 @@
+> 01_H2O    : AER Line List Name  : 01_H2O  $Revision$                                        
+> 02_CO2    : AER Line List Name  : 02_CO2  $Revision$                                        
+> 03_O3     : HIT Line List Name  : 03_O3  $Revision$                                         
+> 04_N2O    : AER Line List Name  : 04_N2O  $Revision$                                        
+> 05_CO     : HIT Line List Name  : 05_CO  $Revision$                                         
+> 06_CH4    : HIT Line List Name  : 06_CH4  $Revision$                                        
+> 07_O2     : AER Line List Name  : 07_O2  $Revision$                                         
+> 08_NO     : AER Line List Name  : 08_NO  $Revision$                                         
+> 09_SO2    : HIT Line List Name  : 09_SO2  $Revision$                                        
+> 10_NO2    : HIT Line List Name  : 10_NO2  $Revision$                                        
+> 11_NH3    : HIT Line List Name  : 11_NH3  $Revision$                                        
+> 12_HNO3   : AER Line List Name  : 12_HNO3  $Revision$                                       
+> 13_OH     : AER Line List Name  : 13_OH  $Revision$                                         
+> 14_HF     : HIT Line List Name  : 14_HF  $Revision$                                         
+> 15_HCL    : HIT Line List Name  : 15_HCL  $Revision$                                        
+> 16_HBR    : HIT Line List Name  : 16_HBR  $Revision$                                        
+> 17_HI     : HIT Line List Name  : 17_HI  $Revision$                                         
+> 18_CLO    : AER Line List Name  : 18_CLO  $Revision$                                        
+> 19_OCS    : AER Line List Name  : 19_OCS  $Revision$                                        
+> 20_H2CO   : HIT Line List Name  : 20_H2CO  $Revision$                                       
+> 21_HOCL   : HIT Line List Name  : 21_HOCL  $Revision$                                       
+> 22_N2     : HIT Line List Name  : 22_N2  $Revision$                                         
+> 23_HCN    : HIT Line List Name  : 23_HCN  $Revision$                                        
+> 24_CH3CL  : HIT Line List Name  : 24_CH3CL  $Revision$                                      
+> 25_H2O2   : HIT Line List Name  : 25_H2O2  $Revision$                                       
+> 26_C2H2   : AER Line List Name  : 26_C2H2  $Revision$                                       
+> 27_C2H6   : AER Line List Name  : 27_C2H6  $Revision$                                       
+> 28_PH3    : AER Line List Name  : 28_PH3  $Revision$                                        
+> 29_COF2   : HIT Line List Name  : 29_COF2  $Revision$                                       
+> 30_SF6    : HIT Line List Name  : 30_SF6  $Revision$                                        
+> 31_H2S    : HIT Line List Name  : 31_H2S  $Revision$                                        
+> 32_HCOOH  : HIT Line List Name  : 32_HCOOH  $Revision$                                      
+> 33_HO2    : HIT Line List Name  : 33_HO2  $Revision$                                        
+> 34_O      : HIT Line List Name  : 34_O  $Revision$                                          
+> 35_CLONO2 : HIT Line List Name  : 35_CLONO2  $Revision$                                     
+> 36_NO+    : AER Line List Name  : 36_NO+  $Revision$                                        
+> 37_HOBr   : HIT Line List Name  : 37_HOBr  $Revision$                                       
+> 38_C2H4   : HIT Line List Name  : 38_C2H4  $Revision$                                       
+> 39_C2H4   : HIT Line List Name  : 39_C2H4  $Revision$                                       
+> 01_H2O    : AER Line List Name  : 01_H2O  $Revision$                                        
+> 01_H2O    : AER Line List Date  : $Date$                                    
+> 01_H2O    : Orig Line List Name : 01_hit06_22_183.dat                                             
+> 01_H2O    : Date Created        :                                                                 
+> 01_H2O    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 01_H2O    :                                                                                       
+> 01_H2O    : Comments:                                                                             
+> 01_H2O    :                                                                                       
+> 01_H2O    :Updated: Hitran 08/2006 (www.hitran.com)                                               
+> 01_H2O    :The air-broadened half-widths for the three most abundant isotopologues                
+> 01_H2O    :of water have been completely updated. Various validations have                        
+> 01_H2O    :demonstrated that the new list is superior to the parameters in the                    
+> 01_H2O    :2004 edition, and the impact can be noticable for simulations in the                   
+> 01_H2O    :troposphere. An update has also been made for the H217O and H218O                      
+> 01_H2O    :isotopologues in the near-IR and visible region based on the work                      
+> 01_H2O    :of M.Tanaka, O. Naumenko, J. Brault, and J. Tennyson, J.Mol.Spectrosc.                 
+> 01_H2O    :234, 1-9 (2005). In addition, some misidentified lines, that have now                  
+> 01_H2O    :been attributed to oxygen, have been removed.                                          
+> 01_H2O    :Note: The exceptions are :                                                             
+> 01_H2O    :                                                                                       
+> 01_H2O    :   1) The intensities for the lines at 0.7417 cm-1 (22.233 GHz)                        
+> 01_H2O    :      and 6.1145 cm-1 (183 GHz).                                                       
+> 01_H2O    :      - based on the work of S.A. Clough 2002                                          
+> 01_H2O    :                                                                                       
+> 01_H2O    :   2) The widths, temerature dependence of the widths, and the shifts                  
+> 01_H2O    :       for the lines at 0.7417 cm-1 (22.233 GHz) and 6.1145 cm-1 (183 GHz)             
+> 01_H2O    :      - based on the work of Bob Gamache (2007) see V. Payne et al., 2007              
+> 01_H2O                                                                                            
+%%%%%%%%                                                                                            
+> 02_CO2    : AER Line List Name  : 02_CO2  $Revision$                                        
+> 02_CO2    : AER Line List Date  : $Date$                                    
+> 02_CO2    : Orig Line List Name : 02_HIT96.par                                                    
+> 02_CO2    : Date Created        :                                                                 
+> 02_CO2    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 02_CO2    :                                                                                       
+> 02_CO2    : Comments:                                                                             
+> 02_CO2    :                                                                                       
+> 02_CO2    :* Line Coupling Coefficients:                                                          
+> 02_CO2    :*                                                                                      
+> 02_CO2    :***********************************************************************                
+> 02_CO2    :*                                                                                      
+> 02_CO2    :*                  CARBON DIOXIDE                                                      
+> 02_CO2    :*                                                                                      
+> 02_CO2    :*    LINE COUPLING PARAMETERS ARE PROVIDED FOR CO2 PQR BRANCHES for the                
+> 02_CO2    :*    1st and 2nd isotope.                                                              
+> 02_CO2    :*                                                                                      
+> 02_CO2    :*        F. Niro, K. Jucks, J.-M. Hartmann, Spectra calculations in                    
+> 02_CO2    :*          central and wing regions of CO2 IR bands. IV : Software and                 
+> 02_CO2    :*          database for the computation of atmospheric spectra, in                     
+> 02_CO2    :*          press in: J Quant Spectrosc Radiat Transfer.                                
+> 02_CO2    :*                                                                                      
+> 02_CO2    :*                                                                                      
+> 02_CO2    :*    These coefficients are consistent with the HITRAN2000 carbon dioxide              
+> 02_CO2    :*    line parameters.                                                                  
+> 02_CO2    :*                                                                                      
+> 02_CO2    :***********************************************************************                
+> 02_CO2                                                                                            
+> 02_CO2    :    Lines not included in the line couple file (above) are from HITRAN 2000            
+> 02_CO2                                                                                            
+> 02_CO2    :      HITRAN 2000 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 03_O3     : HIT Line List Name  : 03_O3  $Revision$                                         
+> 03_O3     : HIT Line List Date  : $Date$                                    
+> 03_O3     : Orig Line List Name : 03_hit04.par                                                    
+> 03_O3     : Date Created        :                                                                 
+> 03_O3     : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 03_O3     :                                                                                       
+> 03_O3     : Comments:                                                                             
+> 03_O3     :                                                                                       
+> 03_O3     :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 04_N2O    : AER Line List Name  : 04_N2O  $Revision$                                        
+> 04_N2O    : AER Line List Date  : $Date$                                    
+> 04_N2O    : Orig Line List Name : 04_hit06.par                                                    
+> 04_N2O    : Date Created        :                                                                 
+> 04_N2O    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 04_N2O    :                                                                                       
+> 04_N2O    : Comments:                                                                             
+> 04_N2O    :                                                                                       
+> 04_N2O    :Updated: Hitran 04/2006 (www.hitran.com)                                               
+> 04_N2O    :It was discovered that two strong P1 lines (at 578.5261 and                            
+> 04_N2O    :1167.2943 cm-1) were absent from the HITRAN2004 edition.                               
+> 04_N2O    :These lines have been restored.  In addition, 6 lines of                               
+> 04_N2O    :a weak, highly perturbed band (0600-1000) around 4.6 µm                               
+> 04_N2O    :have been added.                                                                       
+%%%%%%%%                                                                                            
+> 05_CO     : HIT Line List Name  : 05_CO  $Revision$                                         
+> 05_CO     : HIT Line List Date  : $Date$                                    
+> 05_CO     : Orig Line List Name : 05_hit04.par                                                    
+> 05_CO     : Date Created        :                                                                 
+> 05_CO     : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 05_CO     :                                                                                       
+> 05_CO     : Comments:                                                                             
+> 05_CO     :                                                                                       
+> 05_CO     :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 06_CH4    : HIT Line List Name  : 06_CH4  $Revision$                                        
+> 06_CH4    : HIT Line List Date  : $Date$                                    
+> 06_CH4    : Orig Line List Name : 06_hit04.par                                                    
+> 06_CH4    : Date Created        :                                                                 
+> 06_CH4    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 06_CH4    :                                                                                       
+> 06_CH4    : Comments:                                                                             
+> 06_CH4    :                                                                                       
+> 06_CH4    :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 07_O2     : AER Line List Name  : 07_O2  $Revision$                                         
+> 07_O2     : AER Line List Date  : $Date$                                    
+> 07_O2     : Orig Line List Name : 07_hit06.par                                                    
+> 07_O2     : Date Created        :                                                                 
+> 07_O2     : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 07_O2     :                                                                                       
+> 07_O2     : Comments:                                                                             
+> 07_O2     :                                                                                       
+> 07_O2     :*   The oxygen line parameters are based on HITRAN 2004                                
+> 07_O2     :                                                                                       
+> 07_O2     :    HITRAN 2004 (http://www.hitran.com)                                                
+> 07_O2     :                                                                                       
+> 07_O2     :    All oxygen lines above 0 cm-1 and below 1.497951 have                              
+> 07_O2     :    been removed from this file.                                                       
+> 07_O2     :                                                                                       
+> 07_O2     :	 They have been replaced by a single line in the merge operation                      
+> 07_O2     :    with a strength appropriate to the lines removed and a width reflecting the        
+> 07_O2     :    effects of line coupling.                                                          
+> 07_O2     :                                                                                       
+> 07_O2     :    The lines removed are d604 and d601 lines                                          
+> 07_O2     :                                                                                       
+> 07_O2     :                  sac 21 May 2007                                                      
+> 07_O2     :                                                                                       
+> 07_O2     :***********************************************************************                
+> 07_O2     :* Line Coupling Coefficients:                                                          
+> 07_O2     :*                                                                                      
+> 07_O2     :*   The O2 coupled lines have been modified (2006/06/31) such that the:                
+> 07_O2     :*        - the O2 line widths, the temperature dependence                              
+> 07_O2     :*          of the widths and the line coupling parameters for                          
+> 07_O2     :*	        the 60 GHz band and the 120 GHz line have been                               
+> 07_O2     :*          changed to those of Tretyakov et al, 2005.                                  
+> 07_O2     :***********************************************************************                
+> 07_O2                                                                                             
+> 07_O2     :                                                                                       
+> 07_O2     :Updated: HITRAN 11/2006 (www.hitran.com)                                               
+> 07_O2     :Corrections have been made to the Einstein A-coefficients for                          
+> 07_O2     :the oxygen line list in the main part of HITRAN. Note that the                         
+> 07_O2     :format of the "global" quantum identifications has been                                
+> 07_O2     :modified slightly.                                                                     
+> 07_O2     :                                                                                       
+%%%%%%%%                                                                                            
+> 08_NO     : AER Line List Name  : 08_NO  $Revision$                                         
+> 08_NO     : AER Line List Date  : $Date$                                    
+> 08_NO     : Orig Line List Name : 08_hit06.par                                                    
+> 08_NO     : Date Created        :                                                                 
+> 08_NO     : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 08_NO     :                                                                                       
+> 08_NO     : Comments:                                                                             
+> 08_NO     :                                                                                       
+> 08_NO     :Updated: Hitran, 12/2006 (www.hitran.com)                                              
+> 08_NO     :Corrections have been made to the statistical weights and                              
+> 08_NO     :Einstein A-coefficients for the HITRAN molecules in the                                
+> 08_NO     :doublet-Pi electronic state, namely NO, OH, and ClO                                    
+> 08_NO     :(molecules 8, 13, and 18 respectively).                                                
+%%%%%%%%                                                                                            
+> 09_SO2    : HIT Line List Name  : 09_SO2  $Revision$                                        
+> 09_SO2    : HIT Line List Date  : $Date$                                    
+> 09_SO2    : Orig Line List Name : 09_hit04.par                                                    
+> 09_SO2    : Date Created        :                                                                 
+> 09_SO2    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 09_SO2    :                                                                                       
+> 09_SO2    : Comments:                                                                             
+> 09_SO2    :                                                                                       
+> 09_SO2    :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 10_NO2    : HIT Line List Name  : 10_NO2  $Revision$                                        
+> 10_NO2    : HIT Line List Date  : $Date$                                    
+> 10_NO2    : Orig Line List Name : 10_hit04.par                                                    
+> 10_NO2    : Date Created        :                                                                 
+> 10_NO2    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 10_NO2    :                                                                                       
+> 10_NO2    : Comments:                                                                             
+> 10_NO2    :                                                                                       
+> 10_NO2    :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 11_NH3    : HIT Line List Name  : 11_NH3  $Revision$                                        
+> 11_NH3    : HIT Line List Date  : $Date$                                    
+> 11_NH3    : Orig Line List Name : 11_hit04.par                                                    
+> 11_NH3    : Date Created        :                                                                 
+> 11_NH3    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 11_NH3    :                                                                                       
+> 11_NH3    : Comments:                                                                             
+> 11_NH3    :                                                                                       
+> 11_NH3    :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 12_HNO3   : AER Line List Name  : 12_HNO3  $Revision$                                       
+> 12_HNO3   : AER Line List Date  : $Date$                                    
+> 12_HNO3   : Orig Line List Name : 12_hit06.par                                                    
+> 12_HNO3   : Date Created        :                                                                 
+> 12_HNO3   : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 12_HNO3   :                                                                                       
+> 12_HNO3   : Comments:                                                                             
+> 12_HNO3   :                                                                                       
+> 12_HNO3   :Updated: Hitran 07/2006 (www.hitran.com)                                               
+> 12_HNO3   :The line parameters for nitric acid have been completely updated in                    
+> 12_HNO3   :the region from 600 to 1790 cm-1. The new data come from the work                      
+> 12_HNO3   :that went into the MIPAS (Michelson Interferometer for Passive                         
+> 12_HNO3   :Atmospheric Sounding) database: J.-M. Flaud, G. Brizzi, M. Carlotti,                   
+> 12_HNO3   :A. Perrin, and M. Ridolfi, "MIPAS database: Validation of HNO3 line                    
+> 12_HNO3   : parameters using MIPAS satellite measurements," Atmos.Chem.Phys.                      
+> 12_HNO3   :Discuss. 6, 4251-4272 (2006).                                                          
+%%%%%%%%                                                                                            
+> 13_OH     : AER Line List Name  : 13_OH  $Revision$                                         
+> 13_OH     : AER Line List Date  : $Date$                                    
+> 13_OH     : Orig Line List Name : 13_hit05.par                                                    
+> 13_OH     : Date Created        :                                                                 
+> 13_OH     : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 13_OH     :                                                                                       
+> 13_OH     : Comments:                                                                             
+> 13_OH     :                                                                                       
+> 13_OH     :Updated: Hitran, 12/2006 (www.hitran.com)                                              
+> 13_OH     :Corrections have been made to the statistical weights and                              
+> 13_OH     :Einstein A-coefficients for the HITRAN molecules in the                                
+> 13_OH     :doublet-Pi electronic state, namely NO, OH, and ClO                                    
+> 13_OH     :(molecules 8, 13, and 18 respectively).                                                
+%%%%%%%%                                                                                            
+> 14_HF     : HIT Line List Name  : 14_HF  $Revision$                                         
+> 14_HF     : HIT Line List Date  : $Date$                                    
+> 14_HF     : Orig Line List Name : 14_hit04.par                                                    
+> 14_HF     : Date Created        :                                                                 
+> 14_HF     : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 14_HF     :                                                                                       
+> 14_HF     : Comments:                                                                             
+> 14_HF     :                                                                                       
+> 14_HF     :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 15_HCL    : HIT Line List Name  : 15_HCL  $Revision$                                        
+> 15_HCL    : HIT Line List Date  : $Date$                                    
+> 15_HCL    : Orig Line List Name : 15_hit04.par                                                    
+> 15_HCL    : Date Created        :                                                                 
+> 15_HCL    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 15_HCL    :                                                                                       
+> 15_HCL    : Comments:                                                                             
+> 15_HCL    :                                                                                       
+> 15_HCL    :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 16_HBR    : HIT Line List Name  : 16_HBR  $Revision$                                        
+> 16_HBR    : HIT Line List Date  : $Date$                                    
+> 16_HBR    : Orig Line List Name : 16_hit04.par                                                    
+> 16_HBR    : Date Created        :                                                                 
+> 16_HBR    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 16_HBR    :                                                                                       
+> 16_HBR    : Comments:                                                                             
+> 16_HBR    :                                                                                       
+> 16_HBR    :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 17_HI     : HIT Line List Name  : 17_HI  $Revision$                                         
+> 17_HI     : HIT Line List Date  : $Date$                                    
+> 17_HI     : Orig Line List Name : 17_hit04.par                                                    
+> 17_HI     : Date Created        :                                                                 
+> 17_HI     : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 17_HI     :                                                                                       
+> 17_HI     : Comments:                                                                             
+> 17_HI     :                                                                                       
+> 17_HI     :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 18_CLO    : AER Line List Name  : 18_CLO  $Revision$                                        
+> 18_CLO    : AER Line List Date  : $Date$                                    
+> 18_CLO    : Orig Line List Name : 18_hit06.par                                                    
+> 18_CLO    : Date Created        :                                                                 
+> 18_CLO    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 18_CLO    :                                                                                       
+> 18_CLO    : Comments:                                                                             
+> 18_CLO    :                                                                                       
+> 18_CLO    :Updated: Hitran, 12/2006 (www.hitran.com)                                              
+> 18_CLO    :Corrections have been made to the statistical weights and                              
+> 18_CLO    :Einstein A-coefficients for the HITRAN molecules in the                                
+> 18_CLO    :doublet-Pi electronic state, namely NO, OH, and ClO                                    
+> 18_CLO    :(molecules 8, 13, and 18 respectively).                                                
+%%%%%%%%                                                                                            
+> 19_OCS    : AER Line List Name  : 19_OCS  $Revision$                                        
+> 19_OCS    : AER Line List Date  : $Date$                                    
+> 19_OCS    : Orig Line List Name : 19_hit06.par                                                    
+> 19_OCS    : Date Created        :                                                                 
+> 19_OCS    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 19_OCS    :                                                                                       
+> 19_OCS    : Comments:                                                                             
+> 19_OCS    :                                                                                       
+> 19_OCS    :Updated: Hitran 09/2006 (www.hitran.com)                                               
+> 19_OCS    :In the HITRAN2004 edition, the intensities of the v3 band of the                       
+> 19_OCS    :principal isotopologue (the region around 5 µm) were updated                          
+> 19_OCS    :according to the average of the measurements reported by                               
+> 19_OCS    :L. Rgalia-Jarlot et al, JQSRT 74, 455-470 (2002) and                                 
+> 19_OCS    :J. Vander Auwera and A. Fayt, J.Mol.Struct. 780-781,                                   
+> 19_OCS    :134-141 (2006). In this update, the same scaling was also                              
+> 19_OCS    :applied to the hot bands of the 622, 624, 623, and 822                                 
+> 19_OCS    :isotopologues, and the cold band of 624, 623, and 822.                                 
+%%%%%%%%                                                                                            
+> 20_H2CO   : HIT Line List Name  : 20_H2CO  $Revision$                                       
+> 20_H2CO   : HIT Line List Date  : $Date$                                    
+> 20_H2CO   : Orig Line List Name : 20_hit04.par                                                    
+> 20_H2CO   : Date Created        :                                                                 
+> 20_H2CO   : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 20_H2CO   :                                                                                       
+> 20_H2CO   : Comments:                                                                             
+> 20_H2CO   :                                                                                       
+> 20_H2CO   :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 21_HOCL   : HIT Line List Name  : 21_HOCL  $Revision$                                       
+> 21_HOCL   : HIT Line List Date  : $Date$                                    
+> 21_HOCL   : Orig Line List Name : 21_hit04.par                                                    
+> 21_HOCL   : Date Created        :                                                                 
+> 21_HOCL   : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 21_HOCL   :                                                                                       
+> 21_HOCL   : Comments:                                                                             
+> 21_HOCL   :                                                                                       
+> 21_HOCL   :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 22_N2     : HIT Line List Name  : 22_N2  $Revision$                                         
+> 22_N2     : HIT Line List Date  : $Date$                                    
+> 22_N2     : Orig Line List Name : 22_hit04.par                                                    
+> 22_N2     : Date Created        :                                                                 
+> 22_N2     : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 22_N2     :                                                                                       
+> 22_N2     : Comments:                                                                             
+> 22_N2     :                                                                                       
+> 22_N2     :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 23_HCN    : HIT Line List Name  : 23_HCN  $Revision$                                        
+> 23_HCN    : HIT Line List Date  : $Date$                                    
+> 23_HCN    : Orig Line List Name : 23_hit04.par                                                    
+> 23_HCN    : Date Created        :                                                                 
+> 23_HCN    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 23_HCN    :                                                                                       
+> 23_HCN    : Comments:                                                                             
+> 23_HCN    :                                                                                       
+> 23_HCN    :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 24_CH3CL  : HIT Line List Name  : 24_CH3CL  $Revision$                                      
+> 24_CH3CL  : HIT Line List Date  : $Date$                                    
+> 24_CH3CL  : Orig Line List Name : 24_hit04.par                                                    
+> 24_CH3CL  : Date Created        :                                                                 
+> 24_CH3CL  : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 24_CH3CL  :                                                                                       
+> 24_CH3CL  : Comments:                                                                             
+> 24_CH3CL  :                                                                                       
+> 24_CH3CL  :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 25_H2O2   : HIT Line List Name  : 25_H2O2  $Revision$                                       
+> 25_H2O2   : HIT Line List Date  : $Date$                                    
+> 25_H2O2   : Orig Line List Name : 25_hit04.par                                                    
+> 25_H2O2   : Date Created        :                                                                 
+> 25_H2O2   : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 25_H2O2   :                                                                                       
+> 25_H2O2   : Comments:                                                                             
+> 25_H2O2   :                                                                                       
+> 25_H2O2   :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 26_C2H2   : AER Line List Name  : 26_C2H2  $Revision$                                       
+> 26_C2H2   : AER Line List Date  : $Date$                                    
+> 26_C2H2   : Orig Line List Name : 26_hit07.par                                                    
+> 26_C2H2   : Date Created        :                                                                 
+> 26_C2H2   : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 26_C2H2   :                                                                                       
+> 26_C2H2   : Comments:                                                                             
+> 26_C2H2   :                                                                                       
+> 26_C2H2   :Updated: 01/2007 (www.hitran.com)                                                      
+> 26_C2H2   :New bands of acetylene have been added to HITRAN in the                                
+> 26_C2H2   :2.5- and 3.8-µm regions. The new parameters (line positions                           
+> 26_C2H2   :and intensities) come from the works of Lyulin et al, JQSRT                            
+> 26_C2H2   :103, 496-523 (2007) and Jacquemart et al, JQSRT 103, 478-495                           
+> 26_C2H2   :(2007), respectively. In addition, some values of the                                  
+> 26_C2H2   :temperature-dependence coefficient that were inadvertantly                             
+> 26_C2H2   :set to zero in the 2004 edition of HITRAN have been set to                             
+> 26_C2H2   :a default value of 0.75. The number of lines for C2H2 has                              
+> 26_C2H2   :increased to a total of 5107.                                                          
+%%%%%%%%                                                                                            
+> 27_C2H6   : AER Line List Name  : 27_C2H6  $Revision$                                       
+> 27_C2H6   : AER Line List Date  : $Date$                                    
+> 27_C2H6   : Orig Line List Name : 27_hit05.par                                                    
+> 27_C2H6   : Date Created        :                                                                 
+> 27_C2H6   : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 27_C2H6   :                                                                                       
+> 27_C2H6   : Comments:                                                                             
+> 27_C2H6   :                                                                                       
+> 27_C2H6   :Updated: Hitran 05/2005 (www.hitran.com)                                               
+> 27_C2H6   :In the release of HITRAN2004, a number of Q-branches were inadvertantly                
+> 27_C2H6   :dropped in the v7 band around 3.3µm when we updated one of the branches.              
+> 27_C2H6   :The missing Q-branches have been restored. In addition, while performing               
+> 27_C2H6   :this update, numerous multiplets (due to internal rotation tunneling)                  
+> 27_C2H6   :have now been uniquely identified.                                                     
+%%%%%%%%                                                                                            
+> 28_PH3    : AER Line List Name  : 28_PH3  $Revision$                                        
+> 28_PH3    : AER Line List Date  : $Date$                                    
+> 28_PH3    : Orig Line List Name : 28_hit06.par                                                    
+> 28_PH3    : Date Created        :                                                                 
+> 28_PH3    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 28_PH3    :                                                                                       
+> 28_PH3    : Comments:                                                                             
+> 28_PH3    :                                                                                       
+> 28_PH3    :Updated: Hitran 09/2006 (www.hitran.com)                                               
+> 28_PH3    :New bands of PH3 have been added in the region 2724 to 3602 cm-1,                      
+> 28_PH3    :based on the work of R.A.H. Butler, L. Sagui, I. Kleiner, and                          
+> 28_PH3    :L.R. Brown, J.Mol.Spectrosc. 238, 178-192 (2006). In addition,                         
+> 28_PH3    : the collision-broadened parameters of the previously existing                         
+> 28_PH3    :data in HITRAN from 770 to 2472 cm-1 have been updated using                           
+> 28_PH3    :the latter source.                                                                     
+%%%%%%%%                                                                                            
+> 29_COF2   : HIT Line List Name  : 29_COF2  $Revision$                                       
+> 29_COF2   : HIT Line List Date  : $Date$                                    
+> 29_COF2   : Orig Line List Name : 29_hit04.par                                                    
+> 29_COF2   : Date Created        :                                                                 
+> 29_COF2   : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 29_COF2   :                                                                                       
+> 29_COF2   : Comments:                                                                             
+> 29_COF2   :                                                                                       
+> 29_COF2   :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 30_SF6    : HIT Line List Name  : 30_SF6  $Revision$                                        
+> 30_SF6    : HIT Line List Date  : $Date$                                    
+> 30_SF6    : Orig Line List Name : 30_hit04.par                                                    
+> 30_SF6    : Date Created        :                                                                 
+> 30_SF6    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 30_SF6    :                                                                                       
+> 30_SF6    : Comments:                                                                             
+> 30_SF6    :                                                                                       
+> 30_SF6    :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 31_H2S    : HIT Line List Name  : 31_H2S  $Revision$                                        
+> 31_H2S    : HIT Line List Date  : $Date$                                    
+> 31_H2S    : Orig Line List Name : 31_hit04.par                                                    
+> 31_H2S    : Date Created        :                                                                 
+> 31_H2S    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 31_H2S    :                                                                                       
+> 31_H2S    : Comments:                                                                             
+> 31_H2S    :                                                                                       
+> 31_H2S    :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 32_HCOOH  : HIT Line List Name  : 32_HCOOH  $Revision$                                      
+> 32_HCOOH  : HIT Line List Date  : $Date$                                    
+> 32_HCOOH  : Orig Line List Name : 32_hit04.par                                                    
+> 32_HCOOH  : Date Created        :                                                                 
+> 32_HCOOH  : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 32_HCOOH  :                                                                                       
+> 32_HCOOH  : Comments:                                                                             
+> 32_HCOOH  :                                                                                       
+> 32_HCOOH  :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 33_HO2    : HIT Line List Name  : 33_HO2  $Revision$                                        
+> 33_HO2    : HIT Line List Date  : $Date$                                    
+> 33_HO2    : Orig Line List Name : 33_hit04.par                                                    
+> 33_HO2    : Date Created        :                                                                 
+> 33_HO2    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 33_HO2    :                                                                                       
+> 33_HO2    : Comments:                                                                             
+> 33_HO2    :                                                                                       
+> 33_HO2    :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 34_O      : HIT Line List Name  : 34_O  $Revision$                                          
+> 34_O      : HIT Line List Date  : $Date$                                    
+> 34_O      : Orig Line List Name : 34_hit04.par                                                    
+> 34_O      : Date Created        :                                                                 
+> 34_O      : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 34_O      :                                                                                       
+> 34_O      : Comments:                                                                             
+> 34_O      :                                                                                       
+> 34_O      :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 35_CLONO2 : HIT Line List Name  : 35_CLONO2  $Revision$                                     
+> 35_CLONO2 : HIT Line List Date  : $Date$                                    
+> 35_CLONO2 : Orig Line List Name : 35_hit04.par                                                    
+> 35_CLONO2 : Date Created        :                                                                 
+> 35_CLONO2 : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 35_CLONO2 :                                                                                       
+> 35_CLONO2 : Comments:                                                                             
+> 35_CLONO2 :                                                                                       
+> 35_CLONO2 :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 36_NO+    : AER Line List Name  : 36_NO+  $Revision$                                        
+> 36_NO+    : AER Line List Date  : $Date$                                    
+> 36_NO+    : Orig Line List Name : 36_hit06.par                                                    
+> 36_NO+    : Date Created        :                                                                 
+> 36_NO+    : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 36_NO+    :                                                                                       
+> 36_NO+    : Comments:                                                                             
+> 36_NO+    :                                                                                       
+> 36_NO+    :Updated: Hitran 09/2006 (www.hitran.com)                                               
+> 36_NO+    :New line positions corresponding to J"less than or equal to 40 for                     
+> 36_NO+    :all vibration bands of NO+ in the database have been generated using                   
+> 36_NO+    :constants derived from a global fit of microwave, infrared, and UV                     
+> 36_NO+    :spectra. Note that the spectrum of this molecule is often used for                     
+> 36_NO+    :upper atmospheric research and hence there is a large dynamic range                    
+> 36_NO+    :in intensities in the line list. Many lines outside the range of                       
+> 36_NO+    :this new fit have been retained from previous editions of HITRAN                       
+> 36_NO+    :with correspondingly large uncertainties in position. The new                          
+> 36_NO+    :analysis was performed by I. Gordon, Harvard-Smithsonian Center                        
+> 36_NO+    :for Astrophysics (2006).                                                               
+%%%%%%%%                                                                                            
+> 37_HOBr   : HIT Line List Name  : 37_HOBr  $Revision$                                       
+> 37_HOBr   : HIT Line List Date  : $Date$                                    
+> 37_HOBr   : Orig Line List Name : 37_hit04.par                                                    
+> 37_HOBr   : Date Created        :                                                                 
+> 37_HOBr   : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 37_HOBr   :                                                                                       
+> 37_HOBr   : Comments:                                                                             
+> 37_HOBr   :                                                                                       
+> 37_HOBr   :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 38_C2H4   : HIT Line List Name  : 38_C2H4  $Revision$                                       
+> 38_C2H4   : HIT Line List Date  : $Date$                                    
+> 38_C2H4   : Orig Line List Name : 38_hit04.par                                                    
+> 38_C2H4   : Date Created        :                                                                 
+> 38_C2H4   : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 38_C2H4   :                                                                                       
+> 38_C2H4   : Comments:                                                                             
+> 38_C2H4   :                                                                                       
+> 38_C2H4   :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> 39_C2H4   : HIT Line List Name  : 39_C2H4  $Revision$                                       
+> 39_C2H4   : HIT Line List Date  : $Date$                                    
+> 39_C2H4   : Orig Line List Name : 39_hit04.par                                                    
+> 39_C2H4   : Date Created        :                                                                 
+> 39_C2H4   : File Created By     : Mark W. Shephard <mshep@aer.com>                                
+> 39_C2H4   :                                                                                       
+> 39_C2H4   : Comments:                                                                             
+> 39_C2H4   :                                                                                       
+> 39_C2H4   :      HITRAN 2004 (http://www.hitran.com)                                              
+%%%%%%%%                                                                                            
+> lncpl_lines:*                                                                                     
+> lncpl_lines:* Line Coupling Coefficients:                                                         
+> lncpl_lines:*                                                                                     
+> lncpl_lines:***********************************************************************               
+> lncpl_lines:*                                                                                     
+> lncpl_lines:*                  CARBON DIOXIDE                                                     
+> lncpl_lines:*                                                                                     
+> lncpl_lines:*    LINE COUPLING PARAMETERS ARE PROVIDED FOR CO2 PQR BRANCHES for the               
+> lncpl_lines:*    1st and 2nd isotope of CO2.                                                      
+> lncpl_lines:*                                                                                     
+> lncpl_lines:*        F. Niro, K. Jucks, J.-M. Hartmann, Spectra calculations in                   
+> lncpl_lines:*          central and wing regions of CO2 IR bands. IV : Software and                
+> lncpl_lines:*          database for the computation of atmospheric spectra, in                    
+> lncpl_lines:*          press in: J Quant Spectrosc Radiat Transfer.                               
+> lncpl_lines:*                                                                                     
+> lncpl_lines:*                                                                                     
+> lncpl_lines:*    These coefficients corresponde to HITRAN2000 carbon dioxide                      
+> lncpl_lines:*    line parameters.                                                                 
+> lncpl_lines:*                                                                                     
+> lncpl_lines:***********************************************************************               
+> lncpl_lines:*                                                                                     
+> lncpl_lines:*                   OXYGEN                                                            
+> lncpl_lines:*                                                                                     
+> lncpl_lines:  Line Coupling Coefficients:                                                         
+> lncpl_lines:*                                                                                     
+> lncpl_lines:*   The O2 coupled lines have been modified (2006/06/31) such that the:               
+> lncpl_lines:*        - the O2 line widths, the temperature dependence                             
+> lncpl_lines:*          of the widths and the line coupling parameters for                         
+> lncpl_lines:*	         the 60 GHz band and the 120 GHz line have been                             
+> lncpl_lines:*          changed to those of Tretyakov et al, 2005.		                               
+> lncpl_lines:***********************************************************************               
+%%%%%%%%                                                                                            
+ 21 6300.036995 6.307D-26 2.121E-07.0790.1091 1328.35950.700.000000 98  3             P 10 255 2 2-1
+ 2 1.780103E-03 0.0000E+00-5.838036E-05 0.0000E+00-9.594840E-04 0.0000E+00-1.467549E-03 0.0000E+00-1
+ 71 6300.158555 3.460D-30 4.768E-06.0510.0500 1685.41000.710.000000  3  2         P 9P 9  d0040001 0
+ 41 6300.198270 1.661D-24 2.279E-03.0874.1139   12.57020.75-.005115 71  1             R  5 466653  0
+ 14 6300.263900 6.092D-27 2.525E-01.0828.4200  809.39330.530.000000 13  1 8 3 5    8 4 4   3555403 0
+ 11 6300.460530 3.175D-25 1.837E-04.0875.4440  224.83840.73-.000300  9  1 4 2 3    4 1 4   3546423 0
+ 14 6300.472890 5.930D-27 6.819E-02.0814.4190  490.42740.590.000000 13  1 6 2 5    7 2 6   3555403 0
+ 11 6300.580960 9.198D-26 4.903E-04.0494.3240  586.47920.53-.006200  9  1 8 0 8    7 1 7   3546423 0
+ 61 6300.639900 6.191D-26 0.000E+00.0600.0700   -1.00000.75-.012601 12 12                  2111123 0
+ 54 6300.683200 7.899D-27 7.156E-03.0589.0655  134.89520.750.000000  4  1             R  8 467660  0
+ 51 6300.745800 2.955D-27 3.291E-02.0589.0655 2280.40110.750.000000  5  2             R  8 467660  0
+ 21 6300.875281 5.292D-27 8.555E-08.0643.0678 2004.66040.730.000000 84  2             P 58 054 2 2-1
+ 2 5.604240E-03 0.0000E+00 4.908773E-03 0.0000E+00 4.380305E-03 0.0000E+00 3.949791E-03 0.0000E+00-1
+ 61 6300.901100 3.865D-26 0.000E+00.0600.0700   -1.00000.75-.012602 12 12                  2111123 0
+ 41 6300.943720 1.895D-24 2.310E-03.0861.1124   17.59820.75-.005159 71  1             R  6 466653  0
+ 61 6301.061200 4.066D-26 0.000E+00.0600.0700   -1.00000.75-.012602 12 12                  2111123 0
+ 61 6301.191800 6.899D-26 0.000E+00.0600.0700   -1.00000.75-.012602 12 12                  2111123 0
+ 14 6301.477520 3.816D-26 2.436E-01.0950.4690  293.63650.690.000000 13  1 4 1 3    5 2 4   3555403 0
+ 41 6301.675920 2.105D-24 2.330E-03.0849.1109   23.46410.75-.005203 71  1             R  7 466653  0
+ 21 6301.764995 5.424D-26 2.096E-07.0811.1116 1313.52230.710.000000 98  3             P  8 255 2 2-1
+ 2-1.948878E-03 0.0000E+00-2.936433E-03 0.0000E+00-3.314920E-03 0.0000E+00-3.462657E-03 0.0000E+00-1
+ 11 6301.949880 3.619D-26 1.281E-03.0691.4390 1201.92150.49-.007000 10  1 8 1 8    9 2 7   3544423 0
+ 21 6302.003836 9.753D-27 8.605E-08.0650.0694 1869.26490.740.000000 84  2             P 55 054 2 2-1
+ 2 7.501124E-03 0.0000E+00 6.401395E-03 0.0000E+00 5.578700E-03 0.0000E+00 4.924633E-03 0.0000E+00-1
+ 71 6302.107685 4.364D-30 5.960E-06.0510.0500 1683.46080.710.000000  3  2         P 9Q 8  d0040001 0
+ 21 6302.143322 1.032D-24 1.018E-07.0663.0738  917.05730.770.000000 71  1             P 48 464 2 2-1
+ 2 7.817206E-03 0.0000E+00 6.455577E-03 0.0000E+00 5.469428E-03 0.0000E+00 4.709105E-03 0.0000E+00-1
+ 41 6302.394840 2.298D-24 2.352E-03.0838.1095   30.16790.75-.005247 71  1             R  8 466653  0
+ 51 6302.400500 1.166D-23 6.191E-03.0573.0632  253.66720.75-.006800  4  1             P 11 467663  0
+ 41 6303.100480 2.464D-24 2.368E-03.0827.1082   37.70960.75-.005291 71  1             R  9 466653  0
+ 21 6303.108342 7.941D-27 8.589E-08.0647.0689 1914.87870.740.000000 84  2             P 56 054 2 2-1
+ 2 5.351665E-03 0.0000E+00 4.658522E-03 0.0000E+00 4.132235E-03 0.0000E+00 3.704363E-03 0.0000E+00-1
+ 54 6303.414400 7.544D-27 7.291E-03.0580.0643  168.60960.750.000000  4  1             R  9 467660  0
+ 21 6303.454029 4.307D-26 2.056E-07.0836.1141 1301.80830.730.000000 98  3             P  6 255 2 2-1
+ 2-6.389076E-03 0.0000E+00-6.499904E-03 0.0000E+00-6.352965E-03 0.0000E+00-6.143013E-03 0.0000E+00-1
+ 51 6303.499200 2.813D-27 3.351E-02.0580.0643 2314.67380.750.000000  5  2             R  9 467660  0
+ 41 6303.792830 2.605D-24 2.381E-03.0817.1069   46.08910.75-.005335 71  1             R 10 466653  0
+ 21 6303.801249 3.737D-27 2.286E-07.0666.0751 2231.23730.770.000000101  5             P 46 254 2 2-1
+ 2 8.452069E-03 0.0000E+00 6.978619E-03 0.0000E+00 5.921044E-03 0.0000E+00 5.112245E-03 0.0000E+00-1
+ 11 6304.026300 3.954D-25 7.025E-04.0495.4000  586.24350.53-.005000  9  1 8 1 8    7 0 7   3545423 0
+ 21 6304.367463 1.403D-24 1.007E-07.0666.0751  843.03010.770.000000 71  1             P 46 464 2 2-1
+ 2 8.127604E-03 0.0000E+00 6.675055E-03 0.0000E+00 5.633653E-03 0.0000E+00 4.837736E-03 0.0000E+00-1
+ 21 6304.369721 1.427D-26 8.636E-08.0654.0706 1784.28080.750.000000 84  2             P 53 054 2 2-1
+ 2 8.342991E-03 0.0000E+00 7.079042E-03 0.0000E+00 6.136302E-03 0.0000E+00 5.389736E-03 0.0000E+00-1
+ 41 6304.471860 2.722D-24 2.394E-03.0807.1056   55.30640.75-.005378 71  1             R 11 466653  0
+ 24 6304.633898 3.990D-27 8.217E-08.0800.1103   27.25960.700.000000 71  1             R  8 025 2 2 1
+ 14 6304.713870 5.567D-27 8.763E-02.0773.3440  609.94660.530.000000 13  1 8 1 8    8 2 7   3555403 0
+ 21 6305.104018 2.994D-26 1.979E-07.0863.1190 1293.21800.740.000000 98  3             P  4 255 2 2-1
+ 2-1.525726E-02 0.0000E+00-1.286896E-02 0.0000E+00-1.124736E-02 0.0000E+00-1.004667E-02 0.0000E+00-1
+ 41 6305.137570 2.810D-24 2.404E-03.0798.1043   65.36140.75-.005422 71  1             R 12 466653  0
+ 21 6305.320133 1.172D-26 8.618E-08.0652.0700 1828.20630.750.000000 84  2             P 54 054 2 2-1
+ 2 5.069298E-03 0.0000E+00 4.392382E-03 0.0000E+00 3.878261E-03 0.0000E+00 3.460759E-03 0.0000E+00-1
+ 24 6305.325119 4.289D-27 8.168E-08.0790.1091   34.07430.700.000000 71  1             R  9 025 2 2 1
+ 41 6305.789940 2.875D-24 2.415E-03.0790.1032   76.25420.75-.005466 71  1             R 13 466653  0
+ 21 6305.925120 5.048D-27 2.284E-07.0668.0765 2160.30910.780.000000101  5             P 44 255 2 2-1
+ 2 8.872946E-03 0.0000E+00 7.194849E-03 0.0000E+00 6.010561E-03 0.0000E+00 5.116263E-03 0.0000E+00-1
+ 71 6305.960244 3.009D-30 4.296E-06.0520.0510 1637.09050.710.000000  3  2         P 7P 7  d0040001 0
+ 24 6306.009756 4.548D-27 8.130E-08.0780.1079   41.64610.690.000000 71  1             R 10 025 2 2 1
+ 54 6306.043100 7.003D-27 7.420E-03.0573.0632  206.06560.750.000000  4  1             R 10 467660  0
+ 51 6306.146100 2.603D-27 3.410E-02.0573.0632 2352.75000.750.000000  5  2             R 10 467660  0
+ 11 6306.290770 1.759D-26 5.368E-05.0824.4291  416.20870.64-.008928  9  1 6 1 5    5 2 4   3542433 5
+ 41 6306.428950 2.915D-24 2.425E-03.0782.1020   87.98450.75-.005510 71  1             R 14 466653  0
+ 21 6306.565865 1.877D-24 9.965E-08.0668.0765  772.11070.780.000000 71  1             P 44 465 2 2-1
+ 2 8.552329E-03 0.0000E+00 6.910775E-03 0.0000E+00 5.754736E-03 0.0000E+00 4.882754E-03 0.0000E+00-1
+ 24 6306.687818 4.765D-27 8.097E-08.0771.1067   49.97490.690.000000 71  1             R 11 025 2 2 1
+ 21 6306.707292 2.052D-26 8.666E-08.0658.0718 1702.40330.760.000000 84  2             P 51 054 2 2-1
+ 2 9.306362E-03 0.0000E+00 7.854732E-03 0.0000E+00 6.775869E-03 0.0000E+00 5.925362E-03 0.0000E+00-1
+ 21 6306.714898 1.537D-26 1.781E-07.0893.1228 1287.75130.750.000000 98  3             P  2 255 2 2-1
+ 2-2.309142E-02 0.0000E+00-1.887761E-02 0.0000E+00-1.624830E-02 0.0000E+00-1.439986E-02 0.0000E+00-1
+ 41 6307.054580 2.931D-24 2.435E-03.0774.1009  100.55250.75-.005554 71  1             R 15 466653  0
+ 51 6307.287500 1.317D-23 6.304E-03.0580.0643  211.40410.75-.006600  4  1             P 10 467663  0
+ 24 6307.359312 4.940D-27 8.071E-08.0762.1055   59.06080.690.000000 71  1             R 12 025 2 2 1
+ 21 6307.510411 1.701D-26 8.652E-08.0656.0712 1744.64450.750.000000 84  2             P 52 054 2 2-1
+ 2 4.573084E-03 0.0000E+00 3.974166E-03 0.0000E+00 3.514945E-03 0.0000E+00 3.140161E-03 0.0000E+00-1
+ 41 6307.666820 2.923D-24 2.445E-03.0767.0998  113.95800.75-.005598 71  1             R 16 466653  0
+ 71 6307.937130 4.048D-30 5.726E-06.0520.0510 1635.11360.710.000000  3  2         P 7Q 6  d0040001 0
+ 21 6308.023842 6.703D-27 2.283E-07.0671.0780 2092.49170.780.000000101  5             P 42 255 2 2-1
+ 2 9.211263E-03 0.0000E+00 7.409290E-03 0.0000E+00 6.154013E-03 0.0000E+00 5.215793E-03 0.0000E+00-1
+ 24 6308.024246 5.072D-27 8.048E-08.0754.1043   68.90370.690.000000 71  1             R 13 025 2 2 1
+ 41 6308.265660 2.891D-24 2.452E-03.0761.0988  128.20090.75-.005641 71  1             R 17 466653  0
+ 11 6308.519200 1.573D-26 9.073E-04.0805.3283 1050.15770.53-.004888  9  1 7 4 4    8 3 5   3542433 5
+ 54 6308.569200 6.332D-27 7.547E-03.0567.0623  247.26180.740.000000  4  1             R 11 467660  0
+ 14 6308.642890 6.213D-27 1.529E-01.0807.3300  701.62040.530.000000 13  1 8 2 7    8 3 6   3555403 0
+ 24 6308.682630 5.161D-27 8.027E-08.0747.1032   79.50350.700.000000 71  1             R 14 025 2 2 1
+ 51 6308.686400 2.346D-27 3.468E-02.0567.0623 2394.62790.740.000000  5  2             R 11 467660  0
+ 21 6308.738156 2.470D-24 9.872E-08.0671.0780  704.30050.780.000000 71  1             P 42 465 2 2-1
+ 2 8.890275E-03 0.0000E+00 7.131345E-03 0.0000E+00 5.909668E-03 0.0000E+00 4.998193E-03 0.0000E+00-1
+ 41 6308.851060 2.843D-24 2.462E-03.0754.0978  143.28120.75-.005685 71  1             R 18 466653  0
+ 21 6309.016363 2.903D-26 8.693E-08.0661.0731 1623.63350.760.000000 84  2             P 49 054 2 2-1
+ 2 1.039500E-02 0.0000E+00 8.744887E-03 0.0000E+00 7.521590E-03 0.0000E+00 6.561746E-03 0.0000E+00-1
+ 21 6309.057785 7.768D-27 4.446E-07.0949.1279 1285.40840.740.000000 98  3             R  0 255 2 2-1
+ 2 2.230843E-02 0.0000E+00 1.744916E-02 0.0000E+00 1.450855E-02 0.0000E+00 1.248269E-02 0.0000E+00-1
+ 14 6309.322470 4.720D-27 4.217E-02.0874.4500  403.54900.640.000000 13  1 5 2 3    6 2 4   3555403 0
+ 24 6309.334476 5.210D-27 8.009E-08.0740.1020   90.86020.710.000000 71  1             R 15 025 2 2 1
+ 41 6309.423020 2.774D-24 2.469E-03.0749.0968  159.19880.75-.005729 71  1             R 19 466653  0
+ 14 6309.423600 6.495D-26 4.931E-01.0829.3800  404.44560.590.000000 13  1 6 0 6    7 1 7   3555403 0
+ 11 6309.620040 7.100D-26 1.432E-04.0679.3550  586.24350.59-.009000  9  1 7 1 6    7 0 7   3546423 0
+ 21 6309.678940 2.428D-26 8.680E-08.0660.0725 1664.19470.760.000000 84  2             P 50 054 2 2-1
+ 2 3.957790E-03 0.0000E+00 3.426495E-03 0.0000E+00 3.014089E-03 0.0000E+00 2.675133E-03 0.0000E+00-1
+ 24 6309.979793 5.220D-27 7.995E-08.0734.1009  102.97380.730.000000 71  1             R 16 025 2 2 1
+ 41 6309.981510 2.689D-24 2.476E-03.0743.0958  175.95360.75-.005773 71  1             R 20 466653  0
+ 21 6310.097406 8.747D-27 2.282E-07.0673.0795 2027.78580.780.000000101  5             P 40 255 2 2-1
+ 2 9.521963E-03 0.0000E+00 7.568643E-03 0.0000E+00 6.227924E-03 0.0000E+00 5.236885E-03 0.0000E+00-1
+ 41 6310.526510 2.593D-24 2.486E-03.0738.0949  193.54550.75-.005816 71  1             R 21 466653  0
+ 21 6310.570711 2.303D-26 2.666E-07.0877.1204 1287.75130.750.000000 98  3             R  2 255 2 2-1
+ 2 2.533976E-02 0.0000E+00 2.070965E-02 0.0000E+00 1.775979E-02 0.0000E+00 1.565205E-02 0.0000E+00-1
+ 24 6310.618595 5.192D-27 7.981E-08.0728.0998  115.84420.740.000000 71  1             R 17 025 2 2 1
+ 14 6310.707760 7.988D-27 6.030E-02.0804.4180  403.16150.590.000000 13  1 6 0 6    7 0 7   3555403 0
+ 21 6310.883980 3.196D-24 9.781E-08.0673.0795  639.60040.780.000000 71  1             P 40 465 2 2-1
+ 2 9.201053E-03 0.0000E+00 7.295531E-03 0.0000E+00 5.991859E-03 0.0000E+00 5.030313E-03 0.0000E+00-1
+ 54 6310.992600 5.583D-27 7.671E-03.0561.0614  292.19670.730.000000  4  1             R 12 467660  0
+ 41 6311.058010 2.480D-24 2.490E-03.0734.0941  211.97450.75-.005860 71  1             R 22 466653  0
+ 51 6311.120000 2.060D-27 3.524E-02.0561.0614 2440.30620.730.000000  5  2             R 12 467660  0
+ 24 6311.250895 5.130D-27 7.969E-08.0722.0987  129.47140.750.000000 71  1             R 18 025 2 2 1
+ 21 6311.296759 4.038D-26 8.717E-08.0664.0744 1547.97310.770.000000 84  2             P 47 054 2 2-1
+ 2 1.193638E-02 0.0000E+00 9.946864E-03 0.0000E+00 8.485809E-03 0.0000E+00 7.348686E-03 0.0000E+00-1
+ 14 6311.454020 7.342D-27 5.578E-02.0801.3900  404.44560.590.000000 13  1 6 1 6    7 1 7   3555403 0
+ 41 6311.575970 2.363D-24 2.499E-03.0730.0932  231.24040.75-.005904 71  1             R 23 466653  0
+ 71 6311.732435 2.013D-30 3.474E-06.0540.0530 1600.13290.710.000000  3  2         P 5P 5  d0040001 0
+ 21 6311.825492 3.408D-26 8.706E-08.0663.0738 1586.85830.770.000000 84  2             P 48 054 2 2-1
+ 2 2.942696E-03 0.0000E+00 2.554604E-03 0.0000E+00 2.243622E-03 0.0000E+00 1.982962E-03 0.0000E+00-1
+ 24 6311.876706 5.036D-27 7.959E-08.0717.0977  143.85530.760.000000 71  1             R 19 025 2 2 1
+ 21 6312.044422 3.735D-26 2.466E-07.0849.1154 1293.21800.740.000000 98  3             R  4 255 2 2-1
+ 2 1.740547E-02 0.0000E+00 1.510615E-02 0.0000E+00 1.346939E-02 0.0000E+00 1.221585E-02 0.0000E+00-1
+ 51 6312.071000 1.446D-23 6.427E-03.0589.0655  172.97800.75-.006700  4  1             P  9 467663  0
+ 41 6312.080400 2.238D-24 2.508E-03.0726.0924  251.34320.75-.005947 71  1             R 24 466653  0
+ 21 6312.145806 1.121D-26 2.280E-07.0675.0810 1966.19250.780.000000101  5             P 38 255 2 2-1
+ 2 9.836588E-03 0.0000E+00 7.718590E-03 0.0000E+00 6.288642E-03 0.0000E+00 5.244389E-03 0.0000E+00-1
+ 24 6312.496045 4.913D-27 7.949E-08.0713.0966  158.99580.760.000000 71  1             R 20 025 2 2 1
+ 41 6312.571250 2.105D-24 2.514E-03.0722.0916  272.28280.75-.005991 71  1             R 25 466653  0
+ 14 6312.738180 6.334D-26 4.784E-01.0814.3910  403.16150.590.000000 13  1 6 1 6    7 0 7   3555403 0
+ 14 6312.822730 4.397D-26 2.496E-01.0935.4670  217.04190.730.000000 13  1 3 1 2    4 2 3   3555403 0
+ 21 6313.003004 4.066D-24 9.698E-08.0675.0810  578.01160.780.000000 71  1             P 38 465 2 2-1
+ 2 9.517095E-03 0.0000E+00 7.450839E-03 0.0000E+00 6.060235E-03 0.0000E+00 5.047071E-03 0.0000E+00-1
+ 41 6313.048520 1.972D-24 2.523E-03.0719.0909  294.05890.75-.006035 71  1             R 26 466653  0
+ 24 6313.108926 4.765D-27 7.941E-08.0708.0956  174.89300.770.000000 71  1             R 21 025 2 2 1
+ 14 6313.152800 7.665D-27 5.616E-02.0892.4830  362.50720.640.000000 13  1 5 1 4    6 1 5   3555403 0
+ 54 6313.313200 4.806D-27 7.795E-03.0555.0606  340.86860.720.000000  4  1             R 13 467660  0
+ 51 6313.446600 1.766D-27 3.580E-02.0555.0606 2489.78320.720.000000  5  2             R 13 467660  0
+ 21 6313.478923 5.011D-26 2.388E-07.0823.1128 1301.80830.720.000000 98  3             R  6 255 2 2-1
+ 2 1.083730E-02 0.0000E+00 1.032010E-02 0.0000E+00 9.711554E-03 0.0000E+00 9.138605E-03 0.0000E+00-1
+ 41 6313.512180 1.835D-24 2.529E-03.0716.0902  316.67170.75-.006078 71  1             R 27 466653  0
+ 21 6313.548307 5.520D-26 8.742E-08.0667.0758 1475.42310.770.000000 84  2             P 45 455 2 2-1
+ 2 1.392007E-02 0.0000E+00 1.157393E-02 0.0000E+00 9.855575E-03 0.0000E+00 8.524588E-03 0.0000E+00-1
+ 24 6313.715367 4.594D-27 7.931E-08.0704.0946  191.54660.770.000000 71  1             R 22 025 2 2 1
+ 71 6313.746857 3.047D-30 5.212E-06.0540.0530 1598.11840.710.000000  3  2         P 5Q 4  d0040001 0
+ 21 6313.949845 4.702D-26 8.731E-08.0666.0751 1512.63660.770.000000 84  2             P 46 454 2 2-1
+ 2 1.176141E-03 0.0000E+00 1.103762E-03 0.0000E+00 1.014028E-03 0.0000E+00 9.214516E-04 0.0000E+00-1
+ 41 6313.962210 1.697D-24 2.533E-03.0713.0895  340.12080.75-.006122 71  1             R 28 466653  0
+ 21 6314.169030 1.412D-26 2.279E-07.0677.0826 1907.71250.780.000000101  5             P 36 255 2 2-1
+ 2 1.012300E-02 0.0000E+00 7.832105E-03 0.0000E+00 6.313022E-03 0.0000E+00 5.218080E-03 0.0000E+00-1
+ 24 6314.315385 4.406D-27 7.926E-08.0701.0935  208.95670.780.000000 71  1             R 23 025 2 2 1
+ 41 6314.398590 1.564D-24 2.541E-03.0711.0888  364.40630.75-.006166 71  1             R 29 466653  0
+ 41 6314.821300 1.435D-24 2.551E-03.0709.0881  389.52790.75-.006209 71  1             R 30 466653  0
+ 21 6314.874232 6.080D-26 2.345E-07.0800.1103 1313.52230.700.000000 98  3             R  8 255 2 2-1
+ 2 5.867020E-03 0.0000E+00 6.537561E-03 0.0000E+00 6.631723E-03 0.0000E+00 6.532727E-03 0.0000E+00-1
+ 24 6314.908999 4.202D-27 7.919E-08.0698.0926  227.12330.780.000000 71  1             R 24 025 2 2 1
+ 21 6315.094911 5.083D-24 9.620E-08.0677.0826  519.53500.780.000000 71  1             P 36 465 2 2-1
+ 2 9.808217E-03 0.0000E+00 7.572570E-03 0.0000E+00 6.094372E-03 0.0000E+00 5.031306E-03 0.0000E+00-1
+ 14 6315.140790 3.546D-26 2.107E-01.0931.4940  157.06470.770.000000 13  1 2 1 2    3 2 1   3555403 0
+ 41 6315.230330 1.310D-24 2.561E-03.0707.0875  415.48560.75-.006253 71  1             R 31 466653  0
+ 24 6315.496229 3.986D-27 7.912E-08.0695.0916  246.04610.780.000000 71  1             R 25 025 2 2 1
+ 14 6315.516500 6.132D-27 9.164E-02.0807.3670  598.56310.530.000000 13  1 8 0 8    8 1 7   3555403 0
+ 54 6315.530800 4.042D-27 7.917E-03.0549.0598  393.27580.710.000000  4  1             R 14 467660  0
+ 41 6315.625650 1.189D-24 2.569E-03.0705.0869  442.27920.75-.006297 71  1             R 32 466653  0
+ 51 6315.666200 1.478D-27 3.634E-02.0549.0598 2543.05660.710.000000  5  2             R 14 467660  0
+ 21 6315.770843 7.418D-26 8.763E-08.0670.0772 1405.98470.780.000000 84  2             P 43 455 2 2-1
+ 2 1.736129E-02 0.0000E+00 1.429722E-02 0.0000E+00 1.207926E-02 0.0000E+00 1.037747E-02 0.0000E+00-1
+ 11 6315.859870 8.391D-26 1.964E-04.0822.4300  326.62550.69-.005000  9  1 5 2 4    5 1 5   3546423 0
+ 41 6316.007240 1.073D-24 2.575E-03.0703.0864  469.90860.75-.006340 71  1             R 33 466653  0
+ 21 6316.051789 6.377D-26 8.753E-08.0668.0765 1441.53080.780.000000 84  2             P 44 455 2 2-1
+ 2-2.068848E-03 0.0000E+00-1.550355E-03 0.0000E+00-1.240563E-03 0.0000E+00-1.038339E-03 0.0000E+00-1
+ 24 6316.077095 3.762D-27 7.906E-08.0692.0906  265.72520.780.000000 71  1             R 26 025 2 2 1
+ 21 6316.167067 1.746D-26 2.277E-07.0679.0843 1852.34670.780.000000101  5             P 34 255 2 2-1
+ 2 1.036238E-02 0.0000E+00 7.895048E-03 0.0000E+00 6.290155E-03 0.0000E+00 5.149284E-03 0.0000E+00-1
+ 21 6316.230383 6.907D-26 2.317E-07.0780.1079 1328.35950.690.000000 98  3             R 10 255 2 2-1
+ 2 1.825922E-03 0.0000E+00 3.394193E-03 0.0000E+00 4.027735E-03 0.0000E+00 4.296005E-03 0.0000E+00-1
+ 41 6316.375100 9.636D-25 2.581E-03.0702.0858  498.37370.75-.006384 71  1             R 34 466653  0
+ 11 6316.676020 1.654D-25 7.132E-05.0991.4400   42.37170.78-.000900  9  1 2 2 1    1 1 0   3546423 0
+ 41 6316.729200 8.628D-25 2.592E-03.0700.0853  527.67430.75-.006427 71  1             R 35 466653  0
+ 51 6316.750900 1.539D-23 6.563E-03.0599.0669  138.39040.75-.006700  4  1             P  8 467663  0
+ 11 6316.835690 1.412D-26 6.624E-05.0859.4291  503.96810.64-.004456  9  1 6 2 4    5 3 3   3542433 5
+ 14 6316.913810 1.013D-26 1.545E-01.0829.3860  576.90470.590.000000 13  1 7 2 6    7 3 5   3555403 0
+ 14 6316.982600 2.707D-26 2.888E-01.0864.4020  473.91770.590.000000 13  1 6 2 5    7 1 6   3555403 0
+ 41 6317.069520 7.661D-25 2.594E-03.0699.0848  557.81020.75-.006471 71  1             R 36 466653  0
+ 21 6317.159403 6.242D-24 9.549E-08.0679.0843  464.17170.780.000000 71  1             P 34 465 2 2-1
+ 2 1.005654E-02 0.0000E+00 7.647544E-03 0.0000E+00 6.084456E-03 0.0000E+00 4.975604E-03 0.0000E+00-1
+ 11 6317.216840 1.904D-25 6.548E-04.0368.2770  744.16270.49-.011000  9  1 9 0 9    8 1 8   3545423 0
+ 41 6317.396060 6.814D-25 2.613E-03.0698.0843  588.78130.75-.006514 71  1             R 37 466653  0
+ 21 6317.547427 7.471D-26 2.297E-07.0762.1055 1346.31980.690.000000 98  3             R 12 255 2 2-1
+ 2-1.420430E-03 0.0000E+00 8.316078E-04 0.0000E+00 1.880303E-03 0.0000E+00 2.432502E-03 0.0000E+00-1
+ 54 6317.645200 3.323D-27 8.038E-03.0542.0589  449.41620.700.000000  4  1             R 15 467660  0
+ 41 6317.708790 6.008D-25 2.621E-03.0697.0838  620.58750.75-.006558 71  1             R 38 466653  0
+ 51 6317.778600 1.210D-27 3.690E-02.0542.0589 2600.12500.700.000000  5  2             R 15 467660  0
+ 21 6317.964207 9.795D-26 8.784E-08.0672.0787 1339.65920.780.000000 84  2             P 41 455 2 2-1
+ 2 2.421258E-02 0.0000E+00 1.992797E-02 0.0000E+00 1.683286E-02 0.0000E+00 1.446631E-02 0.0000E+00-1
+ 41 6318.007710 5.242D-25 2.614E-03.0696.0834  653.22860.75-.006601 71  1             R 39 466653  0
+ 21 6318.131118 8.499D-26 8.774E-08.0671.0780 1373.54210.780.000000 84  2             P 42 455 2 2-1
+ 2-9.794583E-03 0.0000E+00-7.743840E-03 0.0000E+00-6.396892E-03 0.0000E+00-5.431068E-03 0.0000E+00-1
+ 21 6318.139904 2.119D-26 2.275E-07.0682.0860 1800.09590.780.000000101  5             P 32 255 2 2-1
+ 2 1.059620E-02 0.0000E+00 7.946172E-03 0.0000E+00 6.256723E-03 0.0000E+00 5.072816E-03 0.0000E+00-1
+ 41 6318.292810 4.596D-25 2.632E-03.0695.0829  686.70440.75-.006645 71  1             R 40 466653  0
+ 41 6318.564070 3.992D-25 2.638E-03.0694.0825  721.01470.75-.006688 71  1             R 41 466653  0
+ 14 6318.589060 9.924D-27 9.947E-02.0819.3860  490.42740.590.000000 13  1 7 1 7    7 2 6   3555403 0
+ 41 6318.821480 3.455D-25 2.646E-03.0694.0821  756.15940.75-.006732 71  1             R 42 466653  0
+ 21 6318.825427 7.770D-26 2.281E-07.0747.1032 1367.40270.700.000000 98  3             R 14 255 2 2-1
+ 2-4.110600E-03 0.0000E+00-1.372025E-03 0.0000E+00-2.473701E-05 0.0000E+00 7.325800E-04 0.0000E+00-1
+ 41 6319.065050 2.976D-25 2.654E-03.0693.0817  792.13830.75-.006775 71  1             R 43 466653  0
+ 21 6319.196199 7.530D-24 9.481E-08.0682.0860  411.92250.780.000000 71  1             P 32 465 2 2-1
+ 2 1.030218E-02 0.0000E+00 7.713246E-03 0.0000E+00 6.066074E-03 0.0000E+00 4.913876E-03 0.0000E+00-1
+ 41 6319.294770 2.552D-25 2.662E-03.0692.0813  828.95130.75-.006819 71  1             R 44 466653  0
+ 11 6319.357430 6.172D-26 6.369E-04.0384.2770  744.06370.49-.013000  9  1 9 1 9    8 0 8   3545423 0
+ 14 6319.399230 4.018D-27 1.613E-01.0808.3900  801.64410.490.000000 11  1 8 2 6    9 2 7   3555403 0
+ 41 6319.510630 2.177D-25 2.669E-03.0691.0810  866.59810.75-.006862 71  1             R 45 466653  0
+ 71 6319.560103 1.276D-30 3.474E-06.0570.0560 1572.45730.710.000000  3  2         P 3Q 2  d0040001 0
+ 54 6319.656300 2.673D-27 8.161E-03.0535.0581  509.28780.690.000000  4  1             R 16 467660  0
+ 51 6319.783600 9.681D-28 3.744E-02.0535.0581 2660.98560.690.000000  5  2             R 16 467660  0
+ 21 6320.064462 7.817D-26 2.268E-07.0734.1009 1391.60790.730.000000 98  3             R 16 255 2 2-1
+ 2-7.108020E-03 0.0000E+00-3.572333E-03 0.0000E+00-1.733299E-03 0.0000E+00-6.387281E-04 0.0000E+00-1
+ 21 6320.087526 2.524D-26 2.273E-07.0686.0878 1750.96080.780.000000101  5             P 30 255 2 2-1
+ 2 1.077751E-02 0.0000E+00 7.945781E-03 0.0000E+00 6.177721E-03 0.0000E+00 4.956918E-03 0.0000E+00-1
+ 21 6320.128246 1.271D-25 8.804E-08.0674.0802 1276.44760.780.000000 84  2             P 39 455 2 2-1
+ 2 5.338193E-02 0.0000E+00 4.405817E-02 0.0000E+00 3.729690E-02 0.0000E+00 3.212439E-02 0.0000E+00-1
+ 21 6320.187636 1.113D-25 8.794E-08.0673.0795 1308.67180.780.000000 84  2             P 40 455 2 2-1
+ 2-4.475143E-02 0.0000E+00-3.558260E-02 0.0000E+00-2.947578E-02 0.0000E+00-2.504040E-02 0.0000E+00-1
+ 51 6321.189600 1.546D-36 6.042E-02.0420.0413 7152.45800.670.000000  5  2             R 51 466220  0
+ 21 6321.205036 8.917D-24 9.418E-08.0686.0878  362.78820.780.000000 71  1             P 30 465 2 2-1
+ 2 1.049990E-02 0.0000E+00 7.731347E-03 0.0000E+00 6.005442E-03 0.0000E+00 4.815531E-03 0.0000E+00-1
+ 21 6321.264627 7.637D-26 2.257E-07.0722.0987 1418.93490.750.000000 98  3             R 18 255 2 2-1
+ 2-9.538147E-03 0.0000E+00-5.388103E-03 0.0000E+00-3.150259E-03 0.0000E+00-1.773837E-03 0.0000E+00-1
+ 51 6321.326800 1.582D-23 6.713E-03.0612.0685  107.64240.75-.006400  4  1             P  7 467663  0
+ 14 6321.556020 4.680D-27 1.365E-01.0774.3100  735.73520.490.000000 11  1 8 1 7    9 1 8   3555403 0
+ 54 6321.564100 2.105D-27 8.287E-03.0527.0572  572.88830.680.000000  4  1             R 17 467660  0
+ 51 6321.681200 7.579D-28 3.799E-02.0527.0572 2725.63600.680.000000  5  2             R 17 467660  0
+ 21 6322.009917 2.947D-26 2.270E-07.0690.0897 1704.94200.780.000000101  5             P 28 255 2 2-1
+ 2 1.080716E-02 0.0000E+00 7.813847E-03 0.0000E+00 5.984885E-03 0.0000E+00 4.741426E-03 0.0000E+00-1
+ 54 6322.105600 2.484D-36 1.347E-02.0420.0413 5120.58400.670.000000  4  1             R 52 466220  0
+ 21 6322.221154 1.432D-25 8.813E-08.0675.0810 1246.92050.780.000000 84  2             P 38 455 2 2-1
+ 2 8.764922E-02 0.0000E+00 6.940432E-02 0.0000E+00 5.727312E-02 0.0000E+00 4.847042E-02 0.0000E+00-1
+ 21 6322.262812 1.619D-25 8.817E-08.0676.0818 1216.35100.780.000000 84  2             P 37 455 2 2-1
+ 2-5.446375E-02 0.0000E+00-4.558498E-02 0.0000E+00-3.899578E-02 0.0000E+00-3.389363E-02 0.0000E+00-1
+ 21 6322.426031 7.267D-26 2.246E-07.0713.0966 1449.38320.760.000000 98  3             R 20 255 2 2-1
+ 2-1.159689E-02 0.0000E+00-7.062568E-03 0.0000E+00-4.549319E-03 0.0000E+00-2.966908E-03 0.0000E+00-1
+ 14 6322.509290 5.648D-27 1.007E-01.0658.3000  634.42820.490.000000 11  1 8 0 8    9 0 9   3555403 0
+ 11 6322.645310 5.365D-26 6.779E-05.0983.4676   37.13710.780.001980  9  1 2 2 0    1 1 1   3542433 5
+ 21 6322.974849 4.169D-27 8.487E-08.0673.0795 1977.09380.780.000000100  4             P 40 255 2 2-1
+ 2 1.145635E-02 0.0000E+00 9.185008E-03 0.0000E+00 7.632950E-03 0.0000E+00 6.485917E-03 0.0000E+00-1
+ 14 6323.005760 5.930D-27 1.059E-01.0657.3100  634.79100.490.000000 11  1 8 1 8    9 1 9   3555403 0
+ 51 6323.034300 3.784D-36 5.959E-02.0420.0413 6961.38130.670.000000  5  2             R 50 466220  0
+ 21 6323.185667 1.036D-23 9.356E-08.0690.0897  316.76980.780.000000 71  1             P 28 465 2 2-1
+ 2 1.055372E-02 0.0000E+00 7.624269E-03 0.0000E+00 5.836358E-03 0.0000E+00 4.622234E-03 0.0000E+00-1
+ 14 6323.289820 7.826D-26 4.427E-01.0881.4310  308.61570.640.000000 13  1 5 0 5    6 1 6   3555403 0
+ 54 6323.368200 1.621D-27 8.403E-03.0519.0563  640.21530.670.000000  4  1             R 18 467660  0
+ 14 6323.385700 3.090D-26 3.202E-01.0851.4300  467.51460.640.000000 13  1 6 2 5    6 3 4   3555403 0
+ 22 6323.417474 4.645D-27 2.206E-08.0668.0765  772.14750.780.000000 75  1             P 44 255 2 2-1
+ 2 9.250244E-03 0.0000E+00 7.581464E-03 0.0000E+00 6.402714E-03 0.0000E+00 5.510365E-03 0.0000E+00-1
+ 51 6323.471100 5.808D-28 3.854E-02.0519.0563 2794.07420.670.000000  5  2             R 18 467660  0
+ 21 6323.548797 6.748D-26 2.237E-07.0704.0946 1482.95210.770.000000 98  3             R 22 255 2 2-1
+ 2-1.320934E-02 0.0000E+00-8.398663E-03 0.0000E+00-5.668229E-03 0.0000E+00-3.916049E-03 0.0000E+00-1
+ 21 6323.763320 4.739D-27 8.493E-08.0674.0802 1945.79600.780.000000100  4             P 39 255 2 2-1
+ 2 8.214229E-03 0.0000E+00 6.287362E-03 0.0000E+00 5.016833E-03 0.0000E+00 4.103165E-03 0.0000E+00-1
+ 54 6323.904900 6.099D-36 1.328E-02.0420.0413 4928.95020.670.000000  4  1             R 51 466220  0
+ 21 6323.907061 3.372D-26 2.267E-07.0695.0916 1662.04040.780.000000101  5             P 26 255 2 2-1
+ 2 1.075760E-02 0.0000E+00 7.622346E-03 0.0000E+00 5.747837E-03 0.0000E+00 4.493106E-03 0.0000E+00-1
+ 71 6324.113044 1.815D-30 1.297E-05.0420.0410 2213.35010.710.000000  3  2         Q21Q21  d0040001 0
+ 21 6324.231492 1.808D-25 8.823E-08.0677.0826 1188.28980.780.000000 84  2             P 36 455 2 2-1
+ 2 3.379840E-02 0.0000E+00 2.654806E-02 0.0000E+00 2.176454E-02 0.0000E+00 1.831535E-02 0.0000E+00-1
+ 21 6324.367765 2.026D-25 8.832E-08.0678.0835 1159.37040.780.000000 84  2             P 35 455 2 2-1
+ 2-9.886775E-03 0.0000E+00-8.694809E-03 0.0000E+00-7.698612E-03 0.0000E+00-6.878259E-03 0.0000E+00-1
+ 71 6324.461344 2.894D-30 1.296E-05.0430.0430 2097.09130.710.000000  3  2         Q19Q19  d0040001 0
+ 21 6324.633064 6.124D-26 2.228E-07.0698.0926 1519.64120.780.000000 98  3             R 24 255 2 2-1
+ 2-1.485595E-02 0.0000E+00-9.773498E-03 0.0000E+00-6.814556E-03 0.0000E+00-4.876719E-03 0.0000E+00-1
+ 51 6324.766500 9.103D-36 5.881E-02.0420.0413 6773.92870.670.000000  5  2             R 49 466220  0
+ 71 6324.772622 4.320D-30 1.294E-05.0450.0440 1992.11890.710.000000  3  2         Q17Q17  d0040001 0
+ 71 6325.047820 6.022D-30 1.292E-05.0460.0450 1898.45020.710.000000  3  2         Q15Q15  d0040001 0
+ 21 6325.054673 5.362D-27 8.499E-08.0675.0810 1915.27870.780.000000100  4             P 38 255 2 2-1
+ 2 1.197410E-02 0.0000E+00 9.500599E-03 0.0000E+00 7.834291E-03 0.0000E+00 6.615683E-03 0.0000E+00-1
+ 54 6325.068700 1.224D-27 8.530E-03.0510.0553  711.26650.670.000000  4  1             R 19 467660  0
+ 14 6325.100120 4.841D-26 2.862E-01.0989.4690  155.38900.770.000000 13  1 2 1 1    3 2 2   3555403 0
+ 21 6325.137861 1.180D-23 9.310E-08.0695.0916  273.86800.780.000000 71  1             P 26 465 2 2-1
+ 2 1.053362E-02 0.0000E+00 7.461482E-03 0.0000E+00 5.626017E-03 0.0000E+00 4.398446E-03 0.0000E+00-1
+ 51 6325.153200 4.358D-28 3.910E-02.0510.0553 2866.29760.670.000000  5  2             R 19 467660  0
+ 71 6325.287774 7.805D-30 1.288E-05.0470.0460 1816.10050.710.000000  3  2         Q13Q13  d0040001 0
+ 22 6325.490590 6.261D-27 2.238E-08.0671.0780  704.33400.780.000000 75  1             P 42 255 2 2-1
+ 2 9.517731E-03 0.0000E+00 7.704481E-03 0.0000E+00 6.441325E-03 0.0000E+00 5.496609E-03 0.0000E+00-1
+ 71 6325.493218 9.349D-30 1.283E-05.0490.0480 1745.08330.710.000000  3  2         Q11Q11  d0040001 0
+ 14 6325.590750 1.101D-26 6.163E-02.0864.4600  306.31480.640.000000 13  1 5 0 5    6 0 6   3555403 0
+ 54 6325.595800 1.472D-35 1.311E-02.0420.0413 4740.88090.670.000000  4  1             R 50 466220  0
+ 71 6325.664781 1.025D-29 1.274E-05.0500.0490 1685.41000.710.000000  3  2         Q 9Q 9  d0040001 0
+ 21 6325.678984 5.438D-26 2.219E-07.0692.0906 1559.44960.780.000000 98  3             R 26 255 2 2-1
+ 2-1.598708E-02 0.0000E+00-1.084750E-02 0.0000E+00-7.787965E-03 0.0000E+00-5.749392E-03 0.0000E+00-1
+ 21 6325.778940 3.778D-26 2.263E-07.0701.0935 1622.25630.780.000000101  5             P 24 255 2 2-1
+ 2 1.056339E-02 0.0000E+00 7.319686E-03 0.0000E+00 5.422529E-03 0.0000E+00 4.172694E-03 0.0000E+00-1
+ 51 6325.798900 1.565D-23 6.896E-03.0629.0704   80.73540.74-.006000  4  1             P  6 467663  0
+ 71 6325.802991 1.009D-29 1.256E-05.0510.0500 1637.09050.710.000000  3  2         Q 7Q 7  d0040001 0
+ 21 6325.825061 6.040D-27 8.503E-08.0676.0818 1885.54240.780.000000100  4             P 37 255 2 2-1
+ 2 8.316098E-03 0.0000E+00 6.255043E-03 0.0000E+00 4.919734E-03 0.0000E+00 3.972355E-03 0.0000E+00-1
+ 71 6325.908274 8.571D-30 1.216E-05.0530.0520 1600.13290.710.000000  3  2         Q 5Q 5  d0040001 0
+ 71 6325.980956 5.515D-30 1.086E-05.0560.0550 1574.54280.710.000000  3  2         Q 3Q 3  d0040001 0
+ 21 6326.218476 2.243D-25 8.839E-08.0679.0843 1132.78030.780.000000 84  2             P 34 455 2 2-1
+ 2 2.452098E-02 0.0000E+00 1.905966E-02 0.0000E+00 1.549662E-02 0.0000E+00 1.295106E-02 0.0000E+00-1
+ 51 6326.386400 2.151D-35 5.804E-02.0420.0413 6590.10690.670.000000  5  2             R 48 466220  0
+ 21 6326.442970 2.488D-25 8.843E-08.0681.0852 1105.50660.780.000000 84  2             P 33 455 2 2-1
+ 2-1.824860E-03 0.0000E+00-2.136481E-03 0.0000E+00-2.196518E-03 0.0000E+00-2.167712E-03 0.0000E+00-1
+ 71 6326.637381 1.222D-30 3.630E-06.0450.0440 1990.25420.710.000000  3  2         Q17R16  d0040001 0
+ 54 6326.665400 9.050D-28 8.653E-03.0500.0543  786.03900.670.000000  4  1             R 20 467620  0
+ 21 6326.686726 4.729D-26 2.211E-07.0687.0887 1602.37650.780.000000 98  3             R 28 255 2 2-1
+ 2-1.689665E-02 0.0000E+00-1.176103E-02 0.0000E+00-8.639095E-03 0.0000E+00-6.525181E-03 0.0000E+00-1
+ 51 6326.727400 3.203D-28 3.967E-02.0500.0543 2942.30270.670.000000  5  2             R 20 467620  0
+ 11 6326.802770 7.181D-26 7.513E-03.0494.3470 1446.12820.45-.014000 11  1 9 1 9   10 3 8   3545423 0
+ 14 6326.837370 1.017D-26 5.759E-02.0856.4450  308.61570.640.000000 13  1 5 1 5    6 1 6   3555403 0
+ 71 6326.931871 1.729D-30 3.678E-06.0460.0450 1896.56620.710.000000  3  2         Q15R14  d0040001 0
+ 21 6327.061404 1.317D-23 9.260E-08.0701.0935  234.08330.780.000000 71  1             P 24 465 2 2-1
+ 2 1.037583E-02 0.0000E+00 7.192607E-03 0.0000E+00 5.331380E-03 0.0000E+00 4.105803E-03 0.0000E+00-1
+ 21 6327.103128 6.773D-27 8.509E-08.0677.0826 1856.58700.780.000000100  4             P 36 255 2 2-1
+ 2 1.243230E-02 0.0000E+00 9.751243E-03 0.0000E+00 7.973479E-03 0.0000E+00 6.688272E-03 0.0000E+00-1
+ 71 6327.154919 1.337D-30 2.840E-06.0460.0450 1896.34310.710.000000  3  2         Q15P16  d0040001 0
+ 54 6327.178600 3.488D-35 1.293E-02.0420.0413 4556.38180.670.000000  4  1             R 49 466220  0
+ 71 6327.191937 2.286D-30 3.742E-06.0470.0460 1814.19630.710.000000  3  2         Q13R12  d0040001 0
+ 71 6327.375322 1.701D-30 2.782E-06.0470.0460 1814.01290.710.000000  3  2         Q13P14  d0040001 0
+ 71 6327.418775 2.812D-30 3.826E-06.0490.0480 1743.15760.710.000000  3  2         Q11R10  d0040001 0
+ 22 6327.542257 8.285D-27 2.268E-08.0673.0795  639.63090.780.000000 75  1             P 40 255 2 2-1
+ 2 9.796288E-03 0.0000E+00 7.822586E-03 0.0000E+00 6.467157E-03 0.0000E+00 5.464768E-03 0.0000E+00-1
+ 71 6327.560427 1.986D-30 2.700E-06.0490.0480 1743.01600.710.000000  3  2         Q11P12  d0040001 0
+ 71 6327.613910 3.201D-30 3.944E-06.0500.0490 1683.46080.710.000000  3  2         Q 9R 8  d0040001 0
+ 21 6327.625536 4.140D-26 2.259E-07.0708.0956 1585.59050.770.000000101  5             P 22 255 2 2-1
+ 2 9.957230E-03 0.0000E+00 6.794954E-03 0.0000E+00 4.987195E-03 0.0000E+00 3.816349E-03 0.0000E+00-1
+ 21 6327.656470 4.031D-26 2.202E-07.0684.0869 1648.42110.780.000000 98  3             R 30 255 2 2-1
+ 2-1.775352E-02 0.0000E+00-1.265915E-02 0.0000E+00-9.499298E-03 0.0000E+00-7.326200E-03 0.0000E+00-1
+ 71 6327.710404 2.100D-30 2.586E-06.0500.0490 1683.36430.710.000000  3  2         Q 9P10  d0040001 0
+ 71 6327.779876 3.342D-30 4.124E-06.0510.0500 1635.11360.710.000000  3  2         Q 7R 6  d0040001 0
+ 11 6327.790780 1.210D-26 1.442E-03.0289.3841 1394.81420.59-.008960  9  1 6 6 1    7 7 0   3542433 5
+ 71 6327.824883 1.957D-30 2.414E-06.0510.0500 1635.06860.710.000000  3  2         Q 7P 8  d0040001 0
+ 21 6327.861436 7.559D-27 8.513E-08.0678.0835 1828.41270.780.000000100  4             P 35 255 2 2-1
+ 2 8.400809E-03 0.0000E+00 6.200395E-03 0.0000E+00 4.801008E-03 0.0000E+00 3.822212E-03 0.0000E+00-1
+ 51 6327.894100 4.989D-35 5.726E-02.0420.0413 6409.92330.670.000000  5  2             R 47 466220  0
+ 71 6327.902284 1.512D-30 2.126E-06.0530.0520 1598.13880.710.000000  3  2         Q 5P 6  d0040001 0
+ 71 6327.922696 3.145D-30 4.420E-06.0530.0520 1598.11840.710.000000  3  2         Q 5R 4  d0040001 0
+ 71 6328.066586 2.545D-30 4.962E-06.0560.0550 1572.45730.710.000000  3  2         Q 3R 2  d0040001 0
+ 54 6328.158100 6.560D-28 8.782E-03.0491.0531  864.53020.670.000000  4  1             R 21 467620  0
+ 21 6328.181941 2.729D-25 8.847E-08.0682.0860 1080.39320.780.000000 84  2             P 32 455 2 2-1
+ 2 2.074720E-02 0.0000E+00 1.592362E-02 0.0000E+00 1.283086E-02 0.0000E+00 1.064690E-02 0.0000E+00-1
+ 51 6328.193500 2.306D-28 4.024E-02.0491.0531 3022.08740.670.000000  5  2             R 21 467620  0
+ 14 6328.201400 1.448D-26 1.125E-01.0865.4110  373.66590.690.000000 13  1 5 2 4    5 3 3   3555403 0
+ 14 6328.225060 7.786D-27 2.359E-01.0724.2860  743.09740.490.000000 11  1 8 2 7    9 2 8   3555403 0
+ 21 6328.488298 2.998D-25 8.853E-08.0684.0869 1054.76070.780.000000 84  2             P 31 455 2 2-1
+ 2 1.630866E-03 0.0000E+00 5.869528E-04 0.0000E+00 3.957227E-05 0.0000E+00-2.841904E-04 0.0000E+00-1
+ 21 6328.588412 3.370D-26 2.194E-07.0681.0852 1697.58260.780.000000 98  3             R 32 255 2 2-1
+ 2-1.844754E-02 0.0000E+00-1.343261E-02 0.0000E+00-1.026330E-02 0.0000E+00-8.052001E-03 0.0000E+00-1
+ 54 6328.653400 8.124D-35 1.275E-02.0420.0413 4375.46140.670.000000  4  1             R 48 466220  0
+ 21 6328.956097 1.439D-23 9.210E-08.0708.0956  197.41660.770.000000 71  1             P 22 465 2 2-1
+ 2 9.819215E-03 0.0000E+00 6.709051E-03 0.0000E+00 4.930830E-03 0.0000E+00 3.779222E-03 0.0000E+00-1
+ 21 6329.120871 8.398D-27 8.516E-08.0679.0843 1801.01980.780.000000100  4             P 34 255 2 2-1
+ 2 1.280665E-02 0.0000E+00 9.918593E-03 0.0000E+00 8.036220E-03 0.0000E+00 6.692225E-03 0.0000E+00-1
+ 14 6329.138300 7.423D-26 4.160E-01.0870.4210  306.31480.640.000000 13  1 5 1 5    6 0 6   3555403 0
+ 51 6329.289700 1.137D-34 5.651E-02.0420.0413 6233.38530.670.000000  5  2             R 46 466220  0
+ 21 6329.446830 4.432D-26 2.254E-07.0717.0977 1552.04350.760.000000101  5             P 20 255 2 2-1
+ 2 9.344842E-03 0.0000E+00 6.228373E-03 0.0000E+00 4.481933E-03 0.0000E+00 3.367447E-03 0.0000E+00-1
+ 21 6329.482762 2.765D-26 2.186E-07.0678.0835 1749.86010.780.000000 98  3             R 34 255 2 2-1
+ 2-1.898941E-02 0.0000E+00-1.407785E-02 0.0000E+00-1.092024E-02 0.0000E+00-8.687679E-03 0.0000E+00-1
+ 11 6329.508200 6.132D-26 6.421E-03.0713.2700 1446.12820.450.002228  9  1 9 4 5   10 3 8   3544433 0
+ 54 6329.546600 4.657D-28 8.905E-03.0483.0520  946.73700.670.000000  4  1             R 22 467620  0
+ 51 6329.551300 1.626D-28 4.079E-02.0483.0520 3105.64790.670.000000  5  2             R 22 467620  0
+ 22 6329.572102 1.076D-26 2.298E-08.0675.0810  578.03910.780.000000 75  1             P 38 255 2 2-1
+ 2 1.009148E-02 0.0000E+00 7.949620E-03 0.0000E+00 6.501854E-03 0.0000E+00 5.443751E-03 0.0000E+00-1
+ 11 6329.576360 2.291D-26 4.787E-04.0639.2818 1114.54990.45-.012508  9  1 9 2 7   10 110   3542433 5
+ 21 6329.872282 9.285D-27 8.519E-08.0681.0852 1774.40800.780.000000100  4             P 33 255 2 2-1
+ 2 8.519359E-03 0.0000E+00 6.168834E-03 0.0000E+00 4.702640E-03 0.0000E+00 3.691921E-03 0.0000E+00-1
+ 14 6329.877830 1.061D-26 5.953E-02.0921.4600  265.23620.690.000000 13  1 4 1 3    5 1 4   3555403 0
+ 54 6330.020300 1.859D-34 1.258E-02.0420.0413 4198.12500.670.000000  4  1             R 47 466220  0
+ 21 6330.121731 3.258D-25 8.855E-08.0686.0878 1031.12920.780.000000 84  2             P 30 455 2 2-1
+ 2 1.868227E-02 0.0000E+00 1.414088E-02 0.0000E+00 1.128403E-02 0.0000E+00 9.292663E-03 0.0000E+00-1
+ 51 6330.166700 1.476D-23 7.116E-03.0650.0727   57.67040.74-.006100  4  1             P  5 467663  0
+ 21 6330.339744 2.226D-26 2.177E-07.0676.0818 1805.25240.780.000000 98  3             R 36 255 2 2-1
+ 2-1.949749E-02 0.0000E+00-1.469684E-02 0.0000E+00-1.156165E-02 0.0000E+00-9.317550E-03 0.0000E+00-1
+ 21 6330.503626 3.542D-25 8.857E-08.0687.0887 1007.13350.780.000000 84  2             P 29 455 2 2-1
+ 2 3.536198E-03 0.0000E+00 2.020248E-03 0.0000E+00 1.175778E-03 0.0000E+00 6.454711E-04 0.0000E+00-1
+ 51 6330.573400 2.543D-34 5.574E-02.0420.0413 6060.49900.670.000000  5  2             R 45 466220  0
+ 51 6330.800800 1.124D-28 4.137E-02.0475.0508 3192.98140.670.000000  5  2             R 23 467620  0
+ 21 6330.821755 1.537D-23 9.164E-08.0717.0977  163.86840.760.000000 71  1             P 20 465 2 2-1
+ 2 9.258136E-03 0.0000E+00 6.185773E-03 0.0000E+00 4.462995E-03 0.0000E+00 3.363219E-03 0.0000E+00-1
+ 54 6330.831000 3.243D-28 9.035E-03.0475.0508 1032.65650.670.000000  4  1             R 23 467620  0
+ 14 6331.024100 1.589D-26 1.105E-01.0863.4220  384.87560.640.000000 13  1 6 1 6    6 2 5   3555403 0
+ 21 6331.108554 1.022D-26 8.523E-08.0682.0860 1748.57800.780.000000100  4             P 32 255 2 2-1
+ 2 1.313706E-02 0.0000E+00 1.003920E-02 0.0000E+00 8.057185E-03 0.0000E+00 6.660209E-03 0.0000E+00-1
+ 21 6331.159595 1.760D-26 2.169E-07.0674.0802 1863.75870.780.000000 98  3             R 38 255 2 2-1
+ 2-1.993700E-02 0.0000E+00-1.525109E-02 0.0000E+00-1.214739E-02 0.0000E+00-9.900995E-03 0.0000E+00-1
+ 21 6331.242802 4.625D-26 2.248E-07.0728.0998 1521.61550.740.000000101  5             P 18 255 2 2-1
+ 2 8.232670E-03 0.0000E+00 5.386498E-03 0.0000E+00 3.830271E-03 0.0000E+00 2.856383E-03 0.0000E+00-1
+ 54 6331.279500 4.176D-34 1.241E-02.0420.0413 4024.38040.670.000000  4  1             R 46 466220  0
+ 22 6331.579773 1.372D-26 2.323E-08.0677.0826  519.55980.780.000000 75  1             P 36 255 2 2-1
+ 2 1.036218E-02 0.0000E+00 8.046699E-03 0.0000E+00 6.508800E-03 0.0000E+00 5.399010E-03 0.0000E+00-1
+ 14 6331.581990 2.017D-26 1.312E-01.0879.4400  295.48730.730.000000 13  1 4 2 3    4 3 2   3555403 0
+ 71 6331.692454 6.067D-30 1.563E-05.0600.0590 1560.32500.710.000000  3  2         R 1R 1  d0040001 0
+ 51 6331.745300 5.587D-34 5.500E-02.0420.0413 5891.27100.670.000000  5  2             R 44 466220  0
+ 21 6331.857446 1.119D-26 8.523E-08.0684.0869 1723.52930.780.000000100  4             P 31 255 2 2-1
+ 2 8.550531E-03 0.0000E+00 6.056873E-03 0.0000E+00 4.533019E-03 0.0000E+00 3.498369E-03 0.0000E+00-1
+ 51 6331.941800 7.615D-29 4.194E-02.0469.0495 3284.08450.670.000000  5  2             R 24 467620  0
+ 21 6331.942566 1.367D-26 2.160E-07.0672.0787 1925.37770.780.000000 98  3             R 40 255 2 2-1
+ 2-2.033996E-02 0.0000E+00-1.576314E-02 0.0000E+00-1.269331E-02 0.0000E+00-1.044900E-02 0.0000E+00-1
+ 54 6332.010900 2.214D-28 9.165E-03.0469.0495 1122.28540.670.000000  4  1             R 24 467620  0
+ 21 6332.037697 3.813D-25 8.858E-08.0690.0897  984.98900.780.000000 84  2             P 28 455 2 2-1
+ 2 1.723418E-02 0.0000E+00 1.284235E-02 0.0000E+00 1.013003E-02 0.0000E+00 8.264263E-03 0.0000E+00-1
+ 14 6332.216560 5.164D-27 1.863E-01.0844.3600  801.64410.490.000000 13  1 9 1 8    9 2 7   3555403 0
+ 41 6332.387960 2.214D-25 1.022E-03.0698.0843  620.58750.75-.006529 78  1             P 38 466653  0
+ 54 6332.431100 9.219D-34 1.224E-02.0420.0413 3854.23340.670.000000  4  1             R 45 466220  0
+ 21 6332.488838 4.102D-25 8.860E-08.0692.0906  962.62570.780.000000 84  2             P 27 455 2 2-1
+ 2 4.838113E-03 0.0000E+00 2.953303E-03 0.0000E+00 1.893155E-03 0.0000E+00 1.220941E-03 0.0000E+00-1
+ 21 6332.658211 1.601D-23 9.126E-08.0728.0998  133.43930.740.000000 71  1             P 18 465 2 2-1
+ 2 8.209315E-03 0.0000E+00 5.394038E-03 0.0000E+00 3.852722E-03 0.0000E+00 2.887190E-03 0.0000E+00-1
+ 21 6332.688920 1.043D-26 2.151E-07.0670.0772 1990.10820.780.000000 98  3             R 42 255 2 2-1
+ 2-2.077827E-02 0.0000E+00-1.628318E-02 0.0000E+00-1.323166E-02 0.0000E+00-1.097861E-02 0.0000E+00-1
+ 11 6332.790340 3.820D-26 8.433E-04.0286.2550  920.21000.45-.014000  9  110 010    9 1 9   3545423 0
+ 51 6332.805600 1.205D-33 5.426E-02.0420.0413 5725.70900.670.000000  5  2             R 43 466220  0
+ 51 6332.974100 5.058D-29 4.253E-02.0464.0483 3378.95360.670.000000  5  2             R 25 467620  0
+ 21 6333.013432 4.696D-26 2.241E-07.0740.1020 1494.30730.710.000000101  5             P 16 255 2 2-1
+ 2 6.624943E-03 0.0000E+00 4.199644E-03 0.0000E+00 2.914112E-03 0.0000E+00 2.130916E-03 0.0000E+00-1
+ 21 6333.066815 1.219D-26 8.521E-08.0686.0878 1699.26250.780.000000100  4             P 30 255 2 2-1
+ 2 1.339031E-02 0.0000E+00 1.008747E-02 0.0000E+00 8.014202E-03 0.0000E+00 6.572105E-03 0.0000E+00-1
+ 54 6333.086300 1.482D-28 9.296E-03.0464.0483 1215.62040.670.000000  4  1             R 25 467620  0
+ 21 6333.398935 7.820D-27 2.142E-07.0667.0758 2057.94900.770.000000 98  3             R 44 255 2 2-1
+ 2-2.096663E-02 0.0000E+00-1.666099E-02 0.0000E+00-1.371154E-02 0.0000E+00-1.151780E-02 0.0000E+00-1
+ 14 6333.432730 5.688D-27 3.668E-02.0886.4660  293.63650.690.000000 13  1 4 2 3    5 2 4   3555403 0
+ 14 6333.458480 8.391D-27 1.863E-01.0832.4240  653.08880.530.000000 11  1 7 2 5    8 2 6   3555403 0
+ 54 6333.475300 1.999D-33 1.208E-02.0420.0413 3687.69020.670.000000  4  1             R 44 466220  0
+ 22 6333.564932 1.716D-26 2.348E-08.0679.0843  464.19380.780.000000 75  1             P 34 255 2 2-1
+ 2 1.058659E-02 0.0000E+00 8.095267E-03 0.0000E+00 6.471731E-03 0.0000E+00 5.315947E-03 0.0000E+00-1
+ 71 6333.577570 2.040D-30 5.210E-06.0600.0590 1558.43980.710.000000  3  2         R 1Q 2  d0040001 0
+ 41 6333.689110 2.528D-25 1.028E-03.0699.0848  588.78130.75-.006487 78  1             P 37 466653  0
+ 14 6333.717440 8.391D-27 1.429E-01.0821.3670  598.56310.530.000000 11  1 7 1 6    8 1 7   3555403 0
+ 51 6333.754500 2.553D-33 5.356E-02.0420.0413 5563.81840.670.000000  5  2             R 42 466220  0
+ 14 6333.798150 1.509D-26 9.320E-02.0887.4230  233.02370.770.000000 13  1 3 2 2    3 3 1   3555403 0
+ 21 6333.816783 1.322D-26 8.522E-08.0687.0887 1675.77730.780.000000100  4             P 29 255 2 2-1
+ 2 8.485765E-03 0.0000E+00 5.865137E-03 0.0000E+00 4.296577E-03 0.0000E+00 3.248020E-03 0.0000E+00-1
+ 51 6333.897500 3.294D-29 4.312E-02.0457.0470 3477.58520.670.000000  5  2             R 26 466620  0
+ 21 6333.929698 4.371D-25 8.860E-08.0695.0916  941.97370.780.000000 84  2             P 26 455 2 2-1
+ 2 1.610885E-02 0.0000E+00 1.180495E-02 0.0000E+00 9.196330E-03 0.0000E+00 7.425630E-03 0.0000E+00-1
+ 14 6333.993680 1.182D-26 1.099E-01.0861.3950  473.91770.590.000000 13  1 7 0 7    7 1 6   3555403 0
+ 54 6334.057100 9.728D-29 9.427E-03.0457.0470 1312.65810.670.000000  4  1             R 26 466620  0
+ 21 6334.072902 5.764D-27 2.133E-07.0664.0744 2128.89870.770.000000 98  3             R 46 254 2 2-1
+ 2-2.136552E-02 0.0000E+00-1.713584E-02 0.0000E+00-1.421528E-02 0.0000E+00-1.202747E-02 0.0000E+00-1
+ 11 6334.150890 1.174D-25 8.641E-04.0286.2400  920.16840.45-.014000  9  110 110    9 0 9   3545423 0
+ 11 6334.250070 1.614D-25 1.926E-04.0703.3700  447.25240.64-.006200  9  1 6 2 5    6 1 6   3545423 0
+ 54 6334.412200 4.256D-33 1.191E-02.0420.0413 3524.75780.670.000000  4  1             R 43 466220  0
+ 51 6334.430300 1.313D-23 7.423E-03.0676.0753   38.44810.74-.005300  4  1             P  4 467663  0
+ 21 6334.443823 4.652D-25 8.859E-08.0698.0926  921.23820.780.000000 84  2             P 25 455 2 2-1
+ 2 5.652372E-03 0.0000E+00 3.479639E-03 0.0000E+00 2.263273E-03 0.0000E+00 1.491849E-03 0.0000E+00-1
+ 21 6334.465309 1.623D-23 9.081E-08.0740.1020  106.12970.710.000000 71  1             P 16 465 2 2-1
+ 2 6.673584E-03 0.0000E+00 4.263670E-03 0.0000E+00 2.983228E-03 0.0000E+00 2.201442E-03 0.0000E+00-1
+ 51 6334.592000 5.310D-33 5.286E-02.0420.0413 5405.60550.670.000000  5  2             R 41 466220  0
+ 21 6334.711122 4.176D-27 2.123E-07.0661.0731 2202.95630.760.000000 98  3             R 48 254 2 2-1
+ 2-2.165886E-02 0.0000E+00-1.761366E-02 0.0000E+00-1.480563E-02 0.0000E+00-1.269113E-02 0.0000E+00-1
+ 51 6334.712000 2.104D-29 4.372E-02.0451.0458 3579.97510.670.000000  5  2             R 27 466620  0
+ 21 6334.758700 4.623D-26 2.231E-07.0754.1043 1470.11890.690.000000101  5             P 14 255 2 2-1
+ 2 5.249542E-03 0.0000E+00 2.994527E-03 0.0000E+00 1.822004E-03 0.0000E+00 1.120097E-03 0.0000E+00-1
+ 54 6334.923000 6.262D-29 9.557E-03.0451.0458 1413.39470.670.000000  4  1             R 27 466620  0
+ 41 6334.979320 2.879D-25 1.036E-03.0700.0853  557.81020.75-.006445 78  1             P 36 466653  0
+ 21 6334.996274 1.426D-26 8.520E-08.0690.0897 1653.07420.780.000000100  4             P 28 255 2 2-1
+ 2 1.345435E-02 0.0000E+00 9.973359E-03 0.0000E+00 7.831600E-03 0.0000E+00 6.362767E-03 0.0000E+00-1
+ 11 6335.215500 3.227D-26 9.761E-03.0590.2818 1437.96860.45-.010952 11  1 9 0 9   10 2 8   3542433 5
+ 54 6335.241900 8.899D-33 1.175E-02.0420.0413 3365.44170.670.000000  4  1             R 42 466220  0
+ 51 6335.318400 1.084D-32 5.215E-02.0420.0413 5251.07670.670.000000  5  2             R 40 466220  0
+ 14 6335.341770 4.518D-26 3.569E-01.0997.5090  109.26910.780.000000 13  1 1 1 1    2 2 0   3555403 0
+ 51 6335.417500 1.317D-29 4.430E-02.0446.0446 3686.11960.670.000000  5  2             R 28 466620  0
+ 11 6335.445310 9.803D-27 1.178E-05.0967.4643   95.17590.77-.002380  9  1 3 2 2    2 1 1   3542433 5
+ 22 6335.527258 2.105D-26 2.372E-08.0682.0860  411.94210.780.000000 75  1             P 32 255 2 2-1
+ 2 1.080601E-02 0.0000E+00 8.133093E-03 0.0000E+00 6.425743E-03 0.0000E+00 5.227367E-03 0.0000E+00-1
+ 14 6335.589640 1.392D-26 8.603E-02.0899.4540  233.05120.770.000000 13  1 3 2 1    3 3 0   3555403 0
+ 54 6335.684000 3.956D-29 9.692E-03.0446.0446 1517.82670.670.000000  4  1             R 28 466620  0
+ 21 6335.750155 1.531D-26 8.515E-08.0692.0906 1631.15280.780.000000100  4             P 27 255 2 2-1
+ 2 8.476510E-03 0.0000E+00 5.726816E-03 0.0000E+00 4.112407E-03 0.0000E+00 3.044960E-03 0.0000E+00-1
+ 21 6335.797602 4.906D-25 8.857E-08.0701.0935  902.08380.780.000000 84  2             P 24 455 2 2-1
+ 2 1.507986E-02 0.0000E+00 1.084868E-02 0.0000E+00 8.334205E-03 0.0000E+00 6.650400E-03 0.0000E+00-1
+ 51 6335.933700 2.171D-32 5.142E-02.0420.0413 5100.23830.670.000000  5  2             R 39 466220  0
+ 54 6335.964600 1.828D-32 1.159E-02.0420.0413 3209.74780.670.000000  4  1             R 41 466220  0
+ 51 6336.013600 8.090D-30 4.492E-02.0441.0435 3796.01490.670.000000  5  2             R 29 466620  0
+ 14 6336.222760 8.431D-26 3.914E-01.0926.4560  225.86490.690.000000 13  1 4 0 4    5 1 5   3555403 0
+ 21 6336.242911 1.597D-23 9.032E-08.0754.1043   81.94010.690.000000 71  1             P 14 465 2 2-1
+ 2 5.363948E-03 0.0000E+00 3.113929E-03 0.0000E+00 1.939971E-03 0.0000E+00 1.234840E-03 0.0000E+00-1
+ 41 6336.258480 3.258D-25 1.042E-03.0702.0858  527.67430.75-.006403 78  1             P 35 466653  0
+ 54 6336.340000 2.452D-29 9.830E-03.0441.0435 1625.94980.670.000000  4  1             R 29 466620  0
+ 21 6336.368477 5.162D-25 8.853E-08.0704.0946  882.97150.770.000000 84  2             P 23 455 2 2-1
+ 2 5.796278E-03 0.0000E+00 3.562293E-03 0.0000E+00 2.336342E-03 0.0000E+00 1.574343E-03 0.0000E+00-1
+ 51 6336.438200 4.272D-32 5.075E-02.0420.0413 4953.09520.670.000000  5  2             R 38 466220  0
+ 21 6336.478585 4.391D-26 2.218E-07.0771.1067 1449.05100.690.000000101  5             P 12 255 2 2-1
+ 2 3.869937E-03 0.0000E+00 1.640948E-03 0.0000E+00 4.971659E-04 0.0000E+00-1.788727E-04 0.0000E+00-1
+ 51 6336.500300 4.874D-30 4.553E-02.0436.0426 3909.65630.670.000000  5  2             R 30 466620  0
+ 14 6336.533760 2.053D-26 1.338E-01.0895.4490  295.67750.730.000000 13  1 4 2 2    4 3 1   3555403 0
+ 54 6336.580500 3.686D-32 1.144E-02.0420.0413 3057.68240.670.000000  4  1             R 40 466220  0
+ 51 6336.832000 8.247D-32 5.006E-02.0420.0413 4809.65380.670.000000  5  2             R 37 466220  0
+ 51 6336.877500 2.883D-30 4.619E-02.0430.0418 4027.03930.670.000000  5  2             R 31 466620  0
+ 54 6336.890700 1.491D-29 9.968E-03.0436.0426 1737.76030.670.000000  4  1             R 30 466620  0
+ 21 6336.897527 1.634D-26 8.514E-08.0695.0916 1610.01380.780.000000100  4             P 26 255 2 2-1
+ 2 1.337574E-02 0.0000E+00 9.747320E-03 0.0000E+00 7.560575E-03 0.0000E+00 6.084145E-03 0.0000E+00-1
+ 54 6337.089500 7.300D-32 1.128E-02.0420.0413 2909.25070.670.000000  4  1             R 39 466220  0
+ 51 6337.115200 1.563D-31 4.939E-02.0420.0413 4669.91990.670.000000  5  2             R 36 466220  0
+ 51 6337.145100 1.671D-30 4.680E-02.0425.0412 4148.16020.670.000000  5  2             R 32 466620  0
+ 51 6337.287900 2.908D-31 4.874E-02.0420.0413 4533.89840.670.000000  5  2             R 35 466220  0
+ 51 6337.302700 9.506D-31 4.743E-02.0420.0409 4273.01320.670.000000  5  2             R 33 466620  0
+ 71 6337.322362 7.065D-30 1.086E-05.0550.0540 1574.54280.710.000000  3  2         R 3R 3  d0040001 0
+ 54 6337.336100 8.895D-30 1.011E-02.0430.0418 1853.25400.670.000000  4  1             R 31 466620  0
+ 51 6337.350400 5.308D-31 4.809E-02.0420.0409 4401.59420.670.000000  5  2             R 34 466620  0
+ 14 6337.372390 9.722D-27 1.091E-01.0736.3480  512.51580.530.000000 11  1 7 0 7    8 0 8   3555403 0
+ 22 6337.466448 2.531D-26 2.392E-08.0686.0878  362.80560.780.000000 75  1             P 30 255 2 2-1
+ 2 1.097284E-02 0.0000E+00 8.119538E-03 0.0000E+00 6.334623E-03 0.0000E+00 5.100100E-03 0.0000E+00-1
+ 54 6337.492000 1.419D-31 1.112E-02.0420.0413 2764.45850.670.000000  4  1             R 38 466220  0
+ 41 6337.526430 3.669D-25 1.048E-03.0703.0864  498.37370.75-.006361 78  1             P 34 466653  0
+ 21 6337.641282 5.384D-25 8.848E-08.0708.0956  865.32000.770.000000 84  2             P 22 455 2 2-1
+ 2 1.379217E-02 0.0000E+00 9.797376E-03 0.0000E+00 7.474592E-03 0.0000E+00 5.946264E-03 0.0000E+00-1
+ 21 6337.657435 1.735D-26 8.508E-08.0698.0926 1589.65670.780.000000100  4             P 25 255 2 2-1
+ 2 8.336561E-03 0.0000E+00 5.484839E-03 0.0000E+00 3.850571E-03 0.0000E+00 2.795695E-03 0.0000E+00-1
+ 54 6337.675900 5.207D-30 1.024E-02.0425.0412 1972.42650.670.000000  4  1             R 32 466620  0
+ 54 6337.788000 2.710D-31 1.098E-02.0420.0413 2623.31130.670.000000  4  1             R 37 466220  0
+ 54 6337.910200 2.993D-30 1.039E-02.0420.0409 2095.27340.670.000000  4  1             R 33 466620  0
+ 54 6337.977700 5.080D-31 1.083E-02.0420.0413 2485.81400.670.000000  4  1             R 36 466220  0
+ 21 6337.990892 1.516D-23 8.980E-08.0771.1067   60.87090.690.000000 71  1             P 12 465 2 2-1
+ 2 4.049926E-03 0.0000E+00 1.816852E-03 0.0000E+00 6.659376E-04 0.0000E+00-1.738823E-05 0.0000E+00-1
+ 54 6338.038600 1.688D-30 1.053E-02.0420.0409 2221.79000.670.000000  4  1             R 34 466620  0
+ 54 6338.061200 9.345D-31 1.068E-02.0420.0413 2351.97190.670.000000  4  1             R 35 466220  0
+ 21 6338.173066 3.994D-26 2.200E-07.0790.1091 1431.10380.700.000000101  5             P 10 255 2 2-1
+ 2 1.381327E-03 0.0000E+00-4.597216E-04 0.0000E+00-1.350644E-03 0.0000E+00-1.845360E-03 0.0000E+00-1
+ 14 6338.254210 1.154D-26 1.300E-01.0741.3380  513.20720.530.000000 11  1 7 1 7    8 1 8   3555403 0
+ 21 6338.262701 5.598D-25 8.844E-08.0713.0966  847.82630.760.000000 84  2             P 21 455 2 2-1
+ 2 5.995225E-03 0.0000E+00 3.638330E-03 0.0000E+00 2.359506E-03 0.0000E+00 1.566580E-03 0.0000E+00-1
+ 14 6338.450330 7.463D-26 5.892E-01.1003.4940  108.92620.780.000000 13  1 1 1 0    2 2 1   3555403 0
+ 51 6338.589500 1.074D-23 7.898E-03.0709.0785   23.06950.74-.004800  4  1             P  3 467663  0
+ 21 6338.771148 1.833D-26 8.501E-08.0701.0935 1570.08220.780.000000100  4             P 24 255 2 2-1
+ 2 1.310292E-02 0.0000E+00 9.369958E-03 0.0000E+00 7.167550E-03 0.0000E+00 5.702091E-03 0.0000E+00-1
+ 41 6338.783050 4.113D-25 1.055E-03.0705.0869  469.90860.75-.006319 78  1             P 33 466653  0
+ 71 6339.278743 4.277D-30 6.514E-06.0550.0540 1572.58650.710.000000  3  2         R 3Q 4  d0040001 0
+ 14 6339.360150 2.299D-26 1.698E-01.0883.4550  362.50720.640.000000 13  1 5 2 4    6 1 5   3555403 0
+ 22 6339.382217 2.981D-26 2.411E-08.0690.0897  316.78500.780.000000 75  1             P 28 255 2 2-1
+ 2 1.098699E-02 0.0000E+00 7.973655E-03 0.0000E+00 6.129117E-03 0.0000E+00 4.872918E-03 0.0000E+00-1
+ 21 6339.460622 5.770D-25 8.835E-08.0717.0977  831.68290.760.000000 84  2             P 20 455 2 2-1
+ 2 1.257955E-02 0.0000E+00 8.769833E-03 0.0000E+00 6.596074E-03 0.0000E+00 5.185050E-03 0.0000E+00-1
+ 21 6339.538503 1.925D-26 8.494E-08.0704.0946 1551.28960.770.000000100  4             P 23 255 2 2-1
+ 2 7.729161E-03 0.0000E+00 4.977852E-03 0.0000E+00 3.438499E-03 0.0000E+00 2.461412E-03 0.0000E+00-1
+ 21 6339.709139 1.380D-23 8.916E-08.0790.1091   42.92250.700.000000 71  1             P 10 465 2 2-1
+ 2 1.640145E-03 0.0000E+00-2.200584E-04 0.0000E+00-1.127409E-03 0.0000E+00-1.635929E-03 0.0000E+00-1
+ 21 6339.842120 3.435D-26 2.174E-07.0811.1116 1416.27730.710.000000101  5             P  8 255 2 2-1
+ 2-2.507876E-03 0.0000E+00-3.452348E-03 0.0000E+00-3.794178E-03 0.0000E+00-3.911038E-03 0.0000E+00-1
+ 41 6340.028220 4.596D-25 1.064E-03.0707.0875  442.27920.75-.006277 78  1             P 32 466653  0
+ 21 6340.126404 5.923D-25 8.827E-08.0722.0987  815.80330.750.000000 84  2             P 19 455 2 2-1
+ 2 5.658417E-03 0.0000E+00 3.284945E-03 0.0000E+00 2.021754E-03 0.0000E+00 1.255029E-03 0.0000E+00-1
+ 14 6340.141520 1.472D-26 6.714E-02.0918.5000  221.94610.690.000000 13  1 4 0 4    5 0 5   3555403 0
+ 14 6340.609420 5.406D-27 2.589E-01.0850.4130  859.39260.490.000000 13  1 9 2 7    9 3 6   3555403 0
+ 21 6340.617676 2.009D-26 8.485E-08.0708.0956 1533.27980.770.000000100  4             P 22 255 2 2-1
+ 2 1.240614E-02 0.0000E+00 8.758914E-03 0.0000E+00 6.649112E-03 0.0000E+00 5.263024E-03 0.0000E+00-1
+ 14 6340.891400 1.832D-26 1.929E-01.0890.4290  469.66360.640.000000 13  1 6 2 4    6 3 3   3555403 0
+ 21 6341.255514 6.027D-25 8.815E-08.0728.0998  801.17320.740.000000 84  2             P 18 455 2 2-1
+ 2 1.092645E-02 0.0000E+00 7.533726E-03 0.0000E+00 5.639252E-03 0.0000E+00 4.429459E-03 0.0000E+00-1
+ 41 6341.261820 5.080D-25 1.067E-03.0709.0881  415.48560.75-.006234 78  1             P 31 466653  0
+ 22 6341.274296 3.439D-26 2.427E-08.0695.0916  273.88100.780.000000 75  1             P 26 255 2 2-1
+ 2 1.092167E-02 0.0000E+00 7.768004E-03 0.0000E+00 5.879274E-03 0.0000E+00 4.612876E-03 0.0000E+00-1
+ 21 6341.393245 2.085D-26 8.475E-08.0713.0966 1516.05220.760.000000100  4             P 21 255 2 2-1
+ 2 7.338396E-03 0.0000E+00 4.601698E-03 0.0000E+00 3.099542E-03 0.0000E+00 2.160128E-03 0.0000E+00-1
+ 21 6341.397556 1.188D-23 8.819E-08.0811.1116   28.09510.710.000000 71  1             P  8 465 2 2-1
+ 2-2.162558E-03 0.0000E+00-3.145890E-03 0.0000E+00-3.516037E-03 0.0000E+00-3.654903E-03 0.0000E+00-1
+ 21 6341.485728 2.728D-26 2.132E-07.0836.1141 1404.57210.730.000000101  5             P  6 255 2 2-1
+ 2-7.073396E-03 0.0000E+00-7.105774E-03 0.0000E+00-6.902385E-03 0.0000E+00-6.648763E-03 0.0000E+00-1
+ 14 6341.816540 2.400D-26 1.270E-01.0894.4440  293.63650.690.000000 13  1 5 1 5    5 2 4   3555403 0
+ 21 6341.959500 6.102D-25 8.803E-08.0734.1009  786.90280.730.000000 84  2             P 17 455 2 2-1
+ 2 4.966711E-03 0.0000E+00 2.768542E-03 0.0000E+00 1.631857E-03 0.0000E+00 9.585431E-04 0.0000E+00-1
+ 14 6342.001440 1.311D-26 6.098E-02.0900.4900  225.86490.690.000000 13  1 4 1 4    5 1 5   3555403 0
+ 71 6342.084052 4.069D-30 7.444E-06.0600.0590 1558.43980.710.000000  3  2         S 1R 2  d0040001 0
+ 14 6342.390760 7.020D-27 1.267E-01.0772.3430  609.94660.530.000000 11  1 7 2 6    8 2 7   3555403 0
+ 21 6342.437618 2.150D-26 8.460E-08.0717.0977 1499.60740.760.000000100  4             P 20 255 2 2-1
+ 2 1.159721E-02 0.0000E+00 8.029449E-03 0.0000E+00 6.006907E-03 0.0000E+00 4.701101E-03 0.0000E+00-1
+ 41 6342.483730 5.604D-25 1.073E-03.0711.0888  389.52790.75-.006192 78  1             P 30 466653  0
+ 51 6342.644100 7.666D-24 8.895E-03.0748.0821   11.53500.75-.004100  4  1             P  2 467663  0
+ 14 6342.842140 1.392D-26 2.194E-01.0879.4390  581.96210.590.000000 13  1 7 2 5    7 3 4   3555403 0
+ 71 6342.917933 7.750D-30 9.352E-06.0520.0510 1600.13290.710.000000  3  2         R 5R 5  d0040001 0
+ 11 6342.952200 7.786D-26 1.350E-04.0710.4228  552.91140.59-.012056  9  1 7 1 6    6 2 5   3542433 5
+ 21 6343.025857 6.122D-25 8.785E-08.0740.1020  773.79120.710.000000 84  2             P 16 455 2 2-1
+ 2 8.771607E-03 0.0000E+00 5.952241E-03 0.0000E+00 4.420050E-03 0.0000E+00 3.462818E-03 0.0000E+00-1
+ 21 6343.056059 9.450D-24 8.664E-08.0836.1141   16.38900.730.000000 71  1             P  6 465 2 2-1
+ 2-6.648806E-03 0.0000E+00-6.737539E-03 0.0000E+00-6.572902E-03 0.0000E+00-6.348492E-03 0.0000E+00-1
+ 21 6343.103866 1.896D-26 2.054E-07.0863.1190 1395.98820.740.000000101  5             P  4 255 2 2-1
+ 2-1.606481E-02 0.0000E+00-1.355196E-02 0.0000E+00-1.184801E-02 0.0000E+00-1.058686E-02 0.0000E+00-1
+ 14 6343.117150 9.601D-27 2.510E-01.0854.4240  711.79540.530.000000 13  1 8 2 6    8 3 5   3555403 0
+ 22 6343.142431 3.881D-26 2.441E-08.0701.0935  234.09450.780.000000 75  1             P 24 255 2 2-1
+ 2 1.071112E-02 0.0000E+00 7.450706E-03 0.0000E+00 5.540756E-03 0.0000E+00 4.280401E-03 0.0000E+00-1
+ 21 6343.221557 2.203D-26 8.444E-08.0722.0987 1483.94510.750.000000100  4             P 19 255 2 2-1
+ 2 6.515863E-03 0.0000E+00 3.878461E-03 0.0000E+00 2.464682E-03 0.0000E+00 1.597761E-03 0.0000E+00-1
+ 41 6343.693840 6.169D-25 1.083E-03.0713.0895  364.40630.75-.006150 78  1             P 29 466653  0
+ 21 6343.761908 6.103D-25 8.767E-08.0747.1032  761.12550.700.000000 84  2             P 15 455 2 2-1
+ 2 3.682135E-03 0.0000E+00 1.820921E-03 0.0000E+00 8.960528E-04 0.0000E+00 3.688361E-04 0.0000E+00-1
+ 11 6344.035720 7.383D-26 1.159E-03.0695.3200 1006.11590.53-.017000 10  1 7 0 7    8 3 6   3545423 0
+ 21 6344.231446 2.242D-26 8.424E-08.0728.0998 1469.06560.740.000000100  4             P 18 255 2 2-1
+ 2 1.023362E-02 0.0000E+00 7.015498E-03 0.0000E+00 5.230248E-03 0.0000E+00 4.095552E-03 0.0000E+00-1
+ 21 6344.684580 6.585D-24 8.362E-08.0863.1190    7.80430.740.000000 71  1             P  4 465 2 2-1
+ 2-1.555888E-02 0.0000E+00-1.312379E-02 0.0000E+00-1.147141E-02 0.0000E+00-1.024840E-02 0.0000E+00-1
+ 21 6344.696514 9.739D-27 1.848E-07.0893.1228 1390.52550.750.000000101  5             P  2 255 2 2-1
+ 2-2.387445E-02 0.0000E+00-1.953524E-02 0.0000E+00-1.682445E-02 0.0000E+00-1.491653E-02 0.0000E+00-1
+ 21 6344.771558 6.025D-25 8.744E-08.0754.1043  749.53750.690.000000 84  2             P 14 455 2 2-1
+ 2 6.974876E-03 0.0000E+00 4.408470E-03 0.0000E+00 3.040741E-03 0.0000E+00 2.200629E-03 0.0000E+00-1
+ 41 6344.892050 6.733D-25 1.089E-03.0716.0902  340.12080.75-.006108 78  1             P 28 466653  0
+ 71 6344.911944 5.586D-30 6.680E-06.0520.0510 1598.13880.710.000000  3  2         R 5Q 6  d0040001 0
+ 22 6344.986388 4.280D-26 2.452E-08.0708.0956  197.42610.770.000000 75  1             P 22 255 2 2-1
+ 2 1.008673E-02 0.0000E+00 6.910317E-03 0.0000E+00 5.091675E-03 0.0000E+00 3.911784E-03 0.0000E+00-1
+ 21 6345.023343 2.266D-26 8.400E-08.0734.1009 1454.96880.730.000000100  4             P 17 255 2 2-1
+ 2 5.427323E-03 0.0000E+00 3.062843E-03 0.0000E+00 1.831536E-03 0.0000E+00 1.094678E-03 0.0000E+00-1
+ 21 6345.533556 5.901D-25 8.715E-08.0762.1055  738.47180.690.000000 84  2             P 13 455 2 2-1
+ 2 2.764655E-03 0.0000E+00 8.621294E-04 0.0000E+00-8.169203E-05 0.0000E+00-6.196499E-04 0.0000E+00-1
+ 11 6345.895330 4.841D-26 3.958E-04.0821.3841  842.35660.59-.003916  9  1 6 4 3    7 3 4   3542433 5
+ 14 6345.920200 7.988D-26 3.650E-01.0910.4710  221.94610.690.000000 13  1 4 1 4    5 0 5   3555403 0
+ 21 6345.999590 2.272D-26 8.372E-08.0740.1020 1441.65480.710.000000100  4             P 16 255 2 2-1
+ 2 8.232365E-03 0.0000E+00 5.555222E-03 0.0000E+00 4.111330E-03 0.0000E+00 3.214839E-03 0.0000E+00-1
+ 41 6346.078260 7.298D-25 1.093E-03.0719.0909  316.67170.75-.006066 78  1             P 27 466653  0
+ 21 6346.283061 3.392D-24 7.548E-08.0893.1228    2.34130.750.000000 71  1             P  2 465 2 2-1
+ 2-2.332966E-02 0.0000E+00-1.907634E-02 0.0000E+00-1.642305E-02 0.0000E+00-1.455891E-02 0.0000E+00-1
+ 14 6346.342410 1.355D-26 1.459E-01.0856.4200  473.91770.590.000000 11  1 6 1 5    7 1 6   3555403 0
+ 21 6346.492532 5.717D-25 8.681E-08.0771.1067  728.41240.690.000000 84  2             P 12 455 2 2-1
+ 2 5.184112E-03 0.0000E+00 2.732334E-03 0.0000E+00 1.448230E-03 0.0000E+00 6.720198E-04 0.0000E+00-1
+ 51 6346.594000 4.029D-24 1.353E-02.0797.0864    3.84500.76-.004900  4  1             P  1 467663  0
+ 21 6346.798512 2.260D-26 8.340E-08.0747.1032 1429.12370.700.000000100  4             P 15 255 2 2-1
+ 2 3.824245E-03 0.0000E+00 1.872131E-03 0.0000E+00 8.963777E-04 0.0000E+00 3.368957E-04 0.0000E+00-1
+ 14 6346.804750 6.535D-27 3.838E-02.0917.4500  221.83610.730.000000 13  1 3 2 1    4 2 2   3555403 0
+ 22 6346.805949 4.607D-26 2.460E-08.0717.0977  163.87620.760.000000 75  1             P 20 255 2 2-1
+ 2 9.456003E-03 0.0000E+00 6.327787E-03 0.0000E+00 4.572246E-03 0.0000E+00 3.450107E-03 0.0000E+00-1
+ 14 6346.881090 1.323D-26 6.433E-02.0948.4650  182.98350.730.000000 13  1 3 1 2    4 1 3   3555403 0
+ 21 6347.037642 4.927D-27 4.621E-07.0949.1279 1388.18440.740.000000101  5             R  0 255 2 2-1
+ 2 2.148319E-02 0.0000E+00 1.675879E-02 0.0000E+00 1.390534E-02 0.0000E+00 1.194291E-02 0.0000E+00-1
+ 41 6347.252370 7.862D-25 1.097E-03.0722.0916  294.05890.75-.006024 78  1             P 26 466653  0
+ 21 6347.274375 5.482D-25 8.640E-08.0780.1079  718.94200.690.000000 84  2             P 11 455 2 2-1
+ 2 9.875295E-04 0.0000E+00-6.294328E-04 0.0000E+00-1.392239E-03 0.0000E+00-1.803339E-03 0.0000E+00-1
+ 11 6347.486900 6.455D-26 1.121E-03.0220.2818 1114.54990.41-.008788  9  111 011   10 110   3542433 5
+ 14 6347.511830 1.146D-26 2.255E-01.0879.4130  653.08880.530.000000 13  1 8 1 7    8 2 6   3555403 0
+ 21 6347.742438 2.228D-26 8.300E-08.0754.1043 1417.37560.690.000000100  4             P 14 255 2 2-1
+ 2 6.555857E-03 0.0000E+00 4.085533E-03 0.0000E+00 2.778549E-03 0.0000E+00 1.980426E-03 0.0000E+00-1
+ 21 6348.188702 5.187D-25 8.589E-08.0790.1091  710.41630.700.000000 84  2             P 10 455 2 2-1
+ 2 2.351247E-03 0.0000E+00 3.171856E-04 0.0000E+00-6.956247E-04 0.0000E+00-1.277464E-03 0.0000E+00-1
+ 14 6348.273930 4.357D-27 1.293E-01.0803.4130  711.79540.530.000000 11  1 7 3 4    8 3 5   3555403 0
+ 14 6348.294700 5.567D-27 7.508E-02.0873.4250  520.12350.590.000000 11  1 6 2 4    7 2 5   3555403 0
+ 14 6348.388350 8.593D-26 3.673E-01.0961.5200  156.38220.730.000000 13  1 3 0 3    4 1 4   3555403 0
+ 41 6348.414280 8.467D-25 1.106E-03.0726.0924  272.28280.75-.005982 78  1             P 25 466653  0
+ 71 6348.477965 7.792D-30 8.620E-06.0510.0500 1637.09050.710.000000  3  2         R 7R 7  d0040001 0
+ 21 6348.546983 2.175D-26 8.253E-08.0762.1055 1406.41040.690.000000100  4             P 13 255 2 2-1
+ 2 2.620436E-03 0.0000E+00 6.831968E-04 0.0000E+00-2.746346E-04 0.0000E+00-8.187246E-04 0.0000E+00-1
+ 21 6348.566467 1.462D-26 2.773E-07.0877.1204 1390.52550.750.000000101  5             R  2 255 2 2-1
+ 2 2.429202E-02 0.0000E+00 1.983399E-02 0.0000E+00 1.699592E-02 0.0000E+00 1.496970E-02 0.0000E+00-1
+ 22 6348.600912 4.832D-26 2.465E-08.0728.0998  133.44560.740.000000 75  1             P 18 255 2 2-1
+ 2 8.323920E-03 0.0000E+00 5.468926E-03 0.0000E+00 3.905675E-03 0.0000E+00 2.925722E-03 0.0000E+00-1
+ 21 6348.624369 1.725D-24 1.897E-07.0949.1279    0.00000.740.000000 71  1             R  0 465 2 2-1
+ 2 2.212303E-02 0.0000E+00 1.729745E-02 0.0000E+00 1.437716E-02 0.0000E+00 1.236466E-02 0.0000E+00-1
+ 21 6348.984304 4.840D-25 8.524E-08.0800.1103  702.53640.700.000000 84  2             P  9 455 2 2-1
+ 2-1.747165E-03 0.0000E+00-2.860965E-03 0.0000E+00-3.313123E-03 0.0000E+00-3.508845E-03 0.0000E+00-1
+ 21 6349.460334 2.102D-26 8.194E-08.0771.1067 1396.22830.690.000000100  4             P 12 255 2 2-1
+ 2 4.779161E-03 0.0000E+00 2.410944E-03 0.0000E+00 1.179755E-03 0.0000E+00 4.408721E-04 0.0000E+00-1
+ 41 6349.563920 9.032D-25 1.112E-03.0730.0932  251.34320.75-.005940 78  1             P 24 466653  0
+ 14 6349.670460 1.158D-26 1.562E-01.0946.4380  520.12350.590.000000 13  1 6 3 4    7 2 5   3555403 0
+ 14 6349.779970 6.334D-27 3.638E-02.0921.4700  217.04190.730.000000 13  1 3 2 2    4 2 3   3555403 0
+ 21 6349.860001 4.437D-25 8.440E-08.0811.1116  695.54960.710.000000 84  2             P  8 455 2 2-1
+ 2-2.060310E-03 0.0000E+00-3.093096E-03 0.0000E+00-3.492388E-03 0.0000E+00-3.651666E-03 0.0000E+00-1
+ 21 6350.069724 2.373D-26 2.567E-07.0849.1154 1395.98820.740.000000101  5             R  4 255 2 2-1
+ 2 1.631406E-02 0.0000E+00 1.417125E-02 0.0000E+00 1.264071E-02 0.0000E+00 1.146682E-02 0.0000E+00-1
+ 21 6350.147595 5.142D-24 1.143E-07.0877.1204    2.34130.750.000000 71  1             R  2 465 2 2-1
+ 2 2.501812E-02 0.0000E+00 2.044517E-02 0.0000E+00 1.753102E-02 0.0000E+00 1.544770E-02 0.0000E+00-1
+ 21 6350.268680 2.006D-26 8.123E-08.0780.1079 1386.82920.690.000000100  4             P 11 255 2 2-1
+ 2 4.879465E-04 0.0000E+00-1.065868E-03 0.0000E+00-1.785997E-03 0.0000E+00-2.164548E-03 0.0000E+00-1
+ 22 6350.371094 4.926D-26 2.467E-08.0740.1020  106.13480.710.000000 75  1             P 16 255 2 2-1
+ 2 6.694648E-03 0.0000E+00 4.263748E-03 0.0000E+00 2.973439E-03 0.0000E+00 2.185889E-03 0.0000E+00-1
+ 71 6350.499857 6.117D-30 6.706E-06.0510.0500 1635.06860.710.000000  3  2         R 7Q 8  d0040001 0
+ 21 6350.663288 3.984D-25 8.331E-08.0823.1128  689.25530.720.000000 84  2             P  7 455 2 2-1
+ 2-5.410493E-03 0.0000E+00-5.855950E-03 0.0000E+00-5.902028E-03 0.0000E+00-5.819519E-03 0.0000E+00-1
+ 41 6350.701190 9.556D-25 1.114E-03.0734.0941  231.24040.75-.005898 78  1             P 23 466653  0
+ 14 6350.824390 2.993D-26 1.337E-01.0918.4650  217.04190.730.000000 13  1 4 1 4    4 2 3   3555403 0
+ 21 6351.153573 1.888D-26 8.028E-08.0790.1091 1378.21330.700.000000100  4             P 10 255 2 2-1
+ 2 1.869619E-03 0.0000E+00-9.447611E-05 0.0000E+00-1.058957E-03 0.0000E+00-1.604212E-03 0.0000E+00-1
+ 14 6351.362090 2.178D-26 1.367E-01.0903.4380  362.50720.640.000000 13  1 6 0 6    6 1 5   3555403 0
+ 21 6351.506368 3.480D-25 8.177E-08.0836.1141  683.81240.730.000000 84  2             P  6 455 2 2-1
+ 2-7.466984E-03 0.0000E+00-7.323701E-03 0.0000E+00-7.026122E-03 0.0000E+00-6.716443E-03 0.0000E+00-1
+ 21 6351.547390 3.187D-26 2.488E-07.0823.1128 1404.57210.720.000000101  5             R  6 255 2 2-1
+ 2 9.801857E-03 0.0000E+00 9.399430E-03 0.0000E+00 8.876092E-03 0.0000E+00 8.370555E-03 0.0000E+00-1
+ 21 6351.640693 8.389D-24 1.064E-07.0849.1154    7.80430.740.000000 71  1             R  4 465 2 2-1
+ 2 1.707700E-02 0.0000E+00 1.482251E-02 0.0000E+00 1.321648E-02 0.0000E+00 1.198526E-02 0.0000E+00-1
+ 14 6351.728040 1.497D-26 1.145E-01.0804.3900  403.16150.590.000000 11  1 6 0 6    7 0 7   3555403 0
+ 41 6351.826010 1.008D-24 1.121E-03.0738.0949  211.97450.75-.005856 78  1             P 22 466653  0
+ 21 6351.963538 1.749D-26 7.907E-08.0800.1103 1370.38050.700.000000100  4             P  9 255 2 2-1
+ 2-2.715032E-03 0.0000E+00-3.637420E-03 0.0000E+00-3.965350E-03 0.0000E+00-4.072074E-03 0.0000E+00-1
+ 22 6352.116329 4.866D-26 2.465E-08.0754.1043   81.94400.690.000000 75  1             P 14 255 2 2-1
+ 2 5.297143E-03 0.0000E+00 3.039329E-03 0.0000E+00 1.864037E-03 0.0000E+00 1.159336E-03 0.0000E+00-1
+ 21 6352.311279 2.930D-25 7.951E-08.0849.1154  679.09900.740.000000 84  2             P  5 455 2 2-1
+ 2-1.247008E-02 0.0000E+00-1.109911E-02 0.0000E+00-1.006503E-02 0.0000E+00-9.253740E-03 0.0000E+00-1
+ 14 6352.756580 5.002D-27 1.415E-01.0775.3400  701.62040.530.000000 11  1 7 3 5    8 3 6   3555403 0
+ 21 6352.822403 1.587D-26 7.748E-08.0811.1116 1363.33090.710.000000100  4             P  8 255 2 2-1
+ 2-2.874498E-03 0.0000E+00-3.771871E-03 0.0000E+00-4.092990E-03 0.0000E+00-4.198336E-03 0.0000E+00-1
+ 41 6352.938320 1.056D-24 1.126E-03.0743.0958  193.54550.75-.005814 78  1             P 21 466653  0
+ 21 6352.999444 3.871D-26 2.447E-07.0800.1103 1416.27730.700.000000101  5             R  8 255 2 2-1
+ 2 4.940304E-03 0.0000E+00 5.675657E-03 0.0000E+00 5.828597E-03 0.0000E+00 5.780869E-03 0.0000E+00-1
+ 21 6353.103666 1.133D-23 1.037E-07.0823.1128   16.38900.720.000000 71  1             R  6 465 2 2-1
+ 2 1.056687E-02 0.0000E+00 1.006547E-02 0.0000E+00 9.472762E-03 0.0000E+00 8.913329E-03 0.0000E+00-1
+ 21 6353.127750 2.333D-25 7.591E-08.0863.1190  675.20500.740.000000 84  2             P  4 455 2 2-1
+ 2-1.756347E-02 0.0000E+00-1.454355E-02 0.0000E+00-1.257236E-02 0.0000E+00-1.115104E-02 0.0000E+00-1
+ 14 6353.225560 1.460D-26 1.124E-01.0801.3820  404.44560.590.000000 11  1 6 1 6    7 1 7   3555403 0
+ 71 6353.454582 4.416D-30 5.526E-06.0550.0540 1572.58650.710.000000  3  2         S 3R 4  d0040001 0
+ 11 6353.498250 3.631D-26 5.716E-04.0702.3283 1006.11590.530.000968  9  1 7 4 3    8 3 6   3542433 5
+ 21 6353.631494 1.402D-26 7.528E-08.0823.1128 1357.06450.720.000000100  4             P  7 255 2 2-1
+ 2-7.180528E-03 0.0000E+00-7.293239E-03 0.0000E+00-7.129921E-03 0.0000E+00-6.900322E-03 0.0000E+00-1
+ 22 6353.836465 4.633D-26 2.457E-08.0771.1067   60.87380.690.000000 75  1             P 12 255 2 2-1
+ 2 3.894272E-03 0.0000E+00 1.665032E-03 0.0000E+00 5.203440E-04 0.0000E+00-1.570112E-04 0.0000E+00-1
+ 21 6353.928232 1.685D-25 6.942E-08.0877.1204  672.06760.750.000000 84  2             P  3 455 2 2-1
+ 2-2.291922E-02 0.0000E+00-1.897516E-02 0.0000E+00-1.645949E-02 0.0000E+00-1.466706E-02 0.0000E+00-1
+ 71 6354.001150 7.216D-30 8.188E-06.0500.0490 1685.41000.710.000000  3  2         R 9R 9  d0040001 0
+ 41 6354.038030 1.101D-24 1.133E-03.0749.0968  175.95360.75-.005771 78  1             P 20 466653  0
+ 51 6354.179100 4.208D-24 4.633E-03.0797.0864    0.00000.76-.003100  4  1             R  0 467663  0
+ 21 6354.425864 4.403D-26 2.420E-07.0780.1079 1431.10380.690.000000101  5             R 10 255 2 2-1
+ 2 1.051419E-03 0.0000E+00 2.627925E-03 0.0000E+00 3.289551E-03 0.0000E+00 3.589928E-03 0.0000E+00-1
+ 21 6354.467021 1.195D-26 7.202E-08.0836.1141 1351.58140.730.000000100  4             P  6 255 2 2-1
+ 2-9.832486E-03 0.0000E+00-9.241951E-03 0.0000E+00-8.661091E-03 0.0000E+00-8.151915E-03 0.0000E+00-1
+ 21 6354.536534 1.385D-23 1.026E-07.0800.1103   28.09510.700.000000 71  1             R  8 465 2 2-1
+ 2 5.689355E-03 0.0000E+00 6.341195E-03 0.0000E+00 6.432684E-03 0.0000E+00 6.335779E-03 0.0000E+00-1
+ 14 6354.614340 1.819D-26 7.559E-02.0953.5100  150.15620.730.000000 13  1 3 0 3    4 0 4   3555403 0
+ 11 6354.692520 6.172D-26 2.305E-05.0965.4500   79.49640.770.001100  9  1 3 2 1    2 1 2   3544423 0
+ 21 6354.724103 9.584D-26 5.464E-08.0893.1228  669.72750.750.000000 84  2             P  2 455 2 2-1
+ 2-2.653887E-02 0.0000E+00-2.130457E-02 0.0000E+00-1.809658E-02 0.0000E+00-1.587693E-02 0.0000E+00-1
+ 11 6354.940160 2.606D-26 7.233E-05.0807.3590  648.97870.59-.006000  9  1 7 2 5    6 3 4   3544423 0
+ 21 6355.071160 4.671D-27 6.693E-10.0740.1020  773.79120.710.000000 84  2             Q 16 455 2 2-1
+ 2 3.963048E-02 0.0000E+00 3.108934E-02 0.0000E+00 2.583940E-02 0.0000E+00 2.212157E-02 0.0000E+00-1
+ 41 6355.125080 1.137D-24 1.138E-03.0754.0978  159.19880.75-.005729 78  1             P 19 466653  0
+ 11 6355.156200 3.127D-26 1.922E-04.0615.3841  586.47920.59-.003864  9  1 7 2 6    7 1 7   3542433 5
+ 21 6355.272498 9.626D-27 6.705E-08.0849.1154 1346.88150.740.000000100  4             P  5 255 2 2-1
+ 2-1.649962E-02 0.0000E+00-1.427650E-02 0.0000E+00-1.272164E-02 0.0000E+00-1.154508E-02 0.0000E+00-1
+ 21 6355.349993 5.983D-27 8.670E-10.0754.1043  749.53750.690.000000 84  2             Q 14 455 2 2-1
+ 2 1.801394E-02 0.0000E+00 1.097792E-02 0.0000E+00 7.609012E-03 0.0000E+00 5.844519E-03 0.0000E+00-1
+ 21 6355.525832 4.132D-27 5.949E-10.0734.1009  786.90280.730.000000 84  2             Q 17 455 2 2-1
+ 2 5.796358E-02 0.0000E+00 4.418734E-02 0.0000E+00 3.607304E-02 0.0000E+00 3.047544E-02 0.0000E+00-1
+ 22 6355.531371 4.221D-26 2.442E-08.0790.1091   42.92450.700.000000 75  1             P 10 255 2 2-1
+ 2 1.379947E-03 0.0000E+00-4.585223E-04 0.0000E+00-1.348307E-03 0.0000E+00-1.842729E-03 0.0000E+00-1
+ 21 6355.588025 4.312D-27 1.710E-10.0671.0808  704.30600.780.000000 72  1             P 42 000 0 0-1
+ 2 9.411128E-03 0.0000E+00 7.299494E-03 0.0000E+00 5.737902E-03 0.0000E+00 4.547482E-03 0.0000E+00-1
+ 21 6355.592952 7.694D-27 1.167E-09.0771.1067  728.41240.690.000000 84  2             Q 12 455 2 2-1
+ 2 5.977533E-02 0.0000E+00 4.690517E-02 0.0000E+00 3.870125E-02 0.0000E+00 3.172241E-02 0.0000E+00-1
+ 21 6355.691495 5.289D-27 7.585E-10.0747.1032  761.12550.700.000000 84  2             Q 15 455 2 2-1
+ 2 5.723535E-02 0.0000E+00 4.402124E-02 0.0000E+00 3.618047E-02 0.0000E+00 3.064867E-02 0.0000E+00-1
+ 21 6355.799996 1.000D-26 1.656E-09.0790.1091  710.41630.700.000000 84  2             Q 10 455 2 2-1
+ 2 9.783674E-02 0.0000E+00 7.814085E-02 0.0000E+00 6.593164E-02 0.0000E+00 5.783759E-02 0.0000E+00-1
+ 21 6355.826625 4.770D-26 2.403E-07.0762.1055 1449.05100.690.000000101  5             R 12 255 2 2-1
+ 2-2.014975E-03 0.0000E+00 1.851780E-04 0.0000E+00 1.228954E-03 0.0000E+00 1.792501E-03 0.0000E+00-1
+ 21 6355.837223 6.783D-27 1.000E-09.0762.1055  738.47180.690.000000 84  2             Q 13 455 2 2-1
+ 2 4.769300E-02 0.0000E+00 3.604593E-02 0.0000E+00 2.941284E-02 0.0000E+00 2.516635E-02 0.0000E+00-1
+ 21 6355.939329 1.586D-23 1.022E-07.0780.1079   42.92250.690.000000 71  1             R 10 465 2 2-1
+ 2 1.771279E-03 0.0000E+00 3.280995E-03 0.0000E+00 3.889978E-03 0.0000E+00 4.146553E-03 0.0000E+00-1
+ 21 6355.962960 8.761D-27 1.379E-09.0780.1079  718.94200.690.000000 84  2             Q 11 455 2 2-1
+ 2 2.560851E-01 0.0000E+00 2.053333E-01 0.0000E+00 1.733102E-01 0.0000E+00 1.503315E-01 0.0000E+00-1
+ 21 6355.971085 1.330D-26 2.528E-09.0811.1116  695.54960.710.000000 84  2             Q  8 455 2 2-1
+ 2 2.090154E-02 0.0000E+00 1.194800E-02 0.0000E+00 7.801418E-03 0.0000E+00 5.966978E-03 0.0000E+00-1
+ 71 6356.046774 5.960D-30 6.700E-06.0500.0490 1683.36430.710.000000  3  2         R 9Q10  d0040001 0
+ 21 6356.068658 1.150D-26 2.023E-09.0800.1103  702.53640.700.000000 84  2             Q  9 455 2 2-1
+ 2 1.559957E-01 0.0000E+00 1.233057E-01 0.0000E+00 1.034361E-01 0.0000E+00 8.972244E-02 0.0000E+00-1
+ 21 6356.087574 7.008D-27 5.852E-08.0863.1190 1342.96480.740.000000100  4             P  4 255 2 2-1
+ 2-2.505374E-02 0.0000E+00-2.041394E-02 0.0000E+00-1.744386E-02 0.0000E+00-1.532880E-02 0.0000E+00-1
+ 21 6356.106190 1.846D-26 4.334E-09.0836.1141  683.81240.730.000000 84  2             Q  6 455 2 2-1
+ 2 1.925760E-01 0.0000E+00 1.523664E-01 0.0000E+00 1.280161E-01 0.0000E+00 1.112681E-01 0.0000E+00-1
+ 21 6356.154274 1.556D-26 3.251E-09.0823.1128  689.25530.720.000000 84  2             Q  7 455 2 2-1
+ 2 1.627348E-01 0.0000E+00 1.276453E-01 0.0000E+00 1.066354E-01 0.0000E+00 9.237078E-02 0.0000E+00-1
+ 41 6356.199410 1.169D-24 1.145E-03.0761.0988  143.28120.75-.005687 78  1             P 18 466653  0
+ 21 6356.205287 2.799D-26 9.103E-09.0863.1190  675.20500.740.000000 84  2             Q  4 455 2 2-1
+ 2 5.012845E-01 0.0000E+00 3.989247E-01 0.0000E+00 3.358215E-01 0.0000E+00 2.916471E-01 0.0000E+00-1
+ 21 6356.219777 2.238D-26 6.069E-09.0849.1154  679.09900.740.000000 84  2             Q  5 455 2 2-1
+ 2-3.836611E-03 0.0000E+00-8.050575E-03 0.0000E+00-9.573092E-03 0.0000E+00-1.013534E-02 0.0000E+00-1
+ 21 6356.265142 3.684D-26 1.517E-08.0877.1204  672.06760.750.000000 84  2             Q  3 455 2 2-1
+ 2 2.554083E+00 0.0000E+00 2.020283E+00 0.0000E+00 1.694193E+00 0.0000E+00 1.467757E+00 0.0000E+00-1
+ 21 6356.268356 5.323D-26 3.034E-08.0893.1228  669.72750.750.000000 84  2             Q  2 455 2 2-1
+ 2-1.296071E+00 0.0000E+00-1.037567E+00 0.0000E+00-8.768411E-01 0.0000E+00-7.638310E-01 0.0000E+00-1
+ 21 6356.290350 9.655D-26 9.102E-08.0949.1279  668.16130.740.000000 84  2             Q  1 455 2 2-1
+ 2-5.223623E-01 0.0000E+00-4.156969E-01 0.0000E+00-3.498587E-01 0.0000E+00-3.037972E-01 0.0000E+00-1
+ 61 6356.376500 4.117D-26 0.000E+00.0600.0700   -1.00000.75-.012713 12 12                  2111123 0
+ 14 6356.706450 1.109D-26 1.298E-01.0814.3770  490.42740.590.000000 11  1 6 2 5    7 2 6   3555403 0
+ 21 6356.886501 3.953D-27 4.180E-08.0877.1204 1339.83150.750.000000100  4             P  3 255 2 2-1
+ 2-3.647837E-02 0.0000E+00-2.986624E-02 0.0000E+00-2.586616E-02 0.0000E+00-2.313810E-02 0.0000E+00-1
+ 14 6356.985620 1.472D-26 6.310E-02.0920.4960  156.38220.730.000000 13  1 3 1 3    4 1 4   3555403 0
+ 21 6357.110761 5.097D-27 1.550E-10.0673.0833  639.60500.780.000000 72  1             P 40 000 0 0-1
+ 2 9.483581E-03 0.0000E+00 7.159480E-03 0.0000E+00 5.496664E-03 0.0000E+00 4.256436E-03 0.0000E+00-1
+ 22 6357.200931 3.634D-26 2.415E-08.0811.1116   28.09640.710.000000 75  1             P  8 255 2 2-1
+ 2-2.538267E-03 0.0000E+00-3.476782E-03 0.0000E+00-3.815067E-03 0.0000E+00-3.929753E-03 0.0000E+00-1
+ 21 6357.201707 4.969D-26 2.390E-07.0747.1032 1470.11890.700.000000101  5             R 14 255 2 2-1
+ 2-4.502289E-03 0.0000E+00-1.874234E-03 0.0000E+00-5.641148E-04 0.0000E+00 1.842797E-04 0.0000E+00-1
+ 41 6357.260950 1.189D-24 1.148E-03.0767.0998  128.20090.75-.005645 78  1             P 17 466653  0
+ 21 6357.312096 1.731D-23 1.022E-07.0762.1055   60.87090.690.000000 71  1             R 12 465 2 2-1
+ 2-1.332117E-03 0.0000E+00 8.180895E-04 0.0000E+00 1.818177E-03 0.0000E+00 2.343402E-03 0.0000E+00-1
+ 51 6357.813900 8.364D-24 5.636E-03.0748.0821    3.84500.75-.003700  4  1             R  1 467663  0
+ 21 6357.834603 9.651D-26 9.097E-08.0893.1228  668.16130.750.000000 84  2             R  1 455 2 2-1
+ 2 3.443433E-02 0.0000E+00 2.753851E-02 0.0000E+00 2.327710E-02 0.0000E+00 2.029469E-02 0.0000E+00-1
+ 11 6357.881310 3.429D-26 9.110E-05.0734.4291  610.34120.64-.008384  9  1 6 3 4    5 4 1   3542433 5
+ 14 6357.978850 3.143D-26 1.341E-01.0970.4520  155.38900.770.000000 13  1 3 1 3    3 2 2   3555403 0
+ 41 6358.309640 1.206D-24 1.157E-03.0774.1009  113.95800.75-.005603 78  1             P 16 466653  0
+ 21 6358.551085 5.008D-26 2.380E-07.0734.1009 1494.30730.730.000000101  5             R 16 255 2 2-1
+ 2-7.216082E-03 0.0000E+00-3.884913E-03 0.0000E+00-2.137200E-03 0.0000E+00-1.086782E-03 0.0000E+00-1
+ 21 6358.605266 1.702D-25 9.698E-08.0877.1204  669.72750.750.000000 84  2             R  2 455 2 2-1
+ 2 2.809432E-02 0.0000E+00 2.286007E-02 0.0000E+00 1.955051E-02 0.0000E+00 1.719788E-02 0.0000E+00-1
+ 21 6358.637558 5.889D-27 1.396E-10.0675.0859  578.01500.780.000000 72  1             P 38 000 0 0-1
+ 2 9.501879E-03 0.0000E+00 6.964330E-03 0.0000E+00 5.207957E-03 0.0000E+00 3.926613E-03 0.0000E+00-1
+ 21 6358.654896 1.817D-23 1.025E-07.0747.1032   81.94010.700.000000 71  1             R 14 465 2 2-1
+ 2-3.861394E-03 0.0000E+00-1.268287E-03 0.0000E+00 6.074630E-06 0.0000E+00 7.209902E-04 0.0000E+00-1
+ 22 6358.845047 2.886D-26 2.370E-08.0836.1141   16.38970.730.000000 75  1             P  6 255 2 2-1
+ 2-7.137672E-03 0.0000E+00-7.159589E-03 0.0000E+00-6.949509E-03 0.0000E+00-6.691279E-03 0.0000E+00-1
+ 21 6359.189089 4.200D-27 3.508E-08.0863.1190 1342.96480.740.000000100  4             Q  4 255 2 2-1
+ 2 1.048288E-01 0.0000E+00 7.374856E-02 0.0000E+00 5.664944E-02 0.0000E+00 4.568611E-02 0.0000E+00-1
+ 14 6359.211870 2.259D-26 2.650E-01.0902.4420  520.12350.590.000000 13  1 7 1 6    7 2 5   3555403 0
+ 21 6359.220880 5.530D-27 5.847E-08.0877.1204 1339.83150.750.000000100  4             Q  3 255 2 2-1
+ 2 7.282142E-01 0.0000E+00 5.665047E-01 0.0000E+00 4.696149E-01 0.0000E+00 4.032578E-01 0.0000E+00-1
+ 21 6359.236481 7.992D-27 1.169E-07.0893.1228 1337.48160.750.000000100  4             Q  2 255 2 2-1
+ 2-1.252040E+00 0.0000E+00-9.946731E-01 0.0000E+00-8.362745E-01 0.0000E+00-7.257530E-01 0.0000E+00-1
+ 21 6359.342678 2.366D-25 9.739E-08.0863.1190  672.06760.740.000000 84  2             R  3 455 2 2-1
+ 2 2.143844E-02 0.0000E+00 1.781674E-02 0.0000E+00 1.544734E-02 0.0000E+00 1.372505E-02 0.0000E+00-1
+ 41 6359.345440 1.206D-24 1.159E-03.0782.1020  100.55250.75-.005560 78  1             P 15 466653  0
+ 71 6359.486084 6.193D-30 7.902E-06.0480.0470 1745.08330.710.000000  3  2         R11R11  d0040001 0
+ 14 6359.747540 2.066D-26 1.536E-01.0892.4400  362.50720.640.000000 11  1 5 1 4    6 1 5   3555403 0
+ 21 6359.874736 4.902D-26 2.373E-07.0722.0987 1521.61550.750.000000101  5             R 18 255 2 2-1
+ 2-9.346342E-03 0.0000E+00-5.497751E-03 0.0000E+00-3.408959E-03 0.0000E+00-2.115096E-03 0.0000E+00-1
+ 21 6359.967802 1.847D-23 1.029E-07.0734.1009  106.12970.730.000000 71  1             R 16 465 2 2-1
+ 2-6.638488E-03 0.0000E+00-3.318609E-03 0.0000E+00-1.593265E-03 0.0000E+00-5.677915E-04 0.0000E+00-1
+ 21 6360.113785 2.982D-25 9.693E-08.0849.1154  675.20500.740.000000 84  2             R  4 455 2 2-1
+ 2 1.865603E-02 0.0000E+00 1.600212E-02 0.0000E+00 1.416440E-02 0.0000E+00 1.277976E-02 0.0000E+00-1
+ 21 6360.168096 6.645D-27 1.249E-10.0677.0885  519.53800.780.000000 72  1             P 36 000 0 0-1
+ 2 9.405134E-03 0.0000E+00 6.664300E-03 0.0000E+00 4.829012E-03 0.0000E+00 3.519920E-03 0.0000E+00-1
+ 14 6360.278290 7.947D-26 3.637E-01.0995.4390  100.39090.770.000000 13  1 2 0 2    3 1 3   3555403 0
+ 41 6360.368290 1.202D-24 1.168E-03.0790.1032   87.98450.75-.005518 78  1             P 14 466653  0
+ 22 6360.463637 2.006D-26 2.280E-08.0863.1190    7.80470.740.000000 75  1             P  4 255 2 2-1
+ 2-1.616724E-02 0.0000E+00-1.363875E-02 0.0000E+00-1.192439E-02 0.0000E+00-1.065567E-02 0.0000E+00-1
+ 21 6360.819600 3.554D-25 9.631E-08.0836.1141  679.09900.730.000000 84  2             R  5 455 2 2-1
+ 2 1.221571E-02 0.0000E+00 1.113199E-02 0.0000E+00 1.021732E-02 0.0000E+00 9.453666E-03 0.0000E+00-1
+ 21 6361.172637 4.674D-26 2.367E-07.0713.0966 1552.04350.760.000000101  5             R 20 255 2 2-1
+ 2-1.108624E-02 0.0000E+00-6.942102E-03 0.0000E+00-4.632896E-03 0.0000E+00-3.170650E-03 0.0000E+00-1
+ 21 6361.250904 1.824D-23 1.035E-07.0722.0987  133.43930.750.000000 71  1             R 18 465 2 2-1
+ 2-8.837729E-03 0.0000E+00-4.975377E-03 0.0000E+00-2.894218E-03 0.0000E+00-1.615672E-03 0.0000E+00-1
+ 51 6361.343500 1.224D-23 6.123E-03.0709.0785   11.53500.74-.004900  4  1             R  2 467663  0
+ 41 6361.378140 1.185D-24 1.175E-03.0798.1043   76.25420.75-.005476 78  1             P 13 466653  0
+ 11 6361.442380 8.875D-27 1.200E-03.0170.2600 1327.11760.39-.010820  9  112 012   11 111   3542433 5
+ 71 6361.553294 5.290D-30 6.688E-06.0480.0470 1743.01600.710.000000  3  2         R11Q12  d0040001 0
+ 21 6361.570860 3.993D-27 5.841E-08.0877.1204 1337.48160.750.000000100  4             R  2 255 2 2-1
+ 2 4.490089E-02 0.0000E+00 3.631876E-02 0.0000E+00 3.094485E-02 0.0000E+00 2.714937E-02 0.0000E+00-1
+ 21 6361.597176 4.082D-25 9.573E-08.0823.1128  683.81240.720.000000 84  2             R  6 455 2 2-1
+ 2 1.221440E-02 0.0000E+00 1.131205E-02 0.0000E+00 1.048255E-02 0.0000E+00 9.763952E-03 0.0000E+00-1
+ 21 6361.702070 7.316D-27 1.112E-10.0679.0910  464.17400.780.000000 72  1             P 34 000 0 0-1
+ 2 9.163682E-03 0.0000E+00 6.239451E-03 0.0000E+00 4.345124E-03 0.0000E+00 3.024684E-03 0.0000E+00-1
+ 14 6361.833040 1.985D-26 1.125E-01.0915.4680  265.23620.690.000000 13  1 4 2 3    5 1 4   3555403 0
+ 11 6362.054740 2.554D-26 1.151E-03.0177.1700 1327.11000.39-.015000  9  112 112   11 011   3544423 0
+ 22 6362.056637 1.029D-26 2.049E-08.0893.1228    2.34140.750.000000 75  1             P  2 255 2 2-1
+ 2-2.402392E-02 0.0000E+00-1.966082E-02 0.0000E+00-1.693288E-02 0.0000E+00-1.501130E-02 0.0000E+00-1
+ 21 6362.265358 4.563D-25 9.525E-08.0811.1116  689.25530.710.000000 84  2             R  7 455 2 2-1
+ 2 5.724801E-03 0.0000E+00 6.212141E-03 0.0000E+00 6.221682E-03 0.0000E+00 6.079501E-03 0.0000E+00-1
+ 21 6362.322395 7.104D-27 7.507E-08.0863.1190 1339.83150.740.000000100  4             R  3 255 2 2-1
+ 2 2.958956E-02 0.0000E+00 2.431229E-02 0.0000E+00 2.092767E-02 0.0000E+00 1.849890E-02 0.0000E+00-1
+ 41 6362.374940 1.153D-24 1.179E-03.0807.1056   65.36140.75-.005434 78  1             P 12 466653  0
+ 21 6362.444764 4.349D-26 2.362E-07.0704.0946 1585.59050.770.000000101  5             R 22 255 2 2-1
+ 2-1.238101E-02 0.0000E+00-8.047042E-03 0.0000E+00-5.576122E-03 0.0000E+00-3.982845E-03 0.0000E+00-1
+ 21 6362.504303 1.756D-23 1.042E-07.0713.0966  163.86840.760.000000 71  1             R 20 465 2 2-1
+ 2-1.065163E-02 0.0000E+00-6.470829E-03 0.0000E+00-4.155164E-03 0.0000E+00-2.698697E-03 0.0000E+00-1
+ 21 6363.055439 4.993D-25 9.479E-08.0800.1103  695.54960.700.000000 84  2             R  8 455 2 2-1
+ 2 7.986101E-03 0.0000E+00 8.082938E-03 0.0000E+00 7.842913E-03 0.0000E+00 7.520959E-03 0.0000E+00-1
+ 21 6363.083504 9.792D-27 8.170E-08.0849.1154 1342.96480.740.000000100  4             R  4 255 2 2-1
+ 2 2.246613E-02 0.0000E+00 1.906838E-02 0.0000E+00 1.677058E-02 0.0000E+00 1.506271E-02 0.0000E+00-1
+ 14 6363.211610 7.705D-26 3.211E-01.0943.4640  150.15620.730.000000 13  1 3 1 3    4 0 4   3555403 0
+ 21 6363.239191 7.851D-27 9.820E-11.0682.0935  411.92400.780.000000 72  1             P 32 000 0 0-1
+ 2 8.823281E-03 0.0000E+00 5.735520E-03 0.0000E+00 3.800302E-03 0.0000E+00 2.482619E-03 0.0000E+00-1
+ 11 6363.242910 6.455D-26 3.681E-02.0625.2600 1813.22340.41-.009872 11  110 1 9   11 3 8   3542433 5
+ 14 6363.279250 3.090D-26 1.475E-01.0959.5040  108.92620.780.000000 13  1 2 1 2    2 2 1   3555403 0
+ 41 6363.358670 1.113D-24 1.187E-03.0817.1069   55.30640.75-.005391 78  1             P 11 466653  0
+ 21 6363.679951 5.372D-25 9.441E-08.0790.1091  702.53640.700.000000 84  2             R  9 455 2 2-1
+ 2 1.575261E-04 0.0000E+00 1.978892E-03 0.0000E+00 2.786569E-03 0.0000E+00 3.186813E-03 0.0000E+00-1
+ 21 6363.691091 3.957D-26 2.357E-07.0698.0926 1622.25630.780.000000101  5             R 24 255 2 2-1
+ 2-1.366356E-02 0.0000E+00-9.152119E-03 0.0000E+00-6.515949E-03 0.0000E+00-4.782658E-03 0.0000E+00-1
+ 21 6363.728118 1.651D-23 1.051E-07.0704.0946  197.41660.770.000000 71  1             R 22 465 2 2-1
+ 2-1.201888E-02 0.0000E+00-7.626580E-03 0.0000E+00-5.135363E-03 0.0000E+00-3.538299E-03 0.0000E+00-1
+ 21 6363.814521 1.219D-26 8.481E-08.0836.1141 1346.88150.730.000000100  4             R  5 255 2 2-1
+ 2 1.508548E-02 0.0000E+00 1.343189E-02 0.0000E+00 1.216724E-02 0.0000E+00 1.116123E-02 0.0000E+00-1
+ 14 6364.027790 1.380D-26 6.836E-02.0969.4730  116.46130.770.000000 13  1 2 1 1    3 1 2   3555403 0
+ 41 6364.329280 1.060D-24 1.195E-03.0827.1082   46.08910.75-.005349 78  1             P 10 466653  0
+ 22 6364.398058 5.186D-27 5.106E-08.0949.1279    0.00000.740.000000 75  1             R  0 255 2 2-1
+ 2 2.124867E-02 0.0000E+00 1.656078E-02 0.0000E+00 1.373250E-02 0.0000E+00 1.178969E-02 0.0000E+00-1
+ 14 6364.430630 1.553D-26 1.412E-01.0874.4410  403.54900.640.000000 11  1 5 2 3    6 2 4   3555403 0
+ 21 6364.488581 5.694D-25 9.404E-08.0780.1079  710.41630.690.000000 84  2             R 10 455 2 2-1
+ 2 4.820931E-03 0.0000E+00 5.652661E-03 0.0000E+00 5.849277E-03 0.0000E+00 5.821981E-03 0.0000E+00-1
+ 21 6364.571938 1.436D-26 8.648E-08.0823.1128 1351.58140.720.000000100  4             R  6 255 2 2-1
+ 2 1.320064E-02 0.0000E+00 1.212149E-02 0.0000E+00 1.118198E-02 0.0000E+00 1.038694E-02 0.0000E+00-1
+ 14 6364.716650 5.123D-27 3.092E-02.0914.4760  157.06470.770.000000 13  1 2 2 0    3 2 1   3555403 0
+ 71 6364.754690 4.612D-30 4.810E-06.0520.0510 1598.13880.710.000000  3  2         S 5R 6  d0040001 0
+ 51 6364.767600 1.562D-23 6.435E-03.0676.0753   23.06950.74-.005100  4  1             R  3 467663  0
+ 21 6364.779187 8.199D-27 8.607E-11.0686.0960  362.78900.780.000000 72  1             P 30 000 0 0-1
+ 2 8.299018E-03 0.0000E+00 5.082704E-03 0.0000E+00 3.133411E-03 0.0000E+00 1.838290E-03 0.0000E+00-1
+ 11 6364.805130 2.824D-26 1.504E-04.0874.3841  782.40980.590.000592  9  1 7 3 4    7 2 5   3542433 5
+ 21 6364.911593 3.522D-26 2.354E-07.0692.0906 1662.04040.780.000000101  5             R 26 255 2 2-1
+ 2-1.445686E-02 0.0000E+00-9.961590E-03 0.0000E+00-7.277230E-03 0.0000E+00-5.482506E-03 0.0000E+00-1
+ 21 6364.922481 1.518D-23 1.060E-07.0698.0926  234.08330.780.000000 71  1             R 24 465 2 2-1
+ 2-1.338371E-02 0.0000E+00-8.790981E-03 0.0000E+00-6.119007E-03 0.0000E+00-4.370774E-03 0.0000E+00-1
+ 71 6364.931258 4.948D-30 7.700E-06.0470.0460 1816.10050.710.000000  3  2         R13R13  d0040001 0
+ 21 6365.063381 5.963D-25 9.373E-08.0771.1067  718.94200.690.000000 84  2             R 11 455 2 2-1
+ 2-4.250969E-03 0.0000E+00-1.547999E-03 0.0000E+00-1.971504E-04 0.0000E+00 5.796157E-04 0.0000E+00-1
+ 14 6365.155190 7.342D-27 1.345E-01.0823.4070  581.96210.590.000000 11  1 6 3 3    7 3 4   3555403 0
+ 21 6365.279522 1.631D-26 8.742E-08.0811.1116 1357.06450.710.000000100  4             R  7 255 2 2-1
+ 2 7.201721E-03 0.0000E+00 7.385858E-03 0.0000E+00 7.215404E-03 0.0000E+00 6.950833E-03 0.0000E+00-1
+ 41 6365.286730 9.959D-25 1.206E-03.0838.1095   37.70960.75-.005307 78  1             P  9 466653  0
+ 14 6365.592070 2.098D-26 1.189E-01.0864.4320  306.31480.640.000000 11  1 5 0 5    6 0 6   3555403 0
+ 21 6365.896620 6.172D-25 9.344E-08.0762.1055  728.41240.690.000000 84  2             R 12 455 2 2-1
+ 2 2.692191E-03 0.0000E+00 3.987726E-03 0.0000E+00 4.460929E-03 0.0000E+00 4.619688E-03 0.0000E+00-1
+ 22 6365.926915 1.533D-26 3.053E-08.0877.1204    2.34140.750.000000 75  1             R  2 255 2 2-1
+ 2 2.402869E-02 0.0000E+00 1.961073E-02 0.0000E+00 1.680041E-02 0.0000E+00 1.479597E-02 0.0000E+00-1
+ 21 6366.035961 1.803D-26 8.789E-08.0800.1103 1363.33090.700.000000100  4             R  8 255 2 2-1
+ 2 7.910990E-03 0.0000E+00 8.028538E-03 0.0000E+00 7.801762E-03 0.0000E+00 7.490255E-03 0.0000E+00-1
+ 21 6366.087541 1.366D-23 1.070E-07.0692.0906  273.86800.780.000000 71  1             R 26 465 2 2-1
+ 2-1.425142E-02 0.0000E+00-9.657452E-03 0.0000E+00-6.924672E-03 0.0000E+00-5.105518E-03 0.0000E+00-1
+ 21 6366.106245 3.072D-26 2.351E-07.0687.0887 1704.94200.780.000000101  5             R 28 255 2 2-1
+ 2-1.503008E-02 0.0000E+00-1.060566E-02 0.0000E+00-7.908985E-03 0.0000E+00-6.077578E-03 0.0000E+00-1
+ 14 6366.108080 4.962D-27 2.972E-02.0902.5000  155.38900.770.000000 13  1 2 2 1    3 2 2   3555403 0
+ 41 6366.231000 9.193D-25 1.216E-03.0849.1109   30.16790.75-.005264 78  1             P  8 466653  0
+ 21 6366.321800 8.319D-27 7.470E-11.0690.0983  316.77100.780.000000 72  1             P 28 000 0 0-1
+ 2 7.460846E-03 0.0000E+00 4.178622E-03 0.0000E+00 2.257791E-03 0.0000E+00 1.015397E-03 0.0000E+00-1
+ 21 6366.415658 6.330D-25 9.317E-08.0754.1043  738.47180.690.000000 84  2             R 13 455 2 2-1
+ 2-7.977050E-03 0.0000E+00-4.614565E-03 0.0000E+00-2.852243E-03 0.0000E+00-1.788149E-03 0.0000E+00-1
+ 14 6366.669300 3.711D-26 1.723E-01.0934.4570  265.23620.690.000000 13  1 5 0 5    5 1 4   3555403 0
+ 21 6366.717398 1.954D-26 8.819E-08.0790.1091 1370.38050.700.000000100  4             R  9 255 2 2-1
+ 2 1.397853E-03 0.0000E+00 2.942460E-03 0.0000E+00 3.584371E-03 0.0000E+00 3.871828E-03 0.0000E+00-1
+ 11 6366.949540 3.691D-26 1.028E-03.0773.3700 1122.70850.53-.014336 10  1 7 1 6    8 4 5   3544433 0
+ 71 6367.018806 4.329D-30 6.674E-06.0470.0460 1814.01290.710.000000  3  2         R13Q14  d0040001 0
+ 41 6367.162050 8.346D-25 1.233E-03.0861.1124   23.46410.75-.005222 78  1             P  7 466653  0
+ 14 6367.166180 3.663D-26 2.820E-01.0932.4610  403.54900.640.000000 13  1 6 1 5    6 2 4   3555403 0
+ 21 6367.223459 1.205D-23 1.082E-07.0687.0887  316.76980.780.000000 71  1             R 28 465 2 2-1
+ 2-1.489529E-02 0.0000E+00-1.035746E-02 0.0000E+00-7.600983E-03 0.0000E+00-5.736249E-03 0.0000E+00-1
+ 21 6367.275020 2.626D-26 2.348E-07.0684.0869 1750.96080.780.000000101  5             R 30 255 2 2-1
+ 2-1.553123E-02 0.0000E+00-1.121018E-02 0.0000E+00-8.524243E-03 0.0000E+00-6.672358E-03 0.0000E+00-1
+ 21 6367.279580 6.426D-25 9.293E-08.0747.1032  749.53750.700.000000 84  2             R 14 455 2 2-1
+ 2 1.533713E-03 0.0000E+00 2.983154E-03 0.0000E+00 3.548010E-03 0.0000E+00 3.767268E-03 0.0000E+00-1
+ 22 6367.430092 2.479D-26 2.816E-08.0849.1154    7.80470.740.000000 75  1             R  4 255 2 2-1
+ 2 1.601249E-02 0.0000E+00 1.391421E-02 0.0000E+00 1.241426E-02 0.0000E+00 1.126414E-02 0.0000E+00-1
+ 21 6367.475324 2.083D-26 8.835E-08.0780.1079 1378.21330.690.000000100  4             R 10 255 2 2-1
+ 2 4.072992E-03 0.0000E+00 5.074008E-03 0.0000E+00 5.376941E-03 0.0000E+00 5.425049E-03 0.0000E+00-1
+ 21 6367.736798 6.477D-25 9.269E-08.0740.1020  761.12550.710.000000 84  2             R 15 455 2 2-1
+ 2-1.195585E-02 0.0000E+00-7.757238E-03 0.0000E+00-5.477484E-03 0.0000E+00-4.055434E-03 0.0000E+00-1
+ 14 6367.792240 7.463D-27 1.335E-01.0793.3710  576.90470.590.000000 11  1 6 3 4    7 3 5   3555403 0
+ 21 6367.866786 8.184D-27 6.411E-11.0695.1005  273.86800.780.000000 72  1             P 26 000 0 0-1
+ 2 6.401712E-03 0.0000E+00 3.116246E-03 0.0000E+00 1.262614E-03 0.0000E+00 9.855805E-05 0.0000E+00-1
+ 14 6367.974320 2.053D-26 1.178E-01.0856.4200  308.61570.640.000000 11  1 5 1 5    6 1 6   3555403 0
+ 41 6368.079860 7.379D-25 1.253E-03.0874.1139   17.59820.75-.005180 78  1             P  6 466653  0
+ 51 6368.086100 1.835D-23 6.672E-03.0650.0727   38.44810.74-.005100  4  1             R  4 467663  0
+ 21 6368.128154 2.190D-26 8.843E-08.0771.1067 1386.82920.690.000000100  4             R 11 255 2 2-1
+ 2-2.837702E-03 0.0000E+00-4.824423E-04 0.0000E+00 6.630677E-04 0.0000E+00 1.302263E-03 0.0000E+00-1
+ 11 6368.315220 4.236D-26 1.796E-03.0791.3283  982.91170.53-.006428 10  1 7 1 7    8 2 6   3542433 5
+ 21 6368.330417 1.043D-23 1.093E-07.0684.0869  362.78820.780.000000 71  1             R 30 465 2 2-1
+ 2-1.546738E-02 0.0000E+00-1.102057E-02 0.0000E+00-8.264492E-03 0.0000E+00-6.370763E-03 0.0000E+00-1
+ 21 6368.417890 2.202D-26 2.346E-07.0681.0852 1800.09590.780.000000101  5             R 32 255 2 2-1
+ 2-1.587002E-02 0.0000E+00-1.168437E-02 0.0000E+00-9.034775E-03 0.0000E+00-7.182127E-03 0.0000E+00-1
+ 21 6368.637492 6.469D-25 9.246E-08.0734.1009  773.79120.730.000000 84  2             R 16 455 2 2-1
+ 2 6.839545E-04 0.0000E+00 2.421855E-03 0.0000E+00 3.159475E-03 0.0000E+00 3.492228E-03 0.0000E+00-1
+ 21 6368.889727 2.274D-26 8.845E-08.0762.1055 1396.22830.690.000000100  4             R 12 255 2 2-1
+ 2 1.294079E-03 0.0000E+00 2.909319E-03 0.0000E+00 3.579843E-03 0.0000E+00 3.877214E-03 0.0000E+00-1
+ 22 6368.907603 3.314D-26 2.717E-08.0823.1128   16.38970.720.000000 75  1             R  6 255 2 2-1
+ 2 9.461579E-03 0.0000E+00 9.107683E-03 0.0000E+00 8.617593E-03 0.0000E+00 8.137743E-03 0.0000E+00-1
+ 41 6368.984420 6.290D-25 1.274E-03.0887.1154   12.57020.75-.005137 78  1             P  5 466653  0
+ 21 6369.026822 6.423D-25 9.225E-08.0728.0998  786.90280.740.000000 84  2             R 17 455 2 2-1
+ 2-1.657884E-02 0.0000E+00-1.122452E-02 0.0000E+00-8.224916E-03 0.0000E+00-6.304141E-03 0.0000E+00-1
+ 14 6369.338950 1.868D-26 8.203E-02.0975.4880   91.33020.770.000000 13  1 2 0 2    3 0 3   3555403 0
+ 21 6369.408609 8.857D-24 1.106E-07.0681.0852  411.92250.780.000000 71  1             R 32 465 2 2-1
+ 2-1.587292E-02 0.0000E+00-1.155166E-02 0.0000E+00-8.822843E-03 0.0000E+00-6.920468E-03 0.0000E+00-1
+ 21 6369.413918 7.786D-27 5.441E-11.0701.1026  234.08400.780.000000 72  1             P 24 000 0 0-1
+ 2 5.006934E-03 0.0000E+00 1.802792E-03 0.0000E+00 6.699790E-05 0.0000E+00-9.853105E-04 0.0000E+00-1
+ 21 6369.511807 2.337D-26 8.839E-08.0754.1043 1406.41040.690.000000100  4             R 13 255 2 2-1
+ 2-6.116084E-03 0.0000E+00-3.222117E-03 0.0000E+00-1.738092E-03 0.0000E+00-8.607380E-04 0.0000E+00-1
+ 21 6369.534825 1.812D-26 2.344E-07.0678.0835 1852.34670.780.000000101  5             R 34 255 2 2-1
+ 2-1.606111E-02 0.0000E+00-1.202995E-02 0.0000E+00-9.435382E-03 0.0000E+00-7.597711E-03 0.0000E+00-1
+ 11 6369.834720 3.631D-26 2.800E-04.0872.4228  602.77350.64-.002600  9  1 6 3 3    6 2 4   3542433 5
+ 41 6369.875690 5.161D-25 1.318E-03.0901.1170    8.38020.75-.005095 78  1             P  4 466653  0
+ 21 6369.970398 6.321D-25 9.205E-08.0722.0987  801.17320.750.000000 84  2             R 18 455 2 2-1
+ 2 1.192036E-03 0.0000E+00 2.879210E-03 0.0000E+00 3.593303E-03 0.0000E+00 3.908144E-03 0.0000E+00-1
+ 21 6370.278819 2.379D-26 8.835E-08.0747.1032 1417.37560.700.000000100  4             R 14 255 2 2-1
+ 2-6.822593E-04 0.0000E+00 1.265597E-03 0.0000E+00 2.139490E-03 0.0000E+00 2.575421E-03 0.0000E+00-1
+ 21 6370.285758 6.193D-25 9.184E-08.0717.0977  815.80330.760.000000 84  2             R 19 455 2 2-1
+ 2-2.154620E-02 0.0000E+00-1.502255E-02 0.0000E+00-1.127413E-02 0.0000E+00-8.824745E-03 0.0000E+00-1
+ 71 6370.335063 3.693D-30 7.550E-06.0460.0450 1898.45020.710.000000  3  2         R15R15  d0040001 0
+ 22 6370.359478 4.003D-26 2.656E-08.0800.1103   28.09640.700.000000 75  1             R  8 255 2 2-1
+ 2 4.561497E-03 0.0000E+00 5.348992E-03 0.0000E+00 5.537679E-03 0.0000E+00 5.517486E-03 0.0000E+00-1
+ 21 6370.458248 7.385D-24 1.120E-07.0678.0835  464.17170.780.000000 71  1             R 34 465 2 2-1
+ 2-1.612479E-02 0.0000E+00-1.195020E-02 0.0000E+00-9.268394E-03 0.0000E+00-7.373657E-03 0.0000E+00-1
+ 21 6370.625797 1.464D-26 2.342E-07.0676.0818 1907.71250.780.000000101  5             R 36 255 2 2-1
+ 2-1.620411E-02 0.0000E+00-1.233256E-02 0.0000E+00-9.802684E-03 0.0000E+00-7.989429E-03 0.0000E+00-1
+ 41 6370.753670 3.927D-25 1.381E-03.0916.1186    5.02810.75-.005053 78  1             P  3 466653  0
+ 21 6370.868377 2.400D-26 8.827E-08.0740.1020 1429.12370.710.000000100  4             R 15 255 2 2-1
+ 2-9.293376E-03 0.0000E+00-5.773711E-03 0.0000E+00-3.899650E-03 0.0000E+00-2.751487E-03 0.0000E+00-1
+ 21 6370.962985 7.142D-27 4.543E-11.0708.1045  197.41700.770.000000 72  1             P 22 000 0 0-1
+ 2 2.960038E-03 0.0000E+00 9.678170E-05 0.0000E+00-1.371748E-03 0.0000E+00-2.214961E-03 0.0000E+00-1
+ 61 6371.132900 4.368D-26 0.000E+00.0600.0700   -1.00000.75-.012742 12 12                  2111123 0
+ 14 6371.220040 4.599D-26 2.205E-01.0969.4790  109.26910.780.000000 13  1 2 1 1    2 2 0   3555403 0
+ 21 6371.278347 6.015D-25 9.166E-08.0713.0966  831.68290.760.000000 84  2             R 20 455 2 2-1
+ 2 3.796439E-03 0.0000E+00 4.891352E-03 0.0000E+00 5.248297E-03 0.0000E+00 5.324672E-03 0.0000E+00-1
+ 51 6371.298900 2.032D-23 6.871E-03.0629.0704   57.67040.74-.005500  4  1             R  5 467663  0
+ 21 6371.479563 6.047D-24 1.134E-07.0676.0818  519.53500.780.000000 71  1             R 36 465 2 2-1
+ 2-1.632566E-02 0.0000E+00-1.230412E-02 0.0000E+00-9.679448E-03 0.0000E+00-7.801844E-03 0.0000E+00-1
+ 21 6371.513641 5.820D-25 9.146E-08.0708.0956  847.82630.770.000000 84  2             R 21 455 2 2-1
+ 2-2.792526E-02 0.0000E+00-2.004770E-02 0.0000E+00-1.541686E-02 0.0000E+00-1.233545E-02 0.0000E+00-1
+ 41 6371.618340 2.653D-25 1.537E-03.0931.1203    2.51410.75-.005010 78  1             P  2 466653  0
+ 21 6371.642205 2.402D-26 8.819E-08.0734.1009 1441.65480.730.000000100  4             R 16 255 2 2-1
+ 2-2.794653E-03 0.0000E+00-2.599480E-04 0.0000E+00 9.686474E-04 0.0000E+00 1.644941E-03 0.0000E+00-1
+ 14 6371.665120 5.083D-26 2.855E-01.0941.4730  303.99480.690.000000 13  1 5 1 4    5 2 3   3555403 0
+ 21 6371.690774 1.161D-26 2.341E-07.0674.0802 1966.19250.780.000000101  5             R 38 255 2 2-1
+ 2-1.627232E-02 0.0000E+00-1.256271E-02 0.0000E+00-1.010577E-02 0.0000E+00-8.325871E-03 0.0000E+00-1
+ 11 6371.708980 1.230D-26 2.500E-01.0455.2600 2321.81300.41-.014704 11  110 5 6   11 7 5   3542433 5
+ 11 6371.716610 2.542D-26 5.548E-04.0705.3841  816.69420.59-.001664  9  1 6 4 2    7 3 5   3542433 5
+ 22 6371.785763 4.525D-26 2.611E-08.0780.1079   42.92450.690.000000 75  1             R 10 255 2 2-1
+ 2 6.336497E-04 0.0000E+00 2.266029E-03 0.0000E+00 2.966008E-03 0.0000E+00 3.295859E-03 0.0000E+00-1
+ 14 6371.814600 1.380D-26 6.338E-02.0959.5100  100.39090.770.000000 13  1 2 1 2    3 1 3   3555403 0
+ 21 6372.197893 2.385D-26 8.808E-08.0728.0998 1454.96880.740.000000100  4             R 17 255 2 2-1
+ 2-1.262203E-02 0.0000E+00-8.264113E-03 0.0000E+00-5.864253E-03 0.0000E+00-4.350517E-03 0.0000E+00-1
+ 71 6372.442162 3.290D-30 6.662E-06.0460.0450 1896.34310.710.000000  3  2         R15Q16  d0040001 0
+ 21 6372.472803 4.865D-24 1.150E-07.0674.0802  578.01160.780.000000 71  1             R 38 465 2 2-1
+ 2-1.644617E-02 0.0000E+00-1.258041E-02 0.0000E+00-1.002105E-02 0.0000E+00-8.169190E-03 0.0000E+00-1
+ 21 6372.513790 6.288D-27 3.730E-11.0717.1063  163.86800.760.000000 72  1             P 20 000 0 0-1
+ 2 7.433624E-04 0.0000E+00-1.810057E-03 0.0000E+00-3.040701E-03 0.0000E+00-3.699532E-03 0.0000E+00-1
+ 14 6372.531640 6.455D-26 4.024E-01.1015.4550   58.12690.780.000000 13  1 1 0 1    2 1 2   3555403 0
+ 21 6372.561393 5.584D-25 9.128E-08.0704.0946  865.32000.770.000000 84  2             R 22 455 2 2-1
+ 2 1.191784E-02 0.0000E+00 1.127304E-02 0.0000E+00 1.053001E-02 0.0000E+00 9.823339E-03 0.0000E+00-1
+ 21 6372.710509 5.342D-25 9.110E-08.0701.0935  882.97150.780.000000 84  2             R 23 455 2 2-1
+ 2-3.981615E-02 0.0000E+00-2.932714E-02 0.0000E+00-2.301618E-02 0.0000E+00-1.873480E-02 0.0000E+00-1
+ 21 6372.729723 9.050D-27 2.339E-07.0672.0787 2027.78580.780.000000101  5             R 40 255 2 2-1
+ 2-1.629305E-02 0.0000E+00-1.274086E-02 0.0000E+00-1.036008E-02 0.0000E+00-8.618703E-03 0.0000E+00-1
+ 14 6372.799930 5.406D-26 2.337E-01.0964.4700  157.06470.770.000000 13  1 3 1 2    3 2 1   3555403 0
+ 11 6372.832580 1.210D-26 4.804E-02.0569.2600 1985.78490.41-.031028 11  110 3 8   11 5 7   3542433 5
+ 21 6372.979443 2.352D-26 8.798E-08.0722.0987 1469.06560.750.000000100  4             R 18 255 2 2-1
+ 2-4.360081E-03 0.0000E+00-1.399812E-03 0.0000E+00 1.003062E-04 0.0000E+00 9.649411E-04 0.0000E+00-1
+ 22 6373.186523 4.866D-26 2.573E-08.0762.1055   60.87380.690.000000 75  1             R 12 255 2 2-1
+ 2-2.471801E-03 0.0000E+00-2.118237E-04 0.0000E+00 8.730880E-04 0.0000E+00 1.468197E-03 0.0000E+00-1
+ 14 6373.277930 5.608D-26 2.583E-01.0952.4790  221.83610.730.000000 13  1 4 1 3    4 2 2   3555403 0
+ 21 6373.438230 3.848D-24 1.166E-07.0672.0787  639.60040.780.000000 71  1             R 40 465 2 2-1
+ 2-1.651276E-02 0.0000E+00-1.279710E-02 0.0000E+00-1.030496E-02 0.0000E+00-8.482798E-03 0.0000E+00-1
+ 21 6373.500393 2.303D-26 8.785E-08.0717.0977 1483.94510.760.000000100  4             R 19 255 2 2-1
+ 2-1.536169E-02 0.0000E+00-1.037121E-02 0.0000E+00-7.551127E-03 0.0000E+00-5.735608E-03 0.0000E+00-1
+ 21 6373.742609 6.931D-27 2.338E-07.0670.0772 2092.49170.780.000000101  5             R 42 255 2 2-1
+ 2-1.632179E-02 0.0000E+00-1.290789E-02 0.0000E+00-1.059395E-02 0.0000E+00-8.885424E-03 0.0000E+00-1
+ 21 6373.819604 5.066D-25 9.092E-08.0698.0926  902.08380.780.000000 84  2             R 24 455 2 2-1
+ 2 5.061734E-02 0.0000E+00 4.208187E-02 0.0000E+00 3.622497E-02 0.0000E+00 3.185850E-02 0.0000E+00-1
+ 21 6373.876411 4.794D-25 9.073E-08.0695.0916  921.23820.780.000000 84  2             R 25 455 2 2-1
+ 2-8.532899E-02 0.0000E+00-6.480503E-02 0.0000E+00-5.218550E-02 0.0000E+00-4.347187E-02 0.0000E+00-1
+ 14 6374.016820 2.679D-26 1.524E-01.0921.4700  265.23620.690.000000 11  1 4 1 3    5 1 4   3555403 0
+ 21 6374.066151 5.285D-27 2.992E-11.0728.1078  133.43900.740.000000 72  1             P 18 000 0 0-1
+ 2-2.321170E-03 0.0000E+00-4.267794E-03 0.0000E+00-5.090679E-03 0.0000E+00-5.453733E-03 0.0000E+00-1
+ 21 6374.290048 2.241D-26 8.774E-08.0713.0966 1499.60740.760.000000100  4             R 20 255 2 2-1
+ 2-5.571680E-03 0.0000E+00-2.370269E-03 0.0000E+00-6.973107E-04 0.0000E+00 2.955824E-04 0.0000E+00-1
+ 14 6374.342190 6.939D-27 6.328E-02.0900.4340  403.54900.640.000000 13  1 5 3 3    6 2 4   3555403 0
+ 21 6374.376130 2.991D-24 1.183E-07.0670.0772  704.30050.780.000000 71  1             R 42 465 2 2-1
+ 2-1.658036E-02 0.0000E+00-1.299105E-02 0.0000E+00-1.055291E-02 0.0000E+00-8.751593E-03 0.0000E+00-1
+ 51 6374.405800 2.146D-23 7.041E-03.0612.0685   80.73540.75-.005500  4  1             R  6 467663  0
+ 22 6374.561839 5.029D-26 2.539E-08.0747.1032   81.94400.700.000000 75  1             R 14 255 2 2-1
+ 2-4.999017E-03 0.0000E+00-2.306702E-03 0.0000E+00-9.523561E-04 0.0000E+00-1.701289E-04 0.0000E+00-1
+ 21 6374.729398 5.217D-27 2.336E-07.0667.0758 2160.30910.770.000000101  5             R 44 255 2 2-1
+ 2-1.615181E-02 0.0000E+00-1.295924E-02 0.0000E+00-1.077729E-02 0.0000E+00-9.154728E-03 0.0000E+00-1
+ 21 6374.775920 2.167D-26 8.762E-08.0708.0956 1516.05220.770.000000100  4             R 21 255 2 2-1
+ 2-1.758184E-02 0.0000E+00-1.221900E-02 0.0000E+00-9.118853E-03 0.0000E+00-7.084761E-03 0.0000E+00-1
+ 11 6374.846890 1.146D-26 1.474E-03.0141.2373 1557.84780.37-.009368  9  113 013   12 112   3542433 5
+ 41 6374.943750 2.681D-25 9.251E-04.0931.1203    0.83800.75-.005013 78  1             R  1 466653  0
+ 21 6375.011397 4.212D-25 9.037E-08.0690.0897  962.62570.780.000000 84  2             R 27 455 2 2-1
+ 2 8.149423E-02 0.0000E+00 6.431429E-02 0.0000E+00 5.351804E-02 0.0000E+00 4.590986E-02 0.0000E+00-1
+ 21 6375.053050 4.497D-25 9.054E-08.0692.0906  941.97370.780.000000 84  2             R 26 455 2 2-1
+ 2-1.006156E-01 0.0000E+00-7.875492E-02 0.0000E+00-6.467345E-02 0.0000E+00-5.465255E-02 0.0000E+00-1
+ 21 6375.286805 2.286D-24 1.200E-07.0667.0758  772.11070.770.000000 71  1             R 44 465 2 2-1
+ 2-1.642097E-02 0.0000E+00-1.303845E-02 0.0000E+00-1.071713E-02 0.0000E+00-8.987842E-03 0.0000E+00-1
+ 61 6375.337500 3.745D-26 0.000E+00.0600.0700   -1.00000.75-.012751 12 12                  2111123 0
+ 21 6375.573498 2.083D-26 8.750E-08.0704.0946 1533.27980.770.000000100  4             R 22 255 2 2-1
+ 2-6.327349E-03 0.0000E+00-2.986521E-03 0.0000E+00-1.198578E-03 0.0000E+00-1.150023E-04 0.0000E+00-1
+ 21 6375.619901 4.209D-27 2.342E-11.0740.1092  106.13000.710.000000 72  1             P 16 000 0 0-1
+ 2-6.190274E-03 0.0000E+00-7.376350E-03 0.0000E+00-7.711034E-03 0.0000E+00-7.727991E-03 0.0000E+00-1
+ 21 6375.690050 3.861D-27 2.335E-07.0664.0744 2231.23730.770.000000101  5             R 46 254 2 2-1
+ 2-1.613857E-02 0.0000E+00-1.308903E-02 0.0000E+00-1.098944E-02 0.0000E+00-9.416805E-03 0.0000E+00-1
+ 71 6375.695785 2.581D-30 7.432E-06.0440.0430 1992.11890.710.000000  3  2         R17R17  d0040001 0
+ 41 6375.741780 3.988D-25 9.913E-04.0916.1186    2.51410.75-.005057 78  1             R  2 466653  0
+ 22 6375.911810 5.024D-26 2.507E-08.0734.1009  106.13480.730.000000 75  1             R 16 255 2 2-1
+ 2-7.753859E-03 0.0000E+00-4.352986E-03 0.0000E+00-2.557308E-03 0.0000E+00-1.470248E-03 0.0000E+00-1
+ 71 6376.006082 4.487D-30 4.436E-06.0510.0500 1635.06860.710.000000  3  2         S 7R 8  d0040001 0
+ 21 6376.024526 1.990D-26 8.735E-08.0701.0935 1551.28960.780.000000100  4             R 23 255 2 2-1
+ 2-1.964908E-02 0.0000E+00-1.395304E-02 0.0000E+00-1.058745E-02 0.0000E+00-8.344104E-03 0.0000E+00-1
+ 21 6376.115527 3.625D-25 9.000E-08.0686.0878 1007.13350.780.000000 84  2             R 29 455 2 2-1
+ 2 1.090089E-02 0.0000E+00 9.356926E-03 0.0000E+00 8.356143E-03 0.0000E+00 7.619349E-03 0.0000E+00-1
+ 11 6376.131900 4.196D-26 4.053E-05.0882.4291  325.34790.69-.000992  9  1 4 3 2    5 0 5   3542433 5
+ 21 6376.170576 1.719D-24 1.219E-07.0664.0744  843.03010.770.000000 71  1             R 46 464 2 2-1
+ 2-1.638679E-02 0.0000E+00-1.311363E-02 0.0000E+00-1.084598E-02 0.0000E+00-9.143086E-03 0.0000E+00-1
+ 11 6376.172000 1.957D-26 8.369E-05.0798.4228  446.69660.64-.003192  9  1 5 3 3    6 0 6   3542433 5
+ 21 6376.261812 3.909D-25 9.018E-08.0687.0887  984.98900.780.000000 84  2             R 28 455 2 2-1
+ 2-3.835726E-02 0.0000E+00-2.924217E-02 0.0000E+00-2.344879E-02 0.0000E+00-1.937405E-02 0.0000E+00-1
+ 41 6376.526480 5.242D-25 1.026E-03.0901.1170    5.02810.75-.005101 78  1             R  3 466653  0
+ 21 6376.829231 1.891D-26 8.722E-08.0698.0926 1570.08220.780.000000100  4             R 24 255 2 2-1
+ 2-7.138949E-03 0.0000E+00-3.634737E-03 0.0000E+00-1.707261E-03 0.0000E+00-5.124630E-04 0.0000E+00-1
+ 21 6377.027787 1.271D-24 1.239E-07.0661.0731  917.05730.760.000000 71  1             R 48 464 2 2-1
+ 2-1.621026E-02 0.0000E+00-1.311172E-02 0.0000E+00-1.094859E-02 0.0000E+00-9.313808E-03 0.0000E+00-1
+ 61 6377.116500 4.562D-26 0.000E+00.0600.0700   -1.00000.75-.012754 12 12                  2111123 0
+ 21 6377.188865 3.059D-25 8.964E-08.0682.0860 1054.76070.780.000000 84  2             R 31 455 2 2-1
+ 2-2.148525E-03 0.0000E+00-9.905922E-04 0.0000E+00-2.492457E-04 0.0000E+00 2.626086E-04 0.0000E+00-1
+ 22 6377.236552 4.870D-26 2.475E-08.0722.0987  133.44560.750.000000 75  1             R 18 255 2 2-1
+ 2-9.921180E-03 0.0000E+00-5.999367E-03 0.0000E+00-3.859933E-03 0.0000E+00-2.527262E-03 0.0000E+00-1
+ 21 6377.246270 1.787D-26 8.709E-08.0695.0916 1589.65670.780.000000100  4             R 25 255 2 2-1
+ 2-2.126971E-02 0.0000E+00-1.545234E-02 0.0000E+00-1.194113E-02 0.0000E+00-9.563373E-03 0.0000E+00-1
+ 41 6377.297870 6.451D-25 1.050E-03.0887.1154    8.38020.75-.005145 78  1             R  4 466653  0
+ 51 6377.406600 2.179D-23 7.197E-03.0599.0669  107.64240.75-.005700  4  1             R  7 467663  0
+ 21 6377.445981 3.330D-25 8.984E-08.0684.0869 1031.12920.780.000000 84  2             R 30 455 2 2-1
+ 2-2.750726E-02 0.0000E+00-2.075191E-02 0.0000E+00-1.645663E-02 0.0000E+00-1.343859E-02 0.0000E+00-1
+ 71 6377.821912 2.332D-30 6.650E-06.0440.0430 1989.99280.710.000000  3  2         R17Q18  d0040001 0
+ 21 6377.858800 9.246D-25 1.258E-07.0658.0718  994.19130.760.000000 71  1             R 50 464 2 2-1
+ 2-1.617687E-02 0.0000E+00-1.316169E-02 0.0000E+00-1.104171E-02 0.0000E+00-9.429558E-03 0.0000E+00-1
+ 11 6377.908130 2.017D-25 2.874E-04.0886.3920  446.51070.69-.004300  9  1 5 3 2    5 2 3   3546423 0
+ 11 6378.026700 4.639D-26 1.818E-04.0535.3283  744.16270.53-.006120  9  1 8 2 7    8 1 8   3542433 5
+ 41 6378.055940 7.580D-25 1.066E-03.0874.1139   12.57020.75-.005189 78  1             R  5 466653  0
+ 21 6378.056651 1.680D-26 8.697E-08.0692.0906 1610.01380.780.000000100  4             R 26 255 2 2-1
+ 2-7.464245E-03 0.0000E+00-3.994042E-03 0.0000E+00-2.041570E-03 0.0000E+00-8.025223E-04 0.0000E+00-1
+ 21 6378.231482 2.532D-25 8.927E-08.0679.0843 1105.50660.780.000000 84  2             R 33 455 2 2-1
+ 2-8.258029E-03 0.0000E+00-5.961977E-03 0.0000E+00-4.454616E-03 0.0000E+00-3.376517E-03 0.0000E+00-1
+ 11 6378.406850 2.614D-26 2.156E-04.0426.3009  920.16840.49-.011348  9  1 9 1 8    9 0 9   3542433 5
+ 21 6378.441219 1.570D-26 8.679E-08.0690.0897 1631.15280.780.000000100  4             R 27 255 2 2-1
+ 2-2.265834E-02 0.0000E+00-1.679144E-02 0.0000E+00-1.317916E-02 0.0000E+00-1.069481E-02 0.0000E+00-1
+ 22 6378.536197 4.595D-26 2.442E-08.0713.0966  163.87620.760.000000 75  1             R 20 255 2 2-1
+ 2-1.169471E-02 0.0000E+00-7.475750E-03 0.0000E+00-5.114371E-03 0.0000E+00-3.611950E-03 0.0000E+00-1
+ 21 6378.605651 2.782D-25 8.944E-08.0681.0852 1080.39320.780.000000 84  2             R 32 455 2 2-1
+ 2-2.261316E-02 0.0000E+00-1.699386E-02 0.0000E+00-1.340348E-02 0.0000E+00-1.087400E-02 0.0000E+00-1
+ 21 6378.663999 6.618D-25 1.280E-07.0654.0706 1074.43070.750.000000 71  1             R 52 464 2 2-1
+ 2-1.600535E-02 0.0000E+00-1.312380E-02 0.0000E+00-1.108440E-02 0.0000E+00-9.524793E-03 0.0000E+00-1
+ 11 6378.753070 1.827D-26 1.816E-04.0593.3841  709.60820.53-.012592  9  1 8 1 7    7 2 6   3542433 5
+ 41 6378.800720 8.628D-25 1.078E-03.0861.1124   17.59820.75-.005233 78  1             R  6 466653  0
+ 14 6379.104070 8.956D-26 3.422E-01.0970.4900  182.98350.730.000000 13  1 4 0 4    4 1 3   3555403 0
+ 21 6379.243455 2.057D-25 8.890E-08.0677.0826 1159.37040.780.000000 84  2             R 35 455 2 2-1
+ 2-1.237543E-02 0.0000E+00-9.389034E-03 0.0000E+00-7.403867E-03 0.0000E+00-5.963068E-03 0.0000E+00-1
+ 21 6379.255135 1.461D-26 8.668E-08.0687.0887 1653.07420.780.000000100  4             R 28 255 2 2-1
+ 2-7.616029E-03 0.0000E+00-4.223889E-03 0.0000E+00-2.281392E-03 0.0000E+00-1.034485E-03 0.0000E+00-1
+ 21 6379.443791 4.661D-25 1.302E-07.0650.0694 1157.77420.740.000000 71  1             R 54 464 2 2-1
+ 2-1.584891E-02 0.0000E+00-1.308910E-02 0.0000E+00-1.112538E-02 0.0000E+00-9.616636E-03 0.0000E+00-1
+ 41 6379.532230 9.596D-25 1.089E-03.0849.1109   23.46410.75-.005277 78  1             R  7 466653  0
+ 21 6379.609449 1.352D-26 8.653E-08.0686.0878 1675.77730.780.000000100  4             R 29 255 2 2-1
+ 2-2.385134E-02 0.0000E+00-1.799347E-02 0.0000E+00-1.431933E-02 0.0000E+00-1.175698E-02 0.0000E+00-1
+ 21 6379.740928 2.280D-25 8.910E-08.0678.0835 1132.78030.780.000000 84  2             R 34 455 2 2-1
+ 2-1.926512E-02 0.0000E+00-1.441244E-02 0.0000E+00-1.130710E-02 0.0000E+00-9.116228E-03 0.0000E+00-1
+ 22 6379.810896 4.228D-26 2.410E-08.0704.0946  197.42610.770.000000 75  1             R 22 255 2 2-1
+ 2-1.301941E-02 0.0000E+00-8.610230E-03 0.0000E+00-6.086339E-03 0.0000E+00-4.451994E-03 0.0000E+00-1
+ 21 6380.198604 3.230D-25 1.325E-07.0645.0683 1244.22050.730.000000 71  1             R 56 464 2 2-1
+ 2-1.564814E-02 0.0000E+00-1.300794E-02 0.0000E+00-1.112294E-02 0.0000E+00-9.670246E-03 0.0000E+00-1
+ 21 6380.224867 1.640D-25 8.850E-08.0675.0810 1216.35100.780.000000 84  2             R 37 455 2 2-1
+ 2-1.604217E-02 0.0000E+00-1.246579E-02 0.0000E+00-1.006883E-02 0.0000E+00-8.312452E-03 0.0000E+00-1
+ 41 6380.250480 1.044D-24 1.095E-03.0838.1095   30.16790.75-.005321 78  1             R  8 466653  0
+ 51 6380.301300 2.138D-23 7.343E-03.0589.0655  138.39040.75-.006000  4  1             R  8 467663  0
+ 11 6380.408690 2.743D-26 3.338E-04.0830.4228  661.54890.64-.004064  9  1 5 4 2    6 3 3   3542433 5
+ 21 6380.424029 1.245D-26 8.638E-08.0684.0869 1699.26250.780.000000100  4             R 30 255 2 2-1
+ 2-7.784360E-03 0.0000E+00-4.486591E-03 0.0000E+00-2.563802E-03 0.0000E+00-1.311057E-03 0.0000E+00-1
+ 21 6380.751044 1.141D-26 8.624E-08.0682.0860 1723.52930.780.000000100  4             R 31 255 2 2-1
+ 2-2.477707E-02 0.0000E+00-1.898150E-02 0.0000E+00-1.528460E-02 0.0000E+00-1.267356E-02 0.0000E+00-1
+ 21 6380.851924 1.834D-25 8.871E-08.0676.0818 1188.28980.780.000000 84  2             R 36 455 2 2-1
+ 2-1.592438E-02 0.0000E+00-1.172642E-02 0.0000E+00-9.066552E-03 0.0000E+00-7.202842E-03 0.0000E+00-1
+ 51 6380.874600 1.114D-36 1.449E-02.0420.0413 6954.73780.67-.008000  4  1             R 60 466223  0
+ 14 6380.875260 5.809D-26 2.560E-01.0961.5050   91.33020.770.000000 13  1 2 1 2    3 0 3   3555403 0
+ 61 6380.914400 9.207D-26 0.000E+00.0600.0700   -1.00000.75-.012762 12 12                  2111123 0
+ 21 6380.928892 2.203D-25 1.348E-07.0640.0672 1333.76790.730.000000 71  1             R 58 464 2 2-1
+ 2-1.556832E-02 0.0000E+00-1.296905E-02 0.0000E+00-1.110782E-02 0.0000E+00-9.669251E-03 0.0000E+00-1
+ 41 6380.955490 1.117D-24 1.100E-03.0827.1082   37.70960.75-.005365 78  1             R  9 466653  0
+ 71 6381.011608 1.693D-30 7.340E-06.0430.0420 2097.09130.710.000000  3  2         R19R19  d0040001 0
+ 22 6381.060814 3.799D-26 2.377E-08.0698.0926  234.09450.780.000000 75  1             R 24 255 2 2-1
+ 2-1.432917E-02 0.0000E+00-9.743371E-03 0.0000E+00-7.054289E-03 0.0000E+00-5.279641E-03 0.0000E+00-1
+ 14 6381.103900 2.017D-26 1.389E-01.0908.4520  303.99480.690.000000 11  1 4 2 2    5 2 3   3555403 0
+ 21 6381.175807 1.285D-25 8.815E-08.0673.0795 1276.44760.780.000000 84  2             R 39 455 2 2-1
+ 2-2.070396E-02 0.0000E+00-1.632829E-02 0.0000E+00-1.338601E-02 0.0000E+00-1.121900E-02 0.0000E+00-1
+ 14 6381.192060 1.005D-26 6.533E-02.0982.4600   66.18450.780.000000 13  1 1 1 0    2 1 1   3555403 0
+ 11 6381.255260 6.414D-26 8.167E-04.0841.3900  931.23710.59-.014000 11  1 6 0 6    7 4 3   3546423 0
+ 21 6381.562661 1.040D-26 8.604E-08.0681.0852 1748.57800.780.000000100  4             R 32 255 2 2-1
+ 2-7.883289E-03 0.0000E+00-4.697818E-03 0.0000E+00-2.808542E-03 0.0000E+00-1.560164E-03 0.0000E+00-1
+ 21 6381.635130 1.479D-25 1.373E-07.0636.0662 1426.41540.720.000000 71  1             R 60 464 2 2-1
+ 2-1.545768E-02 0.0000E+00-1.294125E-02 0.0000E+00-1.113338E-02 0.0000E+00-9.731915E-03 0.0000E+00-1
+ 14 6381.636630 2.707D-27 3.194E-02.0836.4260  490.42740.590.000000 13  1 6 3 3    7 2 6   3555403 0
+ 41 6381.647290 1.181D-24 1.106E-03.0817.1069   46.08910.75-.005409 78  1             R 10 466653  0
+ 14 6381.762320 9.601D-27 1.210E-01.0829.4050  469.66360.640.000000 11  1 5 3 2    6 3 3   3555403 0
+ 21 6381.866095 9.442D-27 8.591E-08.0679.0843 1774.40800.780.000000100  4             R 33 255 2 2-1
+ 2-2.550497E-02 0.0000E+00-1.980857E-02 0.0000E+00-1.611855E-02 0.0000E+00-1.348173E-02 0.0000E+00-1
+ 21 6381.938761 1.449D-25 8.834E-08.0674.0802 1246.92050.780.000000 84  2             R 38 455 2 2-1
+ 2-9.449648E-03 0.0000E+00-6.117555E-03 0.0000E+00-4.147001E-03 0.0000E+00-2.843690E-03 0.0000E+00-1
+ 11 6381.978930 5.729D-26 1.364E-04.0721.3841  586.24350.59-.001996  9  1 6 3 4    7 0 7   3542433 5
+ 11 6382.044910 3.832D-26 3.680E-05.0857.4291  399.45750.64-.000444  9  1 6 2 5    5 1 4   3542433 5
+ 21 6382.096370 9.883D-26 8.773E-08.0671.0780 1339.65920.780.000000 84  2             R 41 455 2 2-1
+ 2-3.168998E-02 0.0000E+00-2.519719E-02 0.0000E+00-2.085600E-02 0.0000E+00-1.766460E-02 0.0000E+00-1
+ 22 6382.286136 3.338D-26 2.342E-08.0692.0906  273.88100.780.000000 75  1             R 26 255 2 2-1
+ 2-1.514376E-02 0.0000E+00-1.057727E-02 0.0000E+00-7.841584E-03 0.0000E+00-6.006345E-03 0.0000E+00-1
+ 21 6382.317819 9.773D-26 1.399E-07.0631.0652 1522.16110.710.000000 71  1             R 62 464 2 2-1
+ 2-1.532969E-02 0.0000E+00-1.288826E-02 0.0000E+00-1.112972E-02 0.0000E+00-9.763306E-03 0.0000E+00-1
+ 41 6382.325920 1.230D-24 1.109E-03.0807.1056   55.30640.75-.005453 78  1             R 11 466653  0
+ 14 6382.565650 2.529D-26 1.191E-01.0900.4450  225.86490.690.000000 11  1 4 1 4    5 1 5   3555403 0
+ 21 6382.670337 8.530D-27 8.575E-08.0678.0835 1801.01980.780.000000100  4             R 34 255 2 2-1
+ 2-7.983304E-03 0.0000E+00-4.909267E-03 0.0000E+00-3.056513E-03 0.0000E+00-1.815361E-03 0.0000E+00-1
+ 21 6382.954703 7.669D-27 8.559E-08.0677.0826 1828.41270.780.000000100  4             R 35 255 2 2-1
+ 2-2.601254E-02 0.0000E+00-2.045013E-02 0.0000E+00-1.679821E-02 0.0000E+00-1.416100E-02 0.0000E+00-1
+ 21 6382.977486 6.357D-26 1.425E-07.0626.0642 1621.00370.700.000000 71  1             R 64 064 2 2-1
+ 2-1.522491E-02 0.0000E+00-1.285025E-02 0.0000E+00-1.113646E-02 0.0000E+00-9.802488E-03 0.0000E+00-1
+ 21 6382.986658 7.471D-26 8.732E-08.0668.0765 1405.98470.780.000000 84  2             R 43 455 2 2-1
+ 2 1.833928E-01 0.0000E+00 1.451268E-01 0.0000E+00 1.204106E-01 0.0000E+00 1.026745E-01 0.0000E+00-1
+ 41 6382.991400 1.266D-24 1.110E-03.0798.1043   65.36140.75-.005496 78  1             R 12 466653  0
+ 21 6383.001567 1.124D-25 8.793E-08.0672.0787 1308.67180.780.000000 84  2             R 40 455 2 2-1
+ 2-1.231955E-01 0.0000E+00-1.099862E-01 0.0000E+00-9.828093E-02 0.0000E+00-8.819453E-02 0.0000E+00-1
+ 14 6383.072410 9.884D-27 1.233E-01.0816.3970  467.51460.640.000000 11  1 5 3 3    6 3 4   3555403 0
+ 51 6383.089600 2.034D-23 7.484E-03.0580.0643  172.97800.75-.005800  4  1             R  9 467663  0
+ 71 6383.156398 1.547D-30 6.642E-06.0430.0420 2094.94650.710.000000  3  2         R19Q20  d0040001 0
+ 22 6383.487064 2.871D-26 2.306E-08.0687.0887  316.78500.780.000000 75  1             R 28 255 2 2-1
+ 2-1.573497E-02 0.0000E+00-1.124351E-02 0.0000E+00-8.497924E-03 0.0000E+00-6.627518E-03 0.0000E+00-1
+ 21 6383.614685 4.071D-26 1.453E-07.0620.0633 1722.94130.690.000000 71  1             R 66 064 2 2-1
+ 2-1.509664E-02 0.0000E+00-1.278221E-02 0.0000E+00-1.110997E-02 0.0000E+00-9.807032E-03 0.0000E+00-1
+ 41 6383.643770 1.294D-24 1.114E-03.0790.1032   76.25420.75-.005540 78  1             R 13 466653  0
+ 51 6383.703200 3.243D-36 1.434E-02.0420.0413 6729.29690.67-.008000  4  1             R 59 466223  0
+ 21 6383.746352 6.864D-27 8.543E-08.0676.0818 1856.58700.780.000000100  4             R 36 255 2 2-1
+ 2-8.261935E-03 0.0000E+00-5.277667E-03 0.0000E+00-3.449404E-03 0.0000E+00-2.206975E-03 0.0000E+00-1
+ 14 6383.838330 1.428D-26 7.025E-02.0959.4850  182.98350.730.000000 13  1 3 2 2    4 1 3   3555403 0
+ 21 6383.846778 5.550D-26 8.689E-08.0666.0751 1475.42310.770.000000 84  2             R 45 454 2 2-1
+ 2-2.843377E-04 0.0000E+00-5.896338E-04 0.0000E+00-6.359847E-04 0.0000E+00-5.839598E-04 0.0000E+00-1
+ 21 6384.016977 6.115D-27 8.526E-08.0675.0810 1885.54240.780.000000100  4             R 37 255 2 2-1
+ 2-2.618636E-02 0.0000E+00-2.080182E-02 0.0000E+00-1.722628E-02 0.0000E+00-1.462070E-02 0.0000E+00-1
+ 21 6384.040477 8.567D-26 8.753E-08.0670.0772 1373.54210.780.000000 84  2             R 42 455 2 2-1
+ 2-2.513285E-02 0.0000E+00-2.083165E-02 0.0000E+00-1.769428E-02 0.0000E+00-1.525855E-02 0.0000E+00-1
+ 21 6384.229995 2.566D-26 1.482E-07.0615.0625 1827.97240.680.000000 71  1             R 68 064 2 2-1
+ 2-1.501958E-02 0.0000E+00-1.275780E-02 0.0000E+00-1.112323E-02 0.0000E+00-9.849366E-03 0.0000E+00-1
+ 41 6384.283060 1.306D-24 1.114E-03.0782.1020   87.98450.75-.005584 78  1             R 14 466653  0
+ 14 6384.485410 1.622D-26 9.577E-02.0971.4350   46.17310.780.000000 13  1 1 0 1    2 0 2   3555403 0
+ 22 6384.663814 2.418D-26 2.270E-08.0684.0869  362.80560.780.000000 75  1             R 30 255 2 2-1
+ 2-1.625146E-02 0.0000E+00-1.186848E-02 0.0000E+00-9.136970E-03 0.0000E+00-7.248389E-03 0.0000E+00-1
+ 21 6384.676843 4.052D-26 8.647E-08.0663.0738 1547.97310.770.000000 84  2             R 47 054 2 2-1
+ 2-9.325607E-03 0.0000E+00-7.889563E-03 0.0000E+00-6.788042E-03 0.0000E+00-5.895643E-03 0.0000E+00-1
+ 21 6384.789992 5.423D-27 8.509E-08.0674.0802 1915.27870.780.000000100  4             R 38 255 2 2-1
+ 2-8.739039E-03 0.0000E+00-5.818108E-03 0.0000E+00-3.998335E-03 0.0000E+00-2.743177E-03 0.0000E+00-1
+ 61 6384.801100 4.801D-26 0.000E+00.0600.0700   -1.00000.75-.012770 12 12                  2111123 0
+ 21 6384.824025 1.593D-26 1.511E-07.0610.0616 1936.09530.670.000000 71  1             R 70 064 2 2-1
+ 2-1.496095E-02 0.0000E+00-1.274929E-02 0.0000E+00-1.115266E-02 0.0000E+00-9.909403E-03 0.0000E+00-1
+ 41 6384.909330 1.310D-24 1.116E-03.0774.1009  100.55250.75-.005628 78  1             R 15 466653  0
+ 21 6385.053036 4.788D-27 8.493E-08.0673.0795 1945.79600.780.000000100  4             R 39 255 2 2-1
+ 2-2.598181E-02 0.0000E+00-2.082084E-02 0.0000E+00-1.736191E-02 0.0000E+00-1.482211E-02 0.0000E+00-1
+ 21 6385.055638 6.416D-26 8.711E-08.0667.0758 1441.53080.770.000000 84  2             R 44 455 2 2-1
+ 2-1.973604E-02 0.0000E+00-1.606083E-02 0.0000E+00-1.345729E-02 0.0000E+00-1.147472E-02 0.0000E+00-1
+ 11 6385.342610 1.594D-25 3.277E-02.0565.3180 1581.33610.45-.025000 11  1 9 2 8   10 4 7   3546423 0
+ 21 6385.397413 9.735D-27 1.542E-07.0605.0608 2047.30810.660.000000 71  1             R 72 064 2 2-1
+ 2-1.492201E-02 0.0000E+00-1.276348E-02 0.0000E+00-1.120977E-02 0.0000E+00-1.000250E-02 0.0000E+00-1
+ 21 6385.476973 2.909D-26 8.604E-08.0660.0725 1623.63350.760.000000 84  2             R 49 054 2 2-1
+ 2-1.446787E-02 0.0000E+00-1.213377E-02 0.0000E+00-1.043910E-02 0.0000E+00-9.110389E-03 0.0000E+00-1
+ 41 6385.522610 1.302D-24 1.116E-03.0767.0998  113.95800.75-.005672 78  1             R 16 466653  0
+ 14 6385.652050 4.720D-26 7.724E-01.1013.4980   29.80860.780.000000 13  1 0 0 0    1 1 1   3555403 0
+ 51 6385.771500 1.880D-23 7.620E-03.0573.0632  211.40410.75-.006000  4  1             R 10 467663  0
+ 21 6385.800538 4.209D-27 8.474E-08.0672.0787 1977.09380.780.000000100  4             R 40 255 2 2-1
+ 2-9.471499E-03 0.0000E+00-6.580717E-03 0.0000E+00-4.747821E-03 0.0000E+00-3.463923E-03 0.0000E+00-1
+ 22 6385.816623 1.995D-26 2.231E-08.0681.0852  411.94210.780.000000 75  1             R 32 255 2 2-1
+ 2-1.660195E-02 0.0000E+00-1.236072E-02 0.0000E+00-9.670007E-03 0.0000E+00-7.783924E-03 0.0000E+00-1
+ 21 6385.950825 5.857D-27 1.574E-07.0601.0601 2161.60890.650.000000 71  1             R 74 064 2 2-1
+ 2-1.496632E-02 0.0000E+00-1.287642E-02 0.0000E+00-1.138016E-02 0.0000E+00-1.022150E-02 0.0000E+00-1
+ 14 6385.966420 1.993D-26 1.307E-01.0886.4320  293.63650.690.000000 11  1 4 2 3    5 2 4   3555403 0
+ 21 6386.047201 4.723D-26 8.669E-08.0664.0744 1512.63660.770.000000 84  2             R 46 454 2 2-1
+ 2-1.590881E-02 0.0000E+00-1.244046E-02 0.0000E+00-1.007210E-02 0.0000E+00-8.319767E-03 0.0000E+00-1
+ 11 6386.104130 9.400D-26 2.608E-04.0883.4389  315.77950.73-.003140  9  1 4 3 1    4 2 2   3542433 5
+ 41 6386.122960 1.282D-24 1.114E-03.0761.0988  128.20090.75-.005715 78  1             R 17 466653  0
+ 11 6386.212830 1.142D-25 1.335E-02.0572.3500 1216.23130.49-.012000 11  1 8 1 8    9 3 7   3545423 0
+ 21 6386.247294 2.053D-26 8.558E-08.0656.0712 1702.40330.750.000000 84  2             R 51 054 2 2-1
+ 2-2.271120E-02 0.0000E+00-1.890980E-02 0.0000E+00-1.624877E-02 0.0000E+00-1.421252E-02 0.0000E+00-1
+ 51 6386.417900 9.271D-36 1.419E-02.0420.0413 6507.44290.67-.008000  4  1             R 58 466223  0
+ 14 6386.452280 9.763D-27 3.340E-01.0567.3050  709.16660.640.000000 13  1 6 5 1    6 5 2   3555403 0
+ 14 6386.483970 6.495D-27 4.067E-02.0971.5370   58.12690.780.000000 13  1 1 1 1    2 1 2   3555403 0
+ 41 6386.710420 1.258D-24 1.116E-03.0754.0978  143.28120.75-.005759 78  1             R 18 466653  0
+ 22 6386.945742 1.615D-26 2.192E-08.0678.0835  464.19380.780.000000 75  1             R 34 255 2 2-1
+ 2-1.680218E-02 0.0000E+00-1.272331E-02 0.0000E+00-1.009345E-02 0.0000E+00-8.226725E-03 0.0000E+00-1
+ 21 6386.987937 1.425D-26 8.512E-08.0652.0700 1784.28080.750.000000 84  2             R 53 054 2 2-1
+ 2 7.553106E-02 0.0000E+00 6.056652E-02 0.0000E+00 5.086153E-02 0.0000E+00 4.386258E-02 0.0000E+00-1
+ 21 6387.015327 3.418D-26 8.624E-08.0661.0731 1586.85830.760.000000 84  2             R 48 054 2 2-1
+ 2-4.081494E-02 0.0000E+00-3.960339E-02 0.0000E+00-3.765761E-02 0.0000E+00-3.549347E-02 0.0000E+00-1
+ 71 6387.212071 4.059D-30 4.208E-06.0500.0490 1683.36430.710.000000  3  2         S 9R10  d0040001 0
+ 41 6387.285060 1.222D-24 1.115E-03.0749.0968  159.19880.75-.005803 78  1             R 19 466653  0
+ 21 6387.699040 9.728D-27 8.465E-08.0647.0689 1869.26490.740.000000 84  2             R 55 054 2 2-1
+ 2-4.913017E-03 0.0000E+00-4.633881E-03 0.0000E+00-4.295723E-03 0.0000E+00-3.954424E-03 0.0000E+00-1
+ 41 6387.846930 1.181D-24 1.115E-03.0743.0958  175.95360.75-.005847 78  1             R 20 466653  0
+ 21 6387.960183 2.431D-26 8.580E-08.0658.0718 1664.19470.760.000000 84  2             R 50 054 2 2-1
+ 2-1.870576E-02 0.0000E+00-1.609082E-02 0.0000E+00-1.408736E-02 0.0000E+00-1.246401E-02 0.0000E+00-1
+ 22 6388.051440 1.281D-26 2.152E-08.0676.0818  519.55980.780.000000 75  1             R 36 255 2 2-1
+ 2-1.695389E-02 0.0000E+00-1.304471E-02 0.0000E+00-1.048724E-02 0.0000E+00-8.650827E-03 0.0000E+00-1
+ 14 6388.309250 7.544D-26 2.690E-01.1001.5100  116.46130.770.000000 13  1 3 0 3    3 1 2   3555403 0
+ 51 6388.346700 1.691D-23 7.750E-03.0567.0623  253.66720.74-.006100  4  1             R 11 467663  0
+ 21 6388.380746 6.532D-27 8.417E-08.0643.0678 1957.35420.730.000000 84  2             R 57 054 2 2-1
+ 2-1.205902E-02 0.0000E+00-1.053420E-02 0.0000E+00-9.378535E-03 0.0000E+00-8.440136E-03 0.0000E+00-1
+ 41 6388.396100 1.133D-24 1.113E-03.0738.0949  193.54550.75-.005890 78  1             R 21 466653  0
+ 21 6388.881947 1.701D-26 8.537E-08.0654.0706 1744.64450.750.000000 84  2             R 52 054 2 2-1
+ 2-1.553969E-02 0.0000E+00-1.274901E-02 0.0000E+00-1.070317E-02 0.0000E+00-9.110082E-03 0.0000E+00-1
+ 41 6388.932640 1.081D-24 1.112E-03.0734.0941  211.97450.75-.005934 78  1             R 22 466653  0
+ 51 6389.019000 2.604D-35 1.405E-02.0420.0413 6289.18460.67-.008000  4  1             R 57 466223  0
+ 21 6389.033206 4.314D-27 8.367E-08.0638.0667 2048.54710.720.000000 84  2             R 59 054 2 2-1
+ 2-2.322027E-02 0.0000E+00-1.979613E-02 0.0000E+00-1.739107E-02 0.0000E+00-1.553764E-02 0.0000E+00-1
+ 14 6389.071350 3.179D-26 1.566E-01.0948.4710  182.98350.730.000000 11  1 3 1 2    4 1 3   3555403 0
+ 22 6389.134003 9.976D-27 2.110E-08.0674.0802  578.03910.780.000000 75  1             R 38 255 2 2-1
+ 2-1.703326E-02 0.0000E+00-1.329980E-02 0.0000E+00-1.082581E-02 0.0000E+00-9.030726E-03 0.0000E+00-1
+ 41 6389.456620 1.024D-24 1.110E-03.0730.0932  231.24040.75-.005978 78  1             R 23 466653  0
+ 21 6389.780801 1.170D-26 8.490E-08.0650.0694 1828.20630.740.000000 84  2             R 54 054 2 2-1
+ 2-1.782211E-02 0.0000E+00-1.619110E-02 0.0000E+00-1.486859E-02 0.0000E+00-1.372768E-02 0.0000E+00-1
+ 41 6389.968100 9.636D-25 1.107E-03.0726.0924  251.34320.75-.006022 78  1             R 24 466653  0
+ 22 6390.193735 7.623D-27 2.067E-08.0672.0787  639.63090.780.000000 75  1             R 40 255 2 2-1
+ 2-1.707567E-02 0.0000E+00-1.351988E-02 0.0000E+00-1.113705E-02 0.0000E+00-9.391521E-03 0.0000E+00-1
+ 41 6390.467180 9.032D-25 1.105E-03.0722.0916  272.28280.75-.006065 78  1             R 25 466653  0
+ 21 6390.656938 7.915D-27 8.440E-08.0645.0683 1914.87870.730.000000 84  2             R 56 054 2 2-1
+ 2-1.512850E-02 0.0000E+00-1.305791E-02 0.0000E+00-1.146198E-02 0.0000E+00-1.016060E-02 0.0000E+00-1
+ 51 6390.815200 1.483D-23 7.880E-03.0561.0614  299.76560.73-.006000  4  1             R 12 467663  0
+ 41 6390.953930 8.427D-25 1.105E-03.0719.0909  294.05890.75-.006109 78  1             R 26 466653  0
+ 22 6391.230956 5.717D-27 2.023E-08.0670.0772  704.33400.780.000000 75  1             R 42 255 2 2-1
+ 2-1.715611E-02 0.0000E+00-1.377079E-02 0.0000E+00-1.147734E-02 0.0000E+00-9.780426E-03 0.0000E+00-1
+ 41 6391.428450 7.782D-25 1.099E-03.0716.0902  316.67170.75-.006153 78  1             R 27 466653  0
+ 51 6391.506600 7.182D-35 1.389E-02.0420.0413 6074.53030.67-.008000  4  1             R 56 466223  0
+ 21 6391.510557 5.267D-27 8.393E-08.0640.0672 2004.66040.730.000000 84  2             R 58 054 2 2-1
+ 2-1.539847E-02 0.0000E+00-1.409030E-02 0.0000E+00-1.312435E-02 0.0000E+00-1.233083E-02 0.0000E+00-1
+ 61 6391.843800 6.871D-26 0.000E+00.0600.0700   -1.00000.75-.012784 12 12                  2111123 0
+ 41 6391.890830 7.177D-25 1.098E-03.0713.0895  340.12080.75-.006196 78  1             R 28 466653  0
+ 11 6392.222400 2.864D-25 2.062E-04.0874.3910  212.15640.77-.000200  9  1 3 3 0    3 2 1   3546423 0
+ 22 6392.246001 4.210D-27 1.978E-08.0667.0758  772.14750.770.000000 75  1             R 44 255 2 2-1
+ 2-1.712191E-02 0.0000E+00-1.401216E-02 0.0000E+00-1.188625E-02 0.0000E+00-1.029898E-02 0.0000E+00-1
+ 41 6392.341160 6.572D-25 1.094E-03.0711.0888  364.40630.75-.006240 78  1             R 29 466653  0
+ 61 6392.405700 5.503D-26 0.000E+00.0600.0700   -1.00000.75-.012785 12 12                  2111123 0
+ 14 6392.644660 3.118D-26 1.311E-01.0953.5100  150.15620.730.000000 11  1 3 0 3    4 0 4   3555403 0
+ 41 6392.779540 6.008D-25 1.095E-03.0709.0881  389.52790.75-.006284 78  1             R 30 466653  0
+ 11 6393.014950 1.182D-25 4.528E-04.0752.4228  648.97870.64-.002164  9  1 5 4 1    6 3 4   3542433 5
+ 51 6393.176700 1.269D-23 8.008E-03.0555.0606  349.69760.72-.006300  4  1             R 13 467663  0
+ 41 6393.206080 5.443D-25 1.090E-03.0707.0875  415.48560.75-.006327 78  1             R 31 466653  0
+ 41 6393.620900 4.879D-25 1.080E-03.0705.0869  442.27920.75-.006371 78  1             R 32 466653  0
+ 61 6393.778400 3.998D-26 0.000E+00.0600.0700   -1.00000.75-.012788 12 12                  2111123 0
+ 14 6393.858720 5.204D-27 4.360E-02.0870.4450  384.87560.640.000000 13  1 5 3 2    6 2 5   3555403 0
+ 51 6393.880800 1.946D-34 1.375E-02.0420.0413 5863.48830.67-.008000  4  1             R 55 466223  0
+ 41 6394.024100 4.395D-25 1.081E-03.0703.0864  469.90860.75-.006414 78  1             R 33 466653  0
+ 41 6394.415810 3.919D-25 1.076E-03.0702.0858  498.37370.75-.006458 78  1             R 34 466653  0
+ 11 6394.441640 1.174D-25 6.343E-03.0809.3600 1282.91910.49-.010184 10  1 8 2 7    9 3 6   3544433 0
+ 14 6394.484670 8.553D-26 3.350E-01.1032.4600   66.18450.780.000000 13  1 2 0 2    2 1 1   3555403 0
+ 41 6394.796160 3.480D-25 1.071E-03.0700.0853  527.67430.75-.006501 78  1             R 35 466653  0
+ 41 6395.165270 3.076D-25 1.067E-03.0699.0848  557.81020.75-.006545 78  1             R 36 466653  0
+ 61 6395.401300 4.003D-26 0.000E+00.0600.0700   -1.00000.75-.012791 12 12                  2111123 0
+ 51 6395.431200 1.061D-23 8.140E-03.0549.0598  403.46120.71-.006400  4  1             R 14 467663  0
+ 41 6395.523290 2.705D-25 1.063E-03.0698.0843  588.78130.75-.006589 78  1             R 37 466653  0
+ 41 6395.870350 2.367D-25 1.058E-03.0697.0838  620.58750.75-.006632 78  1             R 38 466653  0
+ 51 6396.141700 5.179D-34 1.360E-02.0420.0413 5656.06640.67-.008000  4  1             R 54 466223  0
+ 61 6396.184600 8.055D-26 0.000E+00.0600.0700   -1.00000.75-.012792 12 12                  2111123 0
+ 41 6396.206600 2.060D-25 1.053E-03.0696.0834  653.22860.75-.006676 78  1             R 39 466653  0
+ 14 6397.062420 2.828D-26 1.228E-01.0920.4730  156.38220.730.000000 11  1 3 1 3    4 1 4   3555403 0
+ 11 6397.453580 2.017D-26 4.149E-02.0539.2818 2054.34520.45-.007680 11  1 9 5 5   10 7 4   3542433 5
+ 14 6397.460400 5.769D-27 3.992E-02.0863.4370  303.99480.690.000000 13  1 4 3 2    5 2 3   3555403 0
+ 51 6397.578500 8.660D-24 8.263E-03.0542.0589  461.05450.70-.006400  4  1             R 15 467663  0
+ 61 6397.904300 6.064D-26 0.000E+00.0600.0700   -1.00000.75-.012796 12 12                  2111123 0
+ 14 6397.999960 1.126D-26 1.097E-01.0832.4200  374.41000.690.000000 11  1 4 3 1    5 3 2   3555403 0
+ 11 6398.016160 1.057D-25 2.223E-04.0870.3500  206.30140.77-.001500  9  1 3 3 1    3 2 2   3544423 0
+ 61 6398.030000 4.120D-26 0.000E+00.0600.0700   -1.00000.75-.012796 12 12                  2111123 0
+ 11 6398.040440 3.550D-26 7.812E-04.0808.3841  816.69420.59-.013180 10  1 6 0 6    7 3 5   3542433 5
+ 14 6398.064910 2.158D-26 1.288E-01.0917.4500  221.83610.730.000000 11  1 3 2 1    4 2 2   3555403 0
+ 14 6398.162150 6.455D-26 3.581E-01.1050.4810   32.49640.780.000000 13  1 1 0 1    1 1 0   3555403 0
+ 51 6398.289600 1.354D-33 1.345E-02.0420.0413 5452.27340.67-.008000  4  1             R 53 466223  0
+ 71 6398.372276 3.423D-30 4.054E-06.0480.0470 1743.01600.710.000000  3  2         S11R12  d0040001 0
+ 14 6398.437740 3.014D-26 1.787E-01.0988.4510   46.17310.780.000000 13  1 1 1 1    2 0 2   3555403 0
+ 61 6398.527900 6.484D-26 0.000E+00.0600.0700   -1.00000.75-.012797 12 12                  2111123 0
+ 14 6398.529150 1.126D-26 1.094E-01.0832.3820  373.66590.690.000000 11  1 4 3 2    5 3 3   3555403 0
+ 61 6398.887200 7.799D-26 0.000E+00.0600.0700   -1.00000.75-.012798 12 12                  2111123 0
+ 11 6398.961020 1.541D-26 5.820E-04.0821.3841  927.74390.59-.015368 10  1 6 1 5    7 4 4   3542433 5
+ 14 6399.320350 6.293D-27 7.027E-02.0616.3770  402.32920.730.000000 13  1 4 4 0    4 4 1   3555403 0
+ 51 6399.618400 6.914D-24 8.389E-03.0535.0581  522.47510.69-.006700  4  1             R 16 467663  0
+ 21 6399.809493 4.452D-27 2.495E-11.0747.1098   81.94000.700.000000 72  1             R 14 000 0 0-1
+ 2 9.196621E-03 0.0000E+00 9.825068E-03 0.0000E+00 9.785364E-03 0.0000E+00 9.528075E-03 0.0000E+00-1
+ 14 6399.952410 9.763D-27 1.497E-01.0966.4390   15.50820.780.000000 13  1 0 0 0    1 0 1   3555403 0
