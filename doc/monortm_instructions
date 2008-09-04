@@ -1,17 +1,16 @@
 ************************************************************************ 
 *
 *
-*                                 PRELIMINARY
 *                        USER INSTRUCTIONS FOR MONORTM
 * 
-*                                27 April 2001
+*                                July 2008
 *
 *
 *	Note: All flags or records with a * sign are either used  
 *	differently (wrt LBLRTM) or are specific to MONORTM.
 *
-*       Note: Currently, inputs of cloud amount could be retrieved
-*	only from LBLRTM.IN with IATM=0 (the cloud is read along 
+*       Note: Currently, inputs of cloud amount can be input
+*	only from MONORTM_PROF.IN with IATM=0 (the cloud is read along 
 *       with the other layer information).
 *
 ************************************************************************ 
@@ -26,7 +25,7 @@
  
             CXID(1) is the flag which determines program initialization and termination.  
 	            The actual input data stream for MONORTM commences with the record 
-                    containing a '$' in CXID(1).  Any record that are read prior to a 
+                    containing a '$' in CXID(1).  Any records that are read prior to a 
                     record containing a '$' in CXID(1) are ignored.  Since MONORTM 
                     automatically recycles and reads Record 1.1 at the end of each run 
                     (this allows the stacking of multiple runs), each subsequent run 
@@ -36,75 +35,56 @@
                     file would begin with a '$' and end with a '%'. Records on the input 
                     file following the record with CXID(1) = '%' are ignored by MONORTM.
  
- 		    NOTE: In case INP in record 1.2 is set to 2 or 3, then only the first 
-                    segment in the input file LBLRTM.IN is used (the first segment between 
-                    the first $ and the first %). And it is used only to get instrumental 
-                    information (wavenumber, angle, etc).
+ 		    NOTE: If IATM=0 only records 1.1 through 1.4 are needed in MONORTM.IN;
+                    a separate MONORTM_PROF.IN file is required (see records 2.1.1 through 2.1.3),
+                    which contains the profile layer information (similar to TAPE7 in LBLRTM).
  
 
 --------------
- RECORD 1.2  (note the additional INP, specific for MONORTM)
+ RECORD 1.2  
 --------------
 
  
-IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  IOD,IXSECT, MPTS, NPTS   INP ISPD
-     5,    10,    15,    20,   25,   30,    35,   40,   45,   50,54-55,   60,   65,    70,72-75,77-80,82-85,87-90
- 4X,I1, 4X,I1, 4X,I1, 4X,I1,4X,I1,4X,I1, 4X,I1,4X,I1,4X,I1,4X,I1,3X,A2,4X,I1,4X,I1, 4X,I1,1X,I4,1X,I4,1X,I4,1X,I4
+IHIRAC,       ICNTNM,                                       IATM,                  IXSECT             ISPD
+     5,           15,                                         50,                      70             87-90
+ 4X,I1, 11X,      I1, 34X,                                     I1, 19X,                I1, 16X,        I4
  
  
          IHIRAC -->  Should be one: Voigt profile.
-         ILBLF4 -->  Not used in MONORTM (should be zero or omitted).
-         ICNTNM -->  (0,1) flag for continuum (CONTNM)
+         ICNTNM   (0,1,2,3,4,5,6) flag for continuum (CONTNM)
                      = 0  no continuum calculated
-                     = 1  all continua calculated
-         IAERSL -->  Not used in MONORTM (should be zero or omitted).  
-         IEMIT  -->  (0,1,2,3) 
-                     = 0  optical depth only
-                     = 1  radiance and transmittance
-                     = 2  solar radiance (requires previously calculated optical depths 
-                          or transmittances and binarysolar radiation file SOLAR.RAD)
-                     = 3  radiance, transmittance, and radiance derivative for molecular 
-                          species or temperature(requires RECORD 1.2b)
-         ISCAN  -->  Not used in MONORTM (should be zero or omitted).   
-         IFILTR -->  Not used in MONORTM (should be zero or omitted). 
-        *IPLOT  -->  (0,1)
-		     =0  Radiance only
-	             =1  Radiance and Brightness Temperature 
-         ITEST  -->  Not used in MONORTM (should be zero or omitted). 
+                     = 1  all continua calculated, including Rayleigh extinction where applicable
+                     = 2  H2O self not calculated, all other continua/Rayleigh extinction calculated
+                     = 3  H2O foreign not calculated, all other continua/Rayleigh extinction calculated
+                     = 4  H2O self and foreign not calculated, all other continua/Rayleigh extinction calculated
+                     = 5  Rayleigh extinction not calculated, all other continua calculated
+                     = 6  Individual continuum scale factors input (Requires Record 1.2a)
          IATM   -->  (0,1)   flag for LBLATM    1 = yes 
-         IMRG   -->  Not used in MONORTM (omitt).
-         ILAS   -->  Not used in MONORTM (should be zero or omitted). 
-         IOD    -->  Not used in MONORTM (should be zero or omitted). 
-         IXSECT -->  Not used in MONORTM (should be zero or omitted). 
-         MPTS   -->  Not used in MONORTM (should be zero or omitted). 
-         NPTS   -->  Not used in MONORTM (should be zero or omitted).
-        *INP    -->  (1,2,3)
- 	             =1 Inputs come from LBLRTM.IN file (ex-TAPE5) -default value-
- 		     =2 Inputs come from ARM.IN (list of sondes files).
-		     =3 Inputs come from MONORTM_PROF.IN (ex-TAPE7)
-		     Note: In case of 2,3, the instrumental configuration is
-	                   still read from LBLRTM.IN (wavenumbers, etc).
-			   In case of 3, the skin temperature is assumed to be the 
-	                   surface level temperature.
+	                                        0 = no.  If IATM=0, then user must supply an additional
+                                                         input file (MONORTM_PROF.IN - See Record 2.1)
+         IXSECT -->  (0,1) Cross section flag 
         *ISPD    -->  (0,1)
  	             =0 Slow version of MonoRTM (accurate) -default value-
- 		     =1 Fastversion of MonoRTM (valid only in the microwave).
+ 		     =1 Fast version of MonoRTM (valid only in the microwave, and only valid if used with 
+ 						 a spectral line file with ISPD flags.  Output from LNFL
+						 does not contain the ISPD flags).
+
+--------------
+RECORD 1.2a   (required if ICNTNM = 6)
+--------------
+
+             XSELF, XFRGN, XCO2C, XO3CN, XO2CN, XN2CN, XRAYL
+
+             free format
+
+             XSELF  H2O self broadened continuum absorption multiplicative factor
+             XFRGN  H2O foreign broadened continuum absorption multiplicative factor
+             XCO2C  CO2 continuum absorption multiplicative factor
+             XO3CN  O3 continuum absorption multiplicative factor
+             XO2CN  O2 continuum absorption multiplicative factor
+             XN2CN  N2 continuum absorption multiplicative factor
+             XRAYL  Rayleigh extinction multiplicative factor
 	 
-
---------------
- RECORD 1.2a    -->  Not used in MONORTM.
---------------
- 
-
---------------
- RECORD 1.2b    -->  Not used in MONORTM.
---------------
- 
-
---------------
- RECORD 1.2.1   -->  Not used in MONORTM. 
---------------
- 
  
 --------------
  RECORD 1.3    
@@ -114,27 +94,20 @@ IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  I
 	       wavenumbers, we can set V1 or V2 (or both ) to any negative value. MONORTM 
 	       will then expect record 1.3.1 and record 1.3.2
  
-             V1,     V2,  SAMPLE,  DVSET, ALFAL0,  AVMASS,  DPTMIN, DPTFAC, ILNFLG,    DVOUT NMOL_SCAL
+             V1,     V2,           DVSET,        NMOL_SCAL
  
-           1-10,  11-20,   21-30,  31-40,  41-50,   51-60,   61-70,  71-80,     85,   90-100   105
+           1-10,  11-20,           31-40,          105
  
-          E10.3,  E10.3,   E10.3,  E10.3,  E10.3,   E10.3,   E10.3,  E10.3,  4X,I1, 5X,E10.3 3X,I2
+          E10.3,  E10.3,    10X ,  E10.3,  63X, I2
  
  
                   V1 -->   beginning wavenumber value for the calculation
 			   If negative, see record 1.3.1
                   V2 -->   ending wavenumber value for the calculation
 			   If negative, see record 1.3.1
-              SAMPLE -->   Not used in MONORTM. 
               *DVSET -->   Stepsize of the monochromatic calculation by MONORTM.
 			   IF DVSET=0 and V1=V2, then the caclulation will be performed
 		           for V1=V2 only. 
-              ALFAL0 -->   Not used in MONORTM. 
-              AVMASS -->   Not used in MONORTM.
-              DPTMIN -->   Not used in MONORTM. 
-              DPTFAC -->   Not used in MONORTM.
-              ILNFLG -->   Not used in MONORTM. 
-               DVOUT -->   Not used in MONORTM.
            NMOL_SCAL  -->  Enables the scaling of the atmospheric profile for selected species
                            NMOL_SCAL is the highest molecule number for which scaling will be applied
                            See Record(s) 1.3.a/1.3.b.n
@@ -155,16 +128,22 @@ IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  I
 
           HMOL_SCAL(M)    XMOL_SCAL(M) from Record 1.3.b interpreted and used as follows:
 
-                   ‘ ‘    no scaling applied       (overrides any value on Record 1.3.b)
-                   ‘0’    scaling factor is zero   (layer column amounts are set to 0. for all levels)
-                   ‘1’    scaling factor used directly to scale profile
-            ‘c’ or ‘C’    column amount to which the profile is to be scaled (molec/cm^2)
-            ‘d’ or ‘D’    column amount in Dobson units to which the profile is to be scaled
-            ‘m’ or ‘M’    volume mixing ratio wrt dry air for the total column to which the profile will be scaled
-            ‘p’ or ‘P’    value of Precipitable Water Vapor (cm) to which the profile will be scaled (water vapor only)
 
-                          The scaling factor is the same at all levels
+                   ' '    no scaling applied       (overrides any value on Record 1.3.b)
 
+                   '0'    scaling factor is zero   (layer column amounts are set to 0. for all levels)
+
+                   '1'    scaling factor used directly to scale profile
+
+            'c' or 'C'    column amount to which the profile is to be scaled (molec/cm^2)
+
+            'd' or 'D'    column amount in Dobson units to which the profile is to be scaled
+
+            'm' or 'M'    volume mixing ratio (ppv) wrt dry air for the total column to which the profile will be scaled
+
+            'p' or 'P'    value of Precipitable Water Vapor (cm) to which the profile will be scaled (water vapor only)
+
+ 
                      M    Molecule number as indicated in the following Table:
 
                            1:  H2O   2:  CO2   3:    O3  4:   N2O  5:    CO  6:   CH4  7:    O2
@@ -176,7 +155,7 @@ IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  I
 
 
 -------------------
- RECORD 1.3.b.(1/n)    (only if NMOL_SCAL > 0;  otherwise omit)    # records depends on NMOL_SCAL
+ RECORD 1.3.b.(1..n)    (only if NMOL_SCAL > 0;  otherwise omit)    # records depends on NMOL_SCAL
 -------------------
 
 
@@ -284,6 +263,8 @@ IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  I
 
  *****************************************************************************
  ******  these records applicable only if LBLATM not selected (IATM=0)  ******
+ ******                                                                 ******
+ ******  these records should be in a separte file: MONORTM_PROF.IN
  ******                                                                 ****** 
  ******                      LAYER INPUT  (MOLECULES ONLY)              ******
  *****************************************************************************
@@ -299,8 +280,7 @@ IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,ITEST, IATM, IMRG, ILAS,  I
           1X,I1    I3,    I5,   F10.2,  20X, F8.2,  4X, F8.2,  5X, F8.3
  
  
-               IFORM --> (0,1) column amount format flag (0 is the default)
-		         = 0 read PAVE,WKL(M,L),WBROADL(L) in F10.4,E10.3,E10.3 format
+               IFORM --> (1) column amount format flag 
 		         = 1 read PAVE,WKL(M,L),WBROADL(L) in E15.7 format
               NLAYRS --> number of layers (maximum of 200)
                 NMOL --> value of highest molecule number used (default = 7; maximum of 35)
@@ -342,7 +322,7 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
              ALTZ(L) -->  altitude for top of current layer (information only)
                PZ(L) -->  pressure at ALTZ(L)  (information only)
                TZ(L) -->  temperature at ALTZ(L)  
-              CLW(L) -->  Cloud Liquid Amount in mm present inthe layer  
+              CLW(L) -->  Cloud Liquid Amount in mm present in the layer  
 
  
 --------------
@@ -362,7 +342,6 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
  RECORD 2.1.3     only if (NMOL  .GT . 7)         # records depends on NMOL
 --------------
  
- 
           (WKL(M,L), M=8, NMOL)
  
                 (8E10.3)
@@ -376,7 +355,136 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
  REPEAT RECORDS 2.1.1 through 2.1.3 for the remaining layers (up to NLAYRS)
  
 
+*****************************************************************************
+
+ ******  these records applicable only if LBLATM not selected (IATM=0)  ******
+
+ ****************  and cross-sections ARE selected (IXSECT=1)  ***************
  
+
+                    LAYER INPUT  (CROSS-SECTIONS ONLY)
+
+--------------
+ RECORD 2.2
+--------------
+
+          IXMOLS
+
+               5
+
+              I5
+
+              IXMOLS      number of cross-section molecules to be read (maximum of 35)
+
+
+--------------
+ RECORD 2.2.1
+--------------
+
+          XSNAME(I), I=1, IXMOLS
+
+          (7A10,(/,8A10))
+
+              XSNAME      name of the cross-section molecules to be used
+
+                          (Note: the cross-sections specified here must also appear in the
+
+                           cross-section input file FSCDXS.  See Table II after RECORD 3.7.1)
+
+--------------
+ RECORD 2.2.2
+--------------
+
+          IFRMX, NLAYXS, IXMOL, SECNTX, HEDXS
+
+            2      3-5,   6-10,  11-20, 21-80
+
+          1X,I1    I5,     I5,   F10.2,  15A4
+
+               IFRMX      (1) column amount format flag
+                          =1  read PAVX, XAMNT(M,L), WBROADX(L) in E15.7 format
+              NLAYXS      number of layers (maximum of 200), should be the same as NLAYRS on Record 2.1
+               IXMOL      number of cross-sections (maximum of 35), should be the same as IXMOLS on Record 2.2
+              SECNTX      user entered scale factor for the column amount for the layers defined by NLAYXS
+                                 if positive, looking up
+                                 if negative, looking down
+                          normal value = 1.0
+                           *** Note: this quantity is for information only, SECNTX should be the same as
+                                    SECNT0 on Record 2.1, which is used instead of this quantity.
+               HEDXS      60 character user identification
+ 
+
+ ****************************************************************************************************************
+
+ ****  Note: all the quantites on this Record, are for information only, LBLRTM will use the corresponding   ****
+ ****        values from Record 2.1.1.    This record is retained to maintain compatibility with 2.1.1 and   ****
+ ****        is consistent with the output from LBLATM with IPU = 1; this provides the flexibility of        ****
+ ****        independent utilization of this data with external programs.                                    ****
+ ****************************************************************************************************************
+
+--------------
+RECORD 2.2.3
+--------------
+
+          PAVX,  TAVX,  SECKXS,  ITYX(L),  IPATX,  ALTX(L-1),  PX(L-1),  TX(L-1),  ATLX(L),  PX(L),  TX(L)
+
+          1-10, 11-20,   21-30,    31-33,  34-35,      37-43,    44-51,    52-58,    59-65,  66-73,  74-80
+
+         F10.4,  F10.4,    F10.4,     A3,     I2,    1X,F7.2,      F8.3,    F7.2,     F7.2,   F8.3,   F7.2
+
+                PAVX   ave. pressure of layer (millibars) 
+                TAVX   ave. temperature of layer (K)
+              SECKXS   if SECKXS .ne. 0, it is the value of the column amount
+                       scale factor that will be used in the calculation for this layer
+                       a non-zero value for SECKXS will override the scale factor
+                       value, SECNTX .
+             ITYX(L)   overrides the LBLRTM internal calulation of ITYPE for the layer L.
+                       ITYPE controls the DV ratio of the previous layer to the current layer.
+                       A blank defaults to the internal calulation.
+                     = 0 specifies 1/1
+                       1 specifies 2/1
+                       2 specifies 3/2
+                       4 specifies 5/4
+                       5 specifies 6/5
+                      99 specifies first layer (i.e. no ratio)
+               IPATX = 0 determined by sign of SECNTX
+                       1 looking down merge (upwelling radiance calculated)
+                       2 tangent layer merge
+                       3 looking up merge (downwelling radiance calculated)
+           ALTX(L-1)   altitude for bottom of current layer
+             PX(L-1)   pressure at ALTX(L-1)
+             TX(L-1)   temperature at ALTX(L-1)
+                       ** NOTE **  ALTX(L-1), PX(L-1) and TX(L-1) are only required for the first layer.
+                                   LBLRTM assumes that these quantites are equal to the top of the previous
+                                   layer for L > 1.
+             ALTX(L)   altitude for top of current layer
+               PX(L)   pressure at ALTZ(L)
+               TX(L)   temperature at ALTZ(L)
+
+--------------
+RECORD 2.2.4
+--------------
+          (XAMNT(I,L), I=1, 7), WBROADX(L)
+
+                      (8E15.7)
+
+            XAMNT(I,L)   column densities (molecules/cm**2) or mixing ratios (ppv) for 7 cross-section molecules
+            WBROADX(L)   column density for broadening gases (molecules/cm**2),
+                    ** information only ** should be the same as WBROADL, on Record 2.1.2
+
+--------------
+ RECORD 2.2.5     only if (IXMOL  .GT . 7)         # records depends on IXMOL
+--------------
+
+          (XAMNT(I,L), I=8, IXMOL)
+
+                (8E15.7)
+
+
+ REPEAT RECORDS 2.2.3 through 2.2.5 for the remaining layers (up to NLAYXS)
+
+
+
  *****************************************************************************
  ******  these records applicable only if LBLATM  selected (IATM=1)     ******
  ******                                                                 ****** 
@@ -689,8 +797,191 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
         3.6
 ----------------
  
+*****************************************************************************
+
+**********  these records applicable if LBLATM selected (IATM=1)  ***********
+
+****************  and cross-sections ARE selected (IXSECT=1)  ***************
+
+
+                             XAMNTS
+ 
+
+----------------
+ RECORD 3.7
+----------------
+
+          IXMOLS,  IPRFL, IXSBIN
+
+               5,     10,     15
+
+              I5,     I5,     I5
+
+              IXMOLS      number of cross-section molecules to be inputed (maximum of 35)
+              IPRFL  (0,1)
+                        = 0  user input profile
+                        = 1  standard profile as determined by LBLATM
+              IXSBIN (0,1) flag to deselect pressure convolution of cross-sections
+                        = 0 cross-sections convolved with pressure (default)
+                        = 1 cross-sections not convolved with pressure
+ 
+
+--------------
+ RECORD 3.7.1
+--------------
+
+          XSNAME(I), I=1, IXMOLS
+
+          (7A10,(/,8A10))
+
+              XSNAME      name of the cross-section molecules to be used
+                          (Note: the cross-sections specified here must also appear
+                           in the cross-section input file FSCDXS.  See Table II)
+ 
+
+ TABLE II. Structure of file FSCDXS.
+
+
+                                            TABLE II
+ 
+
+    Below is a sample file for FSCDXS.  The format for the fields of file FSCDXS is given below:
+
+                      XNAME, V1X, V2X, DVX, NTEMP, IFRM, CFRM, (XFILS(I),I=1,NTEMP)
+
+                             FORMAT (A10,2F10.4,F10.7,I5,5X,I5,A1,4X,6A10)
+
+    Sample file FSCDXS:
+
+    ------------------------------------------------------------------------------------------------------------------------
+
+    MOLECULE       V1        V2        DV     NTEMP    FORMAT    FILET1    FILET2    FILET3    FILET4    FILET5   FILET6
 
  
+
+    CCL4        786.0010  805.9980 .01095126    1        86N    CCL4
+
+    F11         830.0090  859.9990 .01095325    4        90N    F11AT1    F11AT2    F11AT3    F11AT4
+
+    F11        1060.0040 1099.9980 .01095726    1        86N    F11BT1
+
+    F12         860.0080  939.9960 .01095576    6        90     F12AT1    F12AT2    F12AT3    F12AT4    F12AT5   F12AT6
+
+    F12        1070.0050 1179.9940 .01095726    4        90N    F12BT1    F12BT2    F12BT3    F12BT4
+
+    %%%
+
+    ------------------------------------------------------------------------------------------------------------------------
+
+           XNAME     10 character cross-section name, left-justified, all CAPS,
+                     which matches an alias from the following table:
+
+                                      Cross-Section Molecules and Aliases   (June 1994)
+
+                                      -------------------------------------------------
+
+                             Alias(1)           Alias(2)           Alias(3)           Alias(4)
+                            ----------         ----------         ----------         ----------
+                            CLONO2              CLNO3
+                            HNO4
+                            CHCL2F                                 CFC21              F21
+                            CCL4
+                            CCL3F               CFCL3              CFC11              F11
+                            CCL2F2              CF2CL2             CFC12              F12
+                            C2CL2F4             C2F4CL2            CFC114             F114
+                            C2CL3F3             C2F3CL3            CFC113             F113
+                            N2O5
+                            HNO3
+                            CF4                                    CFC14              F14
+                            CHCLF2              CHF2CL             CFC22              F22
+                            CCLF3                                  CFC13              F13
+                            C2CLF5                                 CFC115             F115
+                            NO2
+
+                     Note: If a molecule has cross-section data in more than one spectral region,
+                           each region must have a separate entry in FSCDXS.
+
+                     A '%' in column 1 will terminate the read of FSCDXS
+
+TABLE II. Structure of file FSCDXS.  (Continued)
+
+             V1X     Beginning wavenumber for the cross-section data (cm-1)
+
+             V2X     Ending wavenumber for the cross-section data (cm-1)
+
+             DVX     Wavenumber spacing for the cross-section data (cm-1)     ** for information only **
+
+           NTEMP     number of temperature dependent cross-section files to be read in.  '1' indicates no temperature
+                     dependence.  Maximum of '6' files (i.e. 6 temperatures) is allowed.       ***** no default *****
+
+            IFRM     is the format specifier
+                     = 86  -  HITRAN 86 format
+                     = 90  -  HITRAN 90 format   ** default **
+
+                     Note: the headers are different between HITRAN 86 and HITRAN 90
+
+            CFRM     is the blocking specifier
+                     = 'N'  -  unblocked data (100 characters/record)
+                     = ' '  -  blocked data (51*100 characters/record)    ** default **
+
+        XFILS(I)     10 character cross-section file name
+                         (may include directory name if length is adequate)
+
+-----------------------------------------------------------------------------
+
+                     User Defined Atmospheric Profile
+
+ -------------------------------- (IPRFL = 0) --------------------------------
+
+--------------
+ RECORD 3.8
+--------------
+
+            LAYX,  IZORP,  XTITLE
+
+               5,     10,   11-60
+
+              I5,     I5      A50
+
+           LAYX         number of atmospheric profile boundaries
+           IZORP (0,1)  flag which determines value of ZORP on Record 3.8.1
+                        = 0   ZORP is an altitude in KM
+                        = 1   ZORP is a pressure in millibars
+           XTITLE       50 character description of profile
+
+--------------
+ RECORD 3.8.1
+--------------
+
+     ZORP,  (JCHAR(K),K =1,28)
+
+     1-10,    16  through  50
+
+    F10.3, 5X,           35A1
+
+        ZORP       boundary altitude (km) or pressure (millibars) as determined by IZORP on Record 3.8
+      JCHAR(K)     flag for units and input options for
+                   the K'th cross-section
+
+                       JCHAR = 1             - default to value for global model atmosphere
+                             = " ",A         - volume mixing ratio (ppmv)
+
+--------------
+ RECORD 3.8.2 ... 3.8.N
+--------------
+
+          DENX(K), K=1, IXMOLS
+ 
+          8E10.3
+
+          DENX(K) density of the K'th cross-section in units set by JCHAR(K)
+
+ REPEAT records 3.8.1 to 3.8.N for each of the remaining LAYX boundaries
+
+ 
+
+ ----------------------------------------------------------------------------
+
     NOTES:
        1. the character '%' signals the end of TAPE5 and terminates MONORTM.
 
