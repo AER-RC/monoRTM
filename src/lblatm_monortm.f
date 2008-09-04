@@ -6140,7 +6140,7 @@ C                                                                        FX01110
 C                                                                        FX01200
 C     READ IN DESIRED 'CROSS SECTIONS'                                   FX01210
 C                                                                        FX01220
-      CALL XSREAD (XV1,XV2)                                              FX01230
+      CALL XSREAD (ird,XV1,XV2)                                              FX01230
 C                                                                        FX01240
       WRITE (IPR,930) (I,XSNAME(I),I=1,IXMOLS)                           FX01250
 C                                                                        FX01260

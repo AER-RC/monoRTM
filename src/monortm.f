@@ -11,17 +11,17 @@ C             ALGORITHM AUTHORS:
 C                                     S. BOUKABARA
 C                                     S.A. CLOUGH                      
 C                                     R. HOFFMAN                     
-C                                                                      
-C                                                                      
+C
 C                      Atmospheric and Environmental Research Inc. (AER)
 C                      131 Hartwell Avenue
 C                      Lexington, MA, 02421      
 C                                                                      
 C----------------------------------------------------------------------
 C                                                                      
-C               WORK SUPPORTED BY:    THE ARM PROGRAM                  
-C                                     OFFICE OF ENERGY RESEARCH        
-C                                     DEPARTMENT OF ENERGY                          
+C        WORK SUPPORTED BY:    THE ARM PROGRAM                  
+C                              OFFICE OF ENERGY RESEARCH        
+C                              DEPARTMENT OF ENERGY   
+C                              THE JOINT CENTER FOR SATELLITE DATA ASSIMILATION
 C                                                                      
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C                                                                      
@@ -30,19 +30,18 @@ C  This software may be used, copied, or redistributed as long as it is not sold
 C  reproduced on each copy made.  This model is provided as is without any express or implied warranties.
 C  (http://www.rtweb.aer.com/)
 
-
 C                                                                      
 C**********************************************************************
 C   Comments and/or questions are appreciated. 
 C   They should be forwarded to:
-C   AER Inc. (Sid Boukabara or Tony Clough)
+C   AER Inc. (Karen Cady-Pereira or Vivienne Payne)
 C   131 Hartwell Avenue, Lexington, MA02421, USA
-C   By phone  : 1 781 761 2213
+C   By phone  : 1 781 761 2288
 C   By Fax    : 1 781 761 2299
-C   By E-mail : sboukaba@aer.com, clough@aer.com
+C   By E-mail : cadyp@aer.com, vpayne@aer.com
 C
 C
-C   Sid Ahmed Boukabara, AER Inc, April, 2001
+C   Vivienne H. Payne, AER Inc, August, 2008
 C                                                                     
 C**********************************************************************
 
@@ -93,39 +92,15 @@ C**********************************************************************
 	!   Several options are possible in this code. We can:
 	!   **************************************************  
 	!
-	!   - modify the version of the continuum model (see IVC param)
-	!     IVC=1  -> not used 
-	!     IVC=2  -> CKD version 2.4 (by default)
-	!     IVC=3  -> Rosenkranz 1998's suggestions (MPMf87/s93)
-	!
-	!   - turn on/off the line coupling of the O2 lines (see ICPL)
+	!   - turn on/off the line coupling (see ICPL)
 	!     ICPL=1 -> Line coupling turned on  
 	!     ICPL=0 -> Line coupling turned off (even if we have line 
         !               couplng coefficients in the spectroscopic 
 	!               selected_lines)
 	!   - assume that the atmospheric profiles are organized
 	!     from the top to the surface (or the opposite), see IDU.
-	!     IDU=0  -> profiles from top (1st elt) to surface (last elt)
 	!     IDU=1  -> profiles from surface to top (default)
 	!
-	!   - read the inputs from different sources/formats. see INP
-	!     INP=1  ->the inputs read by LBLATM input (MONORTM.IN). This 
-	!              input file is consistent with LBLRTM's TAPE5.
-	!     INP=2  ->ARM files transformed to LBLATM input (needs ARM.IN 
-	!              that will contain the list of ARM sondes files with 
-	!              their absolute path). The sondes are quality-flagged
-	!              See subroutine ARM2LBLATM for the flags.
-	!              Only sondes with FLAG=0 are simulated.
-	!     INP=3  ->inputs are read from a TAPE7-like file called
-	!              MONORTM_PROF.IN. It contains the layers information
-	!              WARNING: In this case, the surface temperature is 
-	!              taken to be the surface level temperature.
-	!     INP comes from the MONORTM.IN file (see instructions)
-	!   - scale/tune several parameters for the line coupling and
-	!     the continuum computation, see :
-	!     XSLF   : scaling factor for self continuum (default=1)
-	!     XFRG   : scaling factor for foreign continuum (default=1)
-	!     XCN2   : scaling factor for N2 continuum (default =1)
 	!     SCLCPL : scaling factor for Line Coupling Parameters
 	!     SCLHW  : scaling factor for the pressure Dependence of the 
 	!              halfwidth of the O2 0-zero band
@@ -170,14 +145,24 @@ C**********************************************************************
 	!     Also, in the uplooking configuration we compute only the 
 	!     downwelling radiance (again, for speed purposes).
 
-        !     September 2003: Modified spectral lines file to improve agreement 
+        !   - September 2003: Modified spectral lines file to improve agreement 
         !     with SGP MWRP data (provided by Nico Cimini). Scaled O2 line coupling
         !     parameters: Y * 0.87, G* 0.
+	!   - 2006: Implementation of Tretyakov et al (2005) O2 line coupling.
+        !     Validated against ARM MWRP data (see Cadeddu et al, 2007)
+	!   - 2007: Updated spectral line file to change the widths and 
+        !     temperature dependences of the widths for the 22 and 183 GHz lines
+        !     (see Payne et al., 2008)
+	!   - 2008: Extensive update to enable the use of MonoRTM beyond 
+        !     the microwave region and to use the MT_CKD continuum.
+        !     Updates to self and foreign broadened microwave continuum based
+        !     on ARM SGP MWR data at 31.4 GHz and ARM FKB (COPS) data at 150 GHz.   
         !     
 	!
 	!***************************************************************
+	IMPLICIT REAL*8           (V) ! for consistency with LBLRTM routines
 	include "declar.incl"
-	INTEGER NWN,I,ICPL,IS,IOUT,IRT,J,ICNTNM,IATM,INP,IVC
+	INTEGER NWN,I,ICPL,IS,IOUT,IRT,J,ICNTNM,IATM
 	REAL*8 V1,V2,SECANT,XALTZ 
 	REAL TMPSFC,TPROF(mxlay),qprof(mxlay),press(mxlay)
         REAL zvec(mxlay),dzvec(mxlay),zbnd(mxfsc),zbnd2(mxfsc)
@@ -185,10 +170,11 @@ C**********************************************************************
         CHARACTER HVRREL*15, HVRSPEC*15
 	CHARACTER fileARMlist*64,hmod*60,CTYPE*3
 	CHARACTER fileprof*80,HFILE*80,FILEOUT*60,ht1*4,ht2*4
-	CHARACTER*60 FILEIN,FILESONDE,FILELOG
+	CHARACTER*60 FILEIN,FILELOG
 	character*8 XID,HMOLID,YID,HDATE,HTIME
 	character*1 hmol_scal
 	character*10 holn2
+	CHARACTER*10 XSFILE,XSNAME,ALIAS,XNAME,XFILS(6),BLANK  
 	real tarray(2)
 	COMMON /CVRMON  / HVRMON
         COMMON /CVRATM  / HVRATM
@@ -199,6 +185,14 @@ C**********************************************************************
 	COMMON /PATHD/ P,T,WKL,WBRODL,DVL,WTOTL,ALBL,ADBL,AVBL,
      &     H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,PZ,TZ
 	common /profil_scal/ nmol_scal,hmol_scal(64),xmol_scal(64)
+        
+        COMMON /PATHX/ IXMAX,IXMOLS,IXINDX(mx_xs),XAMNT(mx_xs,MXLAY)
+
+        COMMON /XSECTF/ XSFILE(6,5,mx_xs),XSNAME(mx_xs),ALIAS(4,mx_xs) 
+        COMMON /XSECTR/ V1FX(5,MX_XS),V2FX(5,MX_XS),DVFX(5,MX_XS),     
+     *                WXM(MX_XS),NTEMPF(5,MX_XS),NSPECR(MX_XS),      
+     *                IXFORM(5,MX_XS),XSMASS(MX_XS),XDOPLR(5,MX_XS), 
+     *                NUMXS,IXSBIN
 
 	COMMON /MANE/ P0,TEMP0,NLAYRS,DVXM,H2OSLF,WTOT,ALBAR,
      1    ADBAR,AVBAR,  
@@ -217,20 +211,14 @@ C**********************************************************************
 	DIMENSION WMT(64)
 
 	!---INPUTS & GENERAL CONTROL PARAMETERS
-	IVC=2    !if=2->CKD2.4  MPMf87/s93 (if=3)
 	ICPL=1   !=1->cpl =0->nocpl
-	IDU=1    !IDU=0->from top 2 surface (not supported), IDU=1->the opposite
-	XSLF=1.  !scaling factor (SLF cont)
-	XFRG=1.  !scaling factor (FRG cont)
-	XCN2=1.  !scaling factor (N2 cont)
+	IDU=1    ! ->profiles input fromn surface to TOA
 	SCLCPL= 1. !scaling factor (Line Coupling Parameters)
 	SCLHW=1. !scaling factor (Pressure Dependence of the halfwidth of the 0 band)
 	Y0RES=0. !Y0RES of the line coupling coeffs
-	IPUNCH=1 !flag to create (1) or not (0) TAPE7 in case INP=2
 
 	!---FILES NAMES ALL PUT HERE FOR CONVENIENCE
 	FILEIN      ='MONORTM.IN'
-	FILESONDE   ='SONDE.IN'
 	fileARMlist ='ARM.IN'
 	fileprof    ='MONORTM_PROF.IN'
 	HFILE       ='spectral_lines.dat'
@@ -248,11 +236,11 @@ C**********************************************************************
 	HVRMON = '$Revision$' 
 
 	!---Release number of MonoRTM
-	HVRREL = 'Release  3.3'
+	HVRREL = 'Release  4.0'
 
 	!---GET THE PROFILES NUMBER
 
-	CALL GETPROFNUMBER(INP,FILEIN,fileARMlist,fileprof,
+	CALL GETPROFNUMBER(IATM,FILEIN,fileARMlist,fileprof,
      1    NPROF,filearmTAB)
 	!---File Unit numbers/Open files
 	IPU  =7 
@@ -264,23 +252,21 @@ C**********************************************************************
 	OPEN (IRD,FILE=FILEIN,STATUS='UNKNOWN',ERR=3000)        
 	OPEN (IOT,file=FILEOUT,status='unknown',
      1    form='formatted',ERR=4000)
-	IF (INP.EQ.3) OPEN(IPF,file=fileprof,status='old',
+	IF (IATM.EQ.0) OPEN(IPF,file=fileprof,status='old',
      1    form='formatted',err=6000)
+
+	IPASSATM = 0 ! flag to determine whether RDLBLINP has been called before
 
 	!---Get info about IBMAX/ZBND/H1/H2...
 	CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
-     1    ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD)
+     1    ICNTNM,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
 
-	!---Write header in output file
-	WRITE(IOT,'(a)') 'MONORTM RESULTS:'
-	WRITE(IOT,'(a)') '----------------' 
-	WRITE(IOT,'(a5,I8)') 'NWN :',NWN 
 
 	!---PRINT OUT MONORTM VERSION AND PROFILES NUMBER
-	CALL start(NPROF,INP)
+	CALL start(NPROF,IATM)
 
 	!---CHECK INPUTS AND THEIR CONSISTENCY WITH MONORTM
-	CALL CHECKINPUTS(NWN,NPROF,NWNMX,NPROFMX,INP)
+	CALL CHECKINPUTS(NWN,NPROF,NWNMX,NPROFMX)
 
 	!---Loop over the number of profiles to be processed
 	NREC=0
@@ -291,39 +277,19 @@ C**********************************************************************
 
 
 	   !---Inputs: MONORTM.IN (TAPE5-type of file)
-	   IF (INP.EQ.1) THEN
+	   IF (IATM.EQ.1) THEN
 	      IF (NPR.EQ.1) THEN
 		 REWIND(IPU)
 		 REWIND(IRD)
 		 IPASS=0
 	      ENDIF
 	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
-     1	         ICNTNM,    INP,IBMAX,ZBND,H1f,H2f,ISPD)
-	   ENDIF
-
-
-	   !---Inputs: wave#/path/angle from MONORTM.IN, profiles from ARM sondes
-	   IF (INP.EQ.2) THEN
-	      IF (NPR.EQ.1) REWIND(IPU)
-	      CALL ARM2LBLATM(filearmTAB(NPR),IFLAG,ilaunchdate, 
-     1  	   ilaunchtime,ibasetime,iserialnumber,isondeage,
-     2	           NWN,WN,V1,V2,DVSET,FILESONDE,NLAYRS,IBMAX,ZBND,
-     3  	   ANGLE,H1F,H2F,NMOL,IPUNCH)
-
-	      IF (IFLAG.EQ.2) THEN
-		 WRITE(*,'(a30,i5,a8)') 'PROCESSING PROFILE NUMBER:',
-     1	         NPR,' FLAG=2'
-		 GOTO 111
-	      ENDIF
-	      OPEN (IRD,FILE=FILESONDE,STATUS='UNKNOWN',ERR=5000)        
-	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILESONDE,
-     1             ICNTNM,    INP,IBMAX2,ZBND2,H1,H2,ISPD)
-	      CLOSE(IRD)
+     1	         ICNTNM,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
 	   ENDIF
 
 
 	   !---Inputs: MONORTM_PROF.IN (TAPE7 consistent)
-	   IF (INP.EQ.3) THEN
+	   IF (IATM.EQ.0) THEN
 
 c	      READ (IPF,'(1x,i5,10a8)') ipass, xid
 
@@ -339,7 +305,6 @@ c	      READ (IPF,'(1x,i5,10a8)') ipass, xid
 		    READ (IPF,*,END=110,ERR=50) P(IL),T(IL),  
      1                   IPATH,ALTZ(IL-1),PZ(IL-1),        
      2	                 TZ(IL-1),ALTZ(IL),  PZ(IL),  TZ(IL)  
-		    TMPSFC=TZ(IL-1)
 		 ELSE                                             
 		    READ (IPF,*,END=110,ERR=50) P(IL),T(IL),  
      1	                 IPATH,ALTZ(IL),PZ(IL),TZ(IL)   
@@ -348,7 +313,50 @@ c	      READ (IPF,'(1x,i5,10a8)') ipass, xid
      1	              WBRODL(IL)          
 		 IF (NMOL.GT.7) READ(IPF,978) (WKL(K,IL),K=8,NMOL)
 	      ENDDO 
-	   ENDIF
+	      
+	      IF (IXSECT.GE.1) THEN
+	         READ(IPF,930) IXMOLS,IXSBIN
+		 XV1 = MINIMUM(WN,nwn)
+		 XV2 = MAXIMUM(WN,nwn)
+
+		 CALL XSREAD (ipf,XV1,XV2)                                           
+		 WRITE (IPR,932) (I,XSNAME(I),I=1,IXMOLS)
+		 READ (IPF,900) IFRMX,NLAYXS,IXMOL,SECNTX,HEDXS                   
+		 IF (IXMOL.EQ.0) THEN                                             
+		    WRITE (IPR,935) IXMOL                                         
+		    STOP ' PATH - IXMOL 0 '                                       
+	         ENDIF                                                            
+	         IF (IXMOL.NE.IXMOLS) THEN                                        
+	            WRITE (IPR,937) IXMOL,IXMOLS                                  
+	            STOP ' PATH - IXMOL .NE. IXMOLS '                             
+	         ENDIF                                                            
+	         IF (NLAYRS.NE.NLAYXS) THEN                                       
+	            WRITE (IPR,940) NLAYRS,NLAYXS                                 
+	            STOP ' PATH - NLAYRS .NE. NLAYXS '                            
+	         ENDIF  
+              
+		 SECNTX = ABS(SECNTX)                                             
+		 WRITE (IPR,942) SECNTX,NLAYXS,IXMOLS,HEDXS                       
+C       
+		 DO 40 L = 1, NLAYXS                                              
+C                                                                         
+		     IF (L.EQ.1) THEN                                              
+			 READ (IPF,910) PAVX,TAVX,SECKXS,CINPX,IPTHKX,ALTXB,
+     &			     PZXB,TZXB,ALTXT,PZXT,TZXT                          
+		     ELSE                                                          
+			 READ (IPF,915) PAVX,TAVX,SECKXS,CINPX,IPTHKX,ALTXT, 
+     &		              PZXT,TZXT                                              
+		     ENDIF                                                         
+			 READ (IPF,978) 
+     *                    (XAMNT(M,L),M=1,7),WBRODX                   
+			 IF (IXMOL.GT.7) 
+     *                    READ (IPF,978) (XAMNT(M,L),M=8,IXMOL)      
+
+  40		 CONTINUE
+
+	     ENDIF ! test on IXSECT=1
+
+	 ENDIF ! test on IATM=0
  
 c_______________________________________________________________________
 c
@@ -358,26 +366,6 @@ c
 
 c_______________________________________________________________________
 C
-	   !---PREPARE THE INPUTS FOR MODM
-	   DO IL=1,NLAYRS
-	      W_wv(IL)=WKL(1,IL)
-	      W_o2(IL)=WKL(7,IL)
-	      IF (NMOL.GE.22) THEN
-		 W_n2(IL)=WKL(22,IL)
-		 W_other(IL)=WBRODL(IL)
-	      ENDIF
-	      IF (NMOL.LT.22) THEN
-		 W_n2(IL)=WBRODL(IL)
-		 W_other(IL)=0.
-	      ENDIF
-	      W_o3(IL)=WKL(3,IL)
-	      W_n2O(IL)=WKL(4,IL)
-	      W_co(IL)=WKL(5,IL)
-	      W_so2(IL)=WKL(9,IL)
-	      W_no2(IL)=WKL(10,IL)
-	      W_oh(IL)=WKL(13,IL)
-	   ENDDO
-
 	   !***********************************************
 	   !* Second Step: SET-UP THE EMISS/REFLEC VECTORS
 	   !***********************************************	   
@@ -386,22 +374,16 @@ C
 	   NREC=NREC+1
 
 	   !---COLUMN WATER VAPOR/LIQUID WATER
-	   CALL INTEGR(W_wv,CLW,NLAYRS,WVCOLMN,CLWCOLMN)
+	   CALL INTEGR(WKL(1,:),CLW,NLAYRS,WVCOLMN,CLWCOLMN)
 
 	   !***********************************************
 	   !* Third Step: OPTICAL DEPTHS COMPUTATION
 	   !***********************************************	
 
-           CALL MODM(IVC,ICPL,NWN,WN,NLAYRS,P,T,
-     4	                             XSLF,XFRG,XCN2,
-     5	        SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ISPD)
+           CALL MODM(ICPL,NWN,WN,dvset,NLAYRS,P,T,
+     4	               NMOL,WKL,WBRODL,
+     5	        SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ixsect,ISPD)
 	   
-	   !***********************************************
-	   !* Fourth Step: CORRECT FOR THE SLANT PATH
-	   !***********************************************	   
-	   !---CORRECT THE OPTDEPTHS FOR THE SLANT PATH
-	   !CALL CORR_OPTDEPTH(INP,NLAYRS,SECNTA,NWN,ANGLE,O,IRT)
-
 	   !***********************************************
 	   !* Fifth Step: RADIATIVE TRANSFER
 	   !***********************************************	   
@@ -412,11 +394,9 @@ C
 	   !***********************************************
 	   !* Sixth Step: WRITE OUT THE RESULTS
 	   !***********************************************	   
-	   CALL STOREOUT(NWN,WN,RAD,TB,TRTOT,SCLCPL,SCLHW,NREC,
-     1          WVCOLMN,0,XSLF,0,Y0RES,0,INP,NPR,ilaunchdate,
-     1          ilaunchtime,ibasetime,iserialnumber,isondeage,
-     2          CLWCOLMN,TMPSFC,REFLC,EMISS,
-     4	                              NLAYRS,P,FILEOUT,ANGLE)
+	   CALL STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT,NPR,
+     1          WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS,
+     4	        NLAYRS,NMOL,ANGLE,IOT,FILEOUT)
 
 	   WRITE(*,'(a30,i5)') 'PROCESSING PROFILE NUMBER:',NPR
 
@@ -428,9 +408,23 @@ C
 	WRITE(IPR,1000) HVRREL,HVRSPEC,HVRMON,HVRMODM,HVRSUB,HVRATM  
 
 	!---Different formats
+ 900	FORMAT (1X,I1,I3,I5,F10.2,15A4) 
+ 910	FORMAT (E15.7,F10.4,F10.4,A3,I2,1X,2(F7.2,F8.3,F7.2))
+ 911	FORMAT (3F10.4,A3,I2,1X,2(F7.2,F8.3,F7.2))                          
+ 915	FORMAT (E15.7,F10.4,F10.4,A3,I2,23X,(F7.2,F8.3,F7.2))
+ 916	FORMAT (3F10.4,A3,I2,23X,(F7.2,F8.3,F7.2))              
  924	FORMAT (1X,I1,I3,I5,F10.6,3A8) 
  925	FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2) 
  926	FORMAT (E15.7,F10.4,10X,I5,1X,F7.3,15X,F7.3,/,(1P8E15.7))    
+ 927	FORMAT (8E10.3) 
+ 930	FORMAT (I5,5X,I5)
+ 932	FORMAT (/,'  THE CROSS-SECTION MOLECULES SELECTED ARE: ',/,/,(5X,   
+     *        I5,3X,A))                                                   
+ 935	FORMAT (/,'***** IXMOL = ',I5,' *****',/)                           
+ 937	FORMAT (/,'***** IXMOL = ',I5,' .NE. IXMOLS = ',I5,' *****',/)     
+ 940	FORMAT (/,'***** NLAYRS = ',I5,' .NE. NLAYXS = ',I5,' *****',/)     
+ 942	FORMAT (/,'0 SECANTX  =',F13.4,/'0 NLAYXS=',I4,/'0 ISMOLS=',I4,/,   
+	1 '0',15A4)                                                   
  972	FORMAT (64a1)
  973	FORMAT (7e15.7,/,(8e15.7,/))
  978	FORMAT (1P8E15.7)                                             
@@ -446,7 +440,6 @@ C
 	!---Close all files
         CLOSE(IPF)		!closes the MONORTM_PROF.IN file
 	CLOSE(IOT)		!closes the OUTPUT file
-	CLOSE(IRD)		!closes the SONDE.IN file
 	CLOSE(IPR)		!closes the LBLATM.LOG file
 	CLOSE(IPU)		!closes the MONORTM.IN file
 	STOP
@@ -459,8 +452,6 @@ C
  3000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILEIN           
 	STOP
  4000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILEOUT
-	STOP
- 5000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILESONDE           
 	STOP
  6000	WRITE(*,*) ' EXIT; ERROR OPENING :',FILEPROF           
 	STOP
