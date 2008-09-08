@@ -837,6 +837,10 @@ c
      *             '  HOBr  ' , ' C2H4   ' , ' CH3OH  '/
 
     ! set up headers: assumes same molecules used in all profiles!!!
+	
+	otot  = 0.
+	odxtot = 0.
+	otot_by_mol(:) = 0.
 
         if (npr.eq.1) then
            if (nmol.lt.22) wkl(22,:) = wbrodl
@@ -872,12 +876,15 @@ c
            end if
              
 	   !----Computation of the integrated optical depths
-	   OTOT=sum(o(iw,:))
-	   odxtot = sum(odxsec(iw,:))
-           do ik=1,kount
-              otot_by_mol(ik) = sum(o_by_mol(iw,id_mol(ik),:))+
-     &                          sum(oc(iw,id_mol(ik),:))
-           end do
+	   DO J = 1,NLAY
+	       OTOT = OTOT + O(IW,J)
+	       ODXTOT = ODXTOT + ODXSEC(IW,J)
+	       DO IK = 1,KOUNT
+		   OTOT_BY_MOL(IK) =  OTOT_BY_MOL(IK) + 
+     &               O_BY_MOL(IW,ID_MOL(IK),J) + 
+     &               OC(IW,ID_MOL(IK),J)
+	       ENDDO
+	   ENDDO
 
           WRITE(IOT,21) NPR,FREQ,TB(Iw),RAD(Iw),TRTOT(Iw),
      2          WVCOLMN,CLWCOLMN,TMPSFC,EMISS(Iw),REFLC(Iw),

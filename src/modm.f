@@ -104,7 +104,7 @@ C-------------------------------------------------------------------------------
       real *8  v1abs,v2abs
       real*8 v1, v2
       real scor(42,9)
-      integer index_cont(ncont)
+      integer index_cont(ncont), imol
       COMMON /ABSORB/ V1ABS,V2ABS,DVABS,NPTABS,ABSRB(n_absrb)                
 C                                                                         
       CHARACTER*8      XID,       HMOLID,      YID     
@@ -201,7 +201,7 @@ c Multiply by radiation term
          end do                    ! end molecule loop
 
 c calculate TIPS using Gamache routine rather that QOFT
-         call tips_2003(nmol,t,scor)
+         call tips_2003(nmol,t(k),scor)
 
 	 DO M=1,NWN                !loop over the wavenumbers
 
@@ -214,8 +214,12 @@ c calculate TIPS using Gamache routine rather that QOFT
      &      P(K),P0,SCLCPL,SCLHW,Y0RES,scor)
    
             O_CLW(M,K)=ODCLW(WN(M),T(K),CLW(K))                       !OPTDEPTH CLW
-            O(M,K)=sum(o_by_mol(m,1:nmol,k))+odxsec(m,k)
+            do imol = 1,nmol
+                O(M,K) = o(m,k) + O_BY_MOL(M,imol,K) 
+            enddo
+            o(m,k) = o(m,k) + odxsec(m,k) + 
      &              +sum(oc(m,1:index_cont(5),k))+O_CLW(M,K)
+
          ENDDO
 
       ENDDO                     ! end layer loop
@@ -225,7 +229,7 @@ c calculate TIPS using Gamache routine rather that QOFT
 
       SUBROUTINE LINES(Xn,WN,T,NMOL,WK,
      &     wbrod,RADCT, T0,o_by_mol,
-     &     XN0,RFT,P,P0,SCLCPL,SCLHW,Y0RES)
+     &     XN0,RFT,P,P0,SCLCPL,SCLHW,Y0RES,scor)
       PARAMETER (NNM=  39,IIM= 75000)
       REAL WK(NMOL),o_by_mol(nmol)
       REAL*8 WN,XNU,XNU0(NNM,IIM)
@@ -252,7 +256,6 @@ c calculate TIPS using Gamache routine rather that QOFT
       RT=T/T0                   !ratio of temperature
       RN=(Xn/XN0)               !ratio of number density
       o_by_mol(:)  = 0.         !initialization
-
 
       DO I=1,NMOL
          W_SPECIES = WK(i)
