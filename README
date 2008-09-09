@@ -60,9 +60,9 @@ run    -> Contains files required to run MonoRTM.
 				       available in idl sub-directory.
 	        . MONORTM.LOG (if LBLATM is ON) - TAPE6 file
 	        . TAPE7 (if LBLATM is ON)      
-src -> contains all source files needed by MonoRTM as well as the build shell (maker).
+src -> contains all source files needed by MonoRTM.
 doc -> detailed instructions manual about MonoRTM, in ascii format. 
-idl -> visualization tool
+idl -> visualization tool and tool for creating monortm input from ARM sonde files.
 
 HOW TO RUN MONORTM:
 -------------------
@@ -98,21 +98,22 @@ MonoRTM is a forward model. MonoRTM is designed to be very flexible. We can eith
 it as a black box and control everything from the MONORTM.IN input file, or one can modify 
 the code itself and recompile it. In the latter, it is structured in such a way that the 
 changes should always be done in "monortm.f" (the driver program). The other auxillary 
-files (monortm_sub.f, modm.f, lblatm.f and declar.incl, continuumDATASTAT.dat) 
-should normally not be touched, except in rare situations. In case there is an update 
-in the continuum calculations a new "contnm.f" module will be generated
-and sent to the users (or made available on the WEB/ftp site). In the same way, if the 
-spectroscopic database is to be updated, only the file "spectral_lines.dat" file should 
-be replaced. The code would not need to be modified.
-The core of MonoRTM is the computation of the optical depths. It is designed as a subroutine 
-for flexibility and could be easily plugged in a different radiative transfer model if needed.
+files (monortm_sub.f, modm.f, lblatm_monortm.f, lblrtm_sub.f, tips_2003.f, declar.incl and 
+ isotope.dat) should normally not be touched, except in rare situations. In case
+there is an update in the continuum calculations a new "contnm.f" module will be
+generated and sent to the users (or made available on the WEB/ftp site). In the same
+way, if the spectroscopic database is to be updated, only the file
+"spectral_lines.dat" file should be replaced. The code would not need to be modified.
+The core of MonoRTM is the computation of the optical depths. It is designed as a
+subroutine for flexibility and could be easily plugged in a different radiative
+transfer model if needed.
 
 
 OUTPUTS OF MONORTM:
 -------------------
 The records stored in MONORTM.OUT are the following:
 NPR	: 	Profile index used (not necessarily in order).
-FREQ	: 	Frequency in GHz
+FREQ	: 	Frequency in GHz (or wavenumbers, for wavenumbers greater than 100 cm-1)
 TB(I)	: 	Brightness temperature in Kelvin
 RAD(I)	: 	Radiance (W/(cm^2 ster cm^-1))
 TRTOT(I): 	Total transmittance (no unit: between 0 and 1)
@@ -131,7 +132,7 @@ ODXSEC	: 	Total column-integrated optical depth due to all cross-section molecul
 QUESTIONS:
 ----------
 Any comments or questions should be forwarded to Karen Cady-Pereira
-or Vivienne Payne in AER at the address below:
+or Vivienne Payne at AER at the address below:
 
 AER , Radiation and Climate Group
 131 Hartwell Avenue
