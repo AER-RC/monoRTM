@@ -991,17 +991,11 @@ c       value from vpayne 2006/07/23
 	   open(90,file=fileprof,status='old',
      1          form='formatted',err=1000)
 	   DO WHILE (.true.) 
-	       READ (90,'(a1)') CXID 
-	       IF (CXID.EQ.CPRCNT) THEN
-		   GO TO 70 
-	       ELSE
-		   BACKSPACE(UNIT=90) 
-		   READ (90,972,end=70,ERR=22) IFORM,
+	       READ (90,972,end=70,ERR=22) IFORM,
      1               LMAX,NMOL,SECNT0,HMOD,
      1	             HMOD,H1,H2,ANGLE,LEN  
 		   NPROF=NPROF+1
   22		   CONTINUE
-	       ENDIF
 	   ENDDO
 C  If there are cross-sections, there will be two records consistent with Format
 C statement 972 for each profile.
