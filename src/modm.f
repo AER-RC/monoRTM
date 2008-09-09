@@ -3,9 +3,9 @@ C     author:		$Author $
 C     revision:	        $Revision$
 C     created:	        $Date$
 
-      SUBROUTINE MODM(IVC,ICP,NWN,WN,NLAY,P,T,
-     &                               XSLF,XFRG,XCN2,
-     &           SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ISPD)
+      SUBROUTINE MODM(ICP,NWN,WN,dvset,NLAY,P,T,
+     &                 NMOL,WKL,WBRODL,
+     &           SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ixsect,ISPD)
 C-------------------------------------------------------------------------------
 C
 C     PROGRAM:  MODM
@@ -28,7 +28,6 @@ C          oxygen, the ozone, the nitrogen and nitrogen dioxide.
 C
 C     INPUTS:
 C     ------
-C     - IVC      : Flag of contin. vers.: CKD2.4(if=2)  MPMf87/s93 (if=3)
 C     - ICP      : Flag to take(if =1) or not (if=0) the line coupling
 C     - NWN      : Number of wavenumbers to be treated
 C     - WN       : Vector of NWN wavenumbers [in cm-1], one should note that
@@ -37,23 +36,10 @@ C     - NLAY     : Number of layers to be treated.
 C     - P        : Vector of NLAY pressures (in mbar), one should note that
 C                  this input could be a scalar (associated with NLAY=1)
 C     - T        : Vector of NLAY temperatures [in Kelvin]
-C     - W_WV     : Vector of NLAY water vapor column amounts [in molecules/cm2]
-C     - W_O2     : Vector of NLAY oxygen column amounts [in molecules/cm2]
-C     - W_O3     : Vector of NLAY ozone column amounts [in molecules/cm2]
-C     - W_N2     : Vector of NLAY nitrogen column amounts [in molecules/cm2]
-C     - W_N2O    : Vector of NLAY N2O column amounts [in molecules/cm2]
-C     - W_CO     : Vector of NLAY CO column amounts [in molecules/cm2]
-C     - W_SO2    : Vector of NLAY SO2 column amounts [in molecules/cm2]
-C     - W_NO2    : Vector of NLAY NO2 column amounts [in molecules/cm2]
-C     - W_OH     : Vector of NLAY OH column amounts [in molecules/cm2]
-C     - W_OTHER  : Vector of NLAY of other species column amounts [in molecules/cm2]
 C     - CLW      : Vector of NLAY Cloud Liquid Water amounts [in kg/m2 or mm]
 C                  When Cloud is present, the frequency must be consistent
 C                  with Rayleigh absorption (no scattering performed in 
 C                  monortm). 
-C     - XSLF     : Scaling factor of the self WV continuum (usually XSLF=1)
-C     - XFRG     : Scaling factor of the foreign WV continuum (usually XFRG=1)
-C     - XCN2     : Scaling factor of the N2 continuum (usually XCN2=1)
 C     - SCLCPL   : Scaling factor of the Line Coupling parameters (usually SCLCPL=1)
 C     - SCLHW    : Scaling factor of the pressure dependence of the halfwidth
 C                  of the zero frequency band (usually SCLHW=1)
@@ -69,33 +55,7 @@ C     OUTPUTS:
 C     -------
 C     - O      : An array of NWNxNLAY elts containing the total optical depths
 C                 due to all the active species [in nepers]
-C     - OL_WV  : An array of NWNxNLAY elts containing the water vapor optical
-C                 depth (due to lines only), [in Nepers]
-C     - OS_WV  : An array of NWNxNLAY elts containing the water vapor optical
-C                 depth (due to self continuum), [in Nepers]
-C     - OF_WV  : An array of NWNxNLAY elts containing the water vapor optical
-C                 depth (due to foreign continuum), [in Nepers]
-C     - OL_O2  : An array of NWNxNLAY elts containing the oxygen optical
-C                 depth (due to lines only), [in Nepers]
-C     - OL_O3  : An array of NWNxNLAY elts containing the ozone optical
-C                 depth (due to lines only), [in Nepers]
-C     - OL_N2  : An array of NWNxNLAY elts containing the nitrogen optical
-C                 depth (due to lines only), [in Nepers]
-C     - OC_N2  : An array of NWNxNLAY elts containing the nitrogen optical
-C                 depth (due to continuum), [in Nepers]
-C     - OL_N2O : An array of NWNxNLAY elts containing the N2O optical
-C                 depth (due to lines only), [in Nepers]
-C     - OL_CO  : An array of NWNxNLAY elts containing the CO optical
-C                 depth (due to lines only), [in Nepers]
-C     - OL_SO2 : An array of NWNxNLAY elts containing the SO2 optical
-C                 depth (due to lines only), [in Nepers]
-C     - OL_NO2 : An array of NWNxNLAY elts containing the NO2 optical
-C                 depth (due to lines only), [in Nepers]
-C     - OL_OH  : An array of NWNxNLAY elts containing the OH optical
-C                 depth (due to lines only), [in Nepers]
-C     - O_CLW  : An array of NWNxNLAY elts containing the CLW optical
-C                 depth , [in Nepers]
-C
+
 C     History of the modifications:
 C     *****************************  
 C     - written in 1999 by Sid Ahmed Boukabara, Ross Hoffman
@@ -122,247 +82,169 @@ C       line shape (speed up process) depending on the current
 C       condition (parameter zeta). The pressure induced
 C       shifted frequency is also passed to the line shape 
 C       computation (instead of the spectroscopic wavenumber).
+C     - September 2003: Modified spectral lines file to improve agreement 
+C       with SGP MWRP data (provided by Nico Cimini). Scaled O2 line coupling
+C       parameters: Y * 0.87, G* 0.
+C     - 2006: Implementation of Tretyakov et al (2005) O2 line coupling.
+C       Validated against ARM MWRP data (see Cadeddu et al, 2007)
+C     - 2007: Updated spectral line file to change the widths and 
+C       temperature dependences of the widths for the 22 and 183 GHz lines
+C     - 2008: Extensive update to enable the use of MonoRTM beyond 
+C       the microwave region and to use the MT_CKD continuum.
+C       Updates to self and foreign broadened microwave continuum based
+C       on ARM SGP MWR data at 31.4 GHz and ARM FKB (COPS) data at 150 GHz.  
 C
-C     Comments should be forwarded to Sid Ahmed Boukabara (sboukaba@aer.com)
-C     or Tony Clough (clough@aer.com).
+C     Comments should be forwarded to Karen Cady-Pereira (cadyp@aer.com)
+C     or Vivienne Payne (vpayne@aer.com).
 C
 C-------------------------------------------------------------------------------
       include "declar.incl"
+
+      parameter (n_absrb=5050,ncont=5)
+      real *8  v1abs,v2abs
+      real*8 v1, v2
+      real scor(42,9)
+      integer index_cont(ncont), imol
+      COMMON /ABSORB/ V1ABS,V2ABS,DVABS,NPTABS,ABSRB(n_absrb)                
+C                                                                         
+      CHARACTER*8      XID,       HMOLID,      YID     
+      REAL*8               SECANT,       XALTZ
+C                                                                         
+      COMMON /CVRCNT/ HNAMCNT,HVRCNT
+      COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4),       
+     *                WKC(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   
+     *                EMISIV,FSCDID(17),NMOLC,LAYER ,YI1,YID(10),LSTWDF
+
+      COMMON /LAMCHN/ ONEPL,ONEMI,EXPMIN,ARGMIN
+
+      COMMON /CNTSCL/ XSELF,XFRGN,XCO2C,XO3CN,XO2CN,XN2CN,XRAYL
+
+      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+     $     RADCN1,RADCN2 
 
       CHARACTER HFILE*80,HVRMODM*15
       COMMON /CVRMODM/ HVRMODM
       LOGICAL INIT
       DATA INIT/.TRUE./
       SAVE INIT
+
+      data index_cont/1,2,3,7,22/
       HVRMODM = '$Revision$' 
+
       IF(INIT)THEN
-         CALL VECISO               !set-up the isotopes
-         CALL READ_HITR(ICP,HFILE,ISPD) !reads the HITRAN data
+         CALL READ_HITR(ICP,HFILE,ISPD,MINWN,MAXWN) !reads the HITRAN data
+         if(wn(1).lt.MINWN.OR.wn(nwn).gt.MAXWN) then
+            print *,' '
+            print *,'!!! WARNING !!!'
+            print *,
+     &         '   Spectral range of lines file does not cover requested 
+     & spectral range.'
+            print *,' '
+            stop
+         endif
          INIT=.FALSE.
       ENDIF
-      DO M=1,NWN                !loop over the wavenumbers
-         DO K=1,NLAY            !Loop over the Temp/Press/Amount profile 
-            CALL INITI(P(K),T(K),RADCT,T0,P0,W_wv(K),W_o2(K),         !INITIALIZATION
-     &      W_o3(K),W_n2(K),W_n2O(K),W_co(K),W_so2(K),
-     &      W_no2(K),W_oh(K),W_other(K),XN0,Xn,Xn_WV,RHOFAC)
+
+! Set up useful constants
+      ONEPL = 1.001                                                       
+      ONEMI = 0.999                                                      
+      ARGMIN = 34.                                                      
+      EXPMIN = EXP(-ARGMIN) 
+
+! Set up constants for call to contnm
+         jrad = 0
+         nmolc = nmol
+         v1 = wn(1)
+         v2 = wn(nwn)
+         dvabs = 1.0
+         v1abs = int(v1)-3.*DVABS
+         V2ABS = INT(V2+3.*DVABS+0.5)
+         NPTABS = (V2ABS-V1ABS)/DVABS+1.5
+
+!  Initialize
+        oc(1:nwn,1:ncont,1:nlay) = 0.
+        odxsec(1:nwn,1:nlay) = 0.
+
+         if (ixsect .eq. 1) 
+     &       call monortm_xsec_sub(wn,nwn,p,t,nlay)
+
+      DO K=1,NLAY            !Loop over the Temp/Press/Amount profile 
+! Set up variables for call to contnm
+         pave = p(k)
+         tave = t(k)
+         wbroad = wbrodl(k)
+         xkt = tave/radcn2
+
+! Call CONTNM for each molecule
+        wkc(1:nmol) = wkl(1:nmol,k)
+        if (nmol.lt.22) wkc(index_cont(ncont)) = wbroad    ! set n2 to wbroad if nmol < 22
+        do icount=1,ncont
+              im = index_cont(icount) 
+	      absrb(:) = 0.
+	      call zero_cntnm(im,xself,xfrgn,xco2c,xo3cn,xo2cn,xn2cn)
+	      call contnm(jrad)
+	      call zero_cntnm(99,xself,xfrgn,xco2c,xo3cn,xo2cn,xn2cn)
+c Interpolate for gridded spectral resolution in one step
+	      if (dvset.ne.0) call xint(v1abs,v2abs,dvabs,absrb,1.0,v1,
+     &                     dvset,oc(1:nwn,im,k),1,nwn) 
+c Interpolate for specific wavenumbers one at a time
+	      if (dvset.eq.0) then 
+		 do iw=1,nwn
+		    call xint(v1abs,v2abs,dvabs,absrb,1.0,wn(iw),1.0,
+     &                   oc(iw,im,k),1,1)
+		 end do
+	      end if
+c Multiply by radiation term
+	       do iw=1,nwn
+		  oc(iw,im,k) = oc(iw,im,k)*radfn(wn(iw),xkt)
+	       end do
+         end do                    ! end molecule loop
+
+c calculate TIPS using Gamache routine rather that QOFT
+         call tips_2003(nmol,t(k),scor)
+
+	 DO M=1,NWN                !loop over the wavenumbers
+
+            CALL INITI(P(K),T(K),RADCT,T0,P0,NMOL,
+     &        WKL(1:NMOL,K),WBRODL(K),XN0,Xn,Xn_WV)         !INITIALIZATION
             RFT=WN(M)*TANH((RADCT*WN(M))/(2*T(K)))	              !RAD_FIELD_TERM
-            CALL LINES(Xn,WN(M),T(K),W_wv(K),W_o2(K),W_o3(K),         !PROCESS_LINES
-     &      W_n2(K),W_n2O(K),W_co(K),W_so2(K),W_no2(K),
-     &      W_oh(K),W_other(K),RADCT,T0,OL_WV(M,K),OL_O2(M,K),
-     &      OL_O3(M,K),OL_N2(M,K),OL_N2O(M,K),OL_CO(M,K),
-     &      OL_SO2(M,K),OL_NO2(M,K),OL_OH(M,K),XN0,RFT,
-     &      P(K),P0,SCLCPL,SCLHW,Y0RES)
+
+            CALL LINES(Xn,WN(M),T(K),NMOL,WKL(1:nmol,k)      ,         !PROCESS_LINES
+     &      wbrodl(K),RADCT,T0,o_by_mol(m,1:nmol,k),XN0,RFT,
+     &      P(K),P0,SCLCPL,SCLHW,Y0RES,scor)
+   
             O_CLW(M,K)=ODCLW(WN(M),T(K),CLW(K))                       !OPTDEPTH CLW
-            IF (ICNTNM.EQ.1) THEN 
-               OS_WV(M,K)=SWV(IVC,WN(M),T(K),T0,W_wv(K),RFT,Xn,       !CONT_SELF_WV
-     &              Xn_WV,XN0,XSLF) 
-               OF_WV(M,K)=FWV(IVC,WN(M),W_wv(K),RFT,Xn,Xn_WV,XN0,XFRG)!CONT_FRGN_WV 
-               OC_N2(M,K)=CONTI_N2(WN(M),T(K),T0,W_n2(K),RFT,RHOFAC,
-     &              XCN2)                                             !CONT_N2
-               O(M,K)=OL_WV(M,K)+OL_O2(M,K)+OL_O3(M,K)+OL_N2(M,K)+    !TOTAL_OPTDEPTH
-     &              OL_N2O(M,K)+OL_CO(M,K)+OL_SO2(M,K)+OL_NO2(M,K)+
-     &              OL_OH(M,K)+OS_WV(M,K)+OF_WV(M,K)+OC_N2(M,K)+
-     &              O_CLW(M,K)
-            ENDIF
-            IF (ICNTNM.NE.1) THEN 
-               O(M,K)=OL_WV(M,K)+OL_O2(M,K)+OL_O3(M,K)+OL_N2(M,K)+    !TOTAL_OPTDEPTH
-     &              OL_N2O(M,K)+OL_CO(M,K)+OL_SO2(M,K)+OL_NO2(M,K)+
-     &              OL_OH(M,K)+O_CLW(M,K)
-            ENDIF
+            do imol = 1,nmol
+                O(M,K) = o(m,k) + O_BY_MOL(M,imol,K) 
+            enddo
+            o(m,k) = o(m,k) + odxsec(m,k) + 
+     &              +sum(oc(m,1:index_cont(5),k))+O_CLW(M,K)
+
          ENDDO
-      ENDDO
-      RETURN
-      END 
 
-      FUNCTION FWV(IVC,WN,W_wv,RFT,Xn,Xn_WV,XN0,XFRG)
-      REAL*8 WN
-      IF (W_wv.EQ.0.) THEN
-         FWV=0.
-         RETURN
-      ENDIF
-      IF (IVC.EQ.2) THEN                               !CKD2.4 CONTINUUM
-         FWV=FWV24(WN,W_wv,RFT,Xn,Xn_WV,XN0,XFRG)      !CNT_FRG_WV CKD2.4
-      ENDIF
-      IF (IVC.EQ.3) THEN                                 !MPMf87s93 CONTINUUM
-         FWV=FWV_MPMf87s93(WN,W_wv,RFT,Xn,Xn_WV,XN0,XFRG)!CNT_FRG_WV 
-      ENDIF
-      RETURN
-      END 
-
-      FUNCTION SWV(IVC,WN,T,T0,W_wv,RFT,Xn,Xn_WV,XN0,XSLF)
-      REAL*8 WN
-      IF (W_wv.EQ.0.) THEN
-         SWV=0.
-         RETURN
-      ENDIF
-      IF (IVC.EQ.2) THEN                               !CKD2.4 CONTINUUM
-         SWV=SWV24(WN,T,T0,W_wv,RFT,Xn,Xn_WV,XN0,XSLF) !CNT_SLF_WV CKD2.4 
-      ENDIF
-      IF (IVC.EQ.3) THEN                                !MPMf87s93 CKD2.4 CONT.
-         SWV=SWV_MPMf87s93(WN,T,T0,W_wv,RFT,Xn,Xn_WV,XN0,XSLF)!CNT_SLF_WV
-      ENDIF
+      ENDDO                     ! end layer loop
       RETURN
       END 
 
 
-
-      FUNCTION SWV_MPMf87s93(WN,T,T0,W_wv,RFT,Xn,Xn_WV,XN0,XSLF)
-      REAL*8 WN,X(4)
-      COMMON /SH2O/ V1,V2,DV,NPTSLFWV,SWV296(2003)!---UNITS(CM**3/MOL)*1.E-20   
-      COMMON /S260/ V1_,V2_,DV_,NPTSLFWV_,SWV260(2003)
-      J=INT((WN-V1)/DV)+1
-      X(1)=((SWV296(J-1))*(SWV260(J-1)/SWV296(J-1))
-     &     **((T-T0)/(260.-T0)))
-      X(2)=((SWV296(J))*(SWV260(J)/SWV296(J))**((T-T0)/(260.-T0)))
-      X(3)=((SWV296(J+1))*(SWV260(J+1)/SWV296(J+1))
-     &     **((T-T0)/(260.-T0)))
-      X(4)=((SWV296(J+2))*(SWV260(J+2)/SWV296(J+2))
-     &     **((T-T0)/(260.-T0)))
-      XF     = ( WN- (V1 + DV * FLOAT(J-1)) ) / DV
-      SFAC = 3. 
-      SWV_MPMf87s93=(W_wv)*RFT*
-     &     (Xn_WV/XN0)*XLGR(XF,X)*1.E-20*SFAC*XSLF
-      RETURN
-      END 
-
-
-
-      FUNCTION FWV_MPMf87s93(WN,W_wv,RFT,Xn,Xn_WV,XN0,XFRG)
-      REAL*8 WN,X(4)
-      COMMON /FH2O/ V1,V2,DV,NPTFH2O,FH2O(2003)                 
-      J=INT((WN-V1)/DV)+1
-      DO I=1,4
-         X(I)=FH2O(J+I-2)
-      ENDDO
-      XF     = ( WN- (V1 + DV * FLOAT(J-1)) ) / DV
-      FSCAL = 0.8
-      FWV_MPMf87s93=XLGR(XF,X)*1.E-20*
-     &     ((W_wv)*RFT*((Xn-Xn_WV)/XN0))*FSCAL*XFRG  
-      RETURN
-      END 
-
-
-
-      FUNCTION FWV24(WN,W_wv,RFT,Xn,Xn_WV,XN0,XFRG)
-      REAL*8 V0F1,V0F1a,V0F2,V0F3,VF2,VF4,VF6
-      REAL*8 WN,X(4)
-      COMMON /FH2O/ V1,V2,DV,NPTFH2O,FH2O(2003)     
-      DATA V0F1,HWSQF1,BETAF1 /350.,40000.,5.e-09 /
-      DATA FACTRF1,V0F1a,HWSQF1a /-0.7,630.,4225/
-      DATA BETAF1a,FACTRF1a,V0F2 /2.e-08,+0.75,1130./
-      DATA HWSQF2,BETAF2,FACTRF2 /108900.,8.E-11,-0.97/
-      DATA V0F3,HWSQF3,BETAF3,FACTRF3 /1975.,62500.,5.E-06,-0.65/
-      J=INT((WN-V1)/DV)+1
-      DO I=1,4
-         X(I)=FH2O(J+I-2)
-      ENDDO
-      XF     = ( WN- (V1 + DV * FLOAT(J-1)) ) / DV
-      !---added correction to the forgn continuum
-      VF2 = (WN-V0F1)**2
-      VF6 = VF2 * VF2 * VF2
-      FSCAL = (1.+FACTRF1*(HWSQF1/(VF2+(BETAF1*VF6)+HWSQF1)))
-      VF2 = (WN-V0F1a)**2
-      VF6 = VF2 * VF2 * VF2
-      FSCAL = FSCAL* 
-     *     (1.+FACTRF1a*(HWSQF1a/(VF2+(BETAF1a*VF6)+HWSQF1a)))
-      VF2 = (WN-V0F2)**2
-      VF6 = VF2 * VF2 * VF2
-      FSCAL = FSCAL* 
-     *     (1.+FACTRF2*(HWSQF2/(VF2+(BETAF2*VF6)+HWSQF2)))
-      VF2 = (WN-V0F3)**2
-      VF4 = VF2*VF2
-      FSCAL = FSCAL* 
-     *     (1.+FACTRF3*(HWSQF3/(VF2+BETAF3*VF4+HWSQF3)))
-      FWV24=XLGR(XF,X)*1.E-20*
-     &     ((W_wv)*RFT*((Xn-Xn_WV)/XN0))*FSCAL*XFRG  
-      RETURN
-      END 
-
-
-
-
-
-      FUNCTION SWV24(WN,T,T0,W_wv,RFT,Xn,Xn_WV,XN0,XSLF)
-      REAL*8 WN,X(4)
-      COMMON /SH2O/ V1,V2,DV,NPTSLFWV,SWV296(2003)!---UNITS(CM**3/MOL)*1.E-20   
-      COMMON /S260/ V1_,V2_,DV_,NPTSLFWV_,SWV260(2003)
-      DATA V0S1,HWSQ1,BETAS1 /0.,10000.,1.E-04/
-      DATA FACTRS1,V0S2,HWSQ2 /0.688,1050.,40000/
-      DATA FACTRS2,V0S3,HWSQ3 /-0.2333,1310.,14400./
-      DATA BETAS3,FACTRS3 /5.E-06,-0.15/
-      J=INT((WN-V1)/DV)+1
-      X(1)=((SWV296(J-1))*(SWV260(J-1)/SWV296(J-1))
-     &     **((T-T0)/(260.-T0)))
-      X(2)=((SWV296(J))*(SWV260(J)/SWV296(J))**((T-T0)/(260.-T0)))
-      X(3)=((SWV296(J+1))*(SWV260(J+1)/SWV296(J+1))
-     &     **((T-T0)/(260.-T0)))
-      X(4)=((SWV296(J+2))*(SWV260(J+2)/SWV296(J+2))
-     &     **((T-T0)/(260.-T0)))
-      XF     = ( WN- (V1 + DV * FLOAT(J-1)) ) / DV
-      SFAC = 1.
-      VS2 = (WN-V0S1)**2
-      VS4 = VS2*VS2
-      SFAC = SFAC * 
-     *     (1.+FACTRS1*(HWSQ1/(WN**2+(BETAS1*VS4)+HWSQ1)))  
-      VS2 = (WN-V0S2)**2
-      SFAC = SFAC *
-     *     (1.+FACTRS2*(HWSQ2/(VS2+HWSQ2)))
-      VS2 = (WN-V0S3)**2
-      VS4 = VS2*VS2
-      SFAC = SFAC *
-     *     (1.+FACTRS3*(HWSQ3/(VS2+(BETAS3*VS4)+HWSQ3))) 
-      SWV24=(W_wv)*RFT*(Xn_WV/XN0)*XLGR(XF,X)*1.E-20*SFAC*XSLF
-      RETURN
-      END 
-
-
-
-
-      FUNCTION CONTI_N2(WN,T,T0,W_n2,RFT,RHOFAC,XCN2)
-      REAL*8 WN,X(4)
-      COMMON /N2RT0/ V1,V2,DV,NPTCONTN2,CT296(73)
-      COMMON /N2RT1/ V1_,V2_,DV_,NPTCONTN2_,CT220(73)
-      IF (W_n2.EQ.0.) THEN
-         CONTI_N2=0.
-         RETURN
-      ENDIF
-      J=INT((WN-V1)/DV)+1
-      X(1)=(CT296(J-1))*(CT296(J-1)/CT220(J-1))**((T-T0)/(220.-T0))
-      X(2)=(CT296(J))*(CT296(J)/CT220(J))**((T-T0)/(220.-T0))
-      X(3)=(CT296(J+1))*(CT296(J+1)/CT220(J+1))**((T-T0)/(220.-T0))
-      X(4)=(CT296(J+2))*(CT296(J+2)/CT220(J+2))**((T-T0)/(220.-T0))
-      XF     = ( WN- (V1 + DV * FLOAT(J-1)) ) / DV
-      CONTI_N2=XLGR(XF,X)*1.E-20*((W_n2/0.26867775)*RFT*(RHOFAC))*XCN2
-      RETURN
-      END 
-
-      FUNCTION XLGR(XF,X) !4 points Lagrange interpolation
-      REAL*8 A(4),X(4)    !with continous derivatives
-      B=0.5*XF*(1.-XF)
-      A(1)   = -B*(1.-XF)
-      A(2)   = 1-((3.-2.*XF)*XF*XF)+B*XF
-      A(3)   = ((3.-2.*XF)*XF*XF)+B*(1.-XF)
-      A(4)   = -(B*XF)
-      XLGR  = A(1)*X(1)+A(2)*X(2)+A(3)*X(3)+A(4)*X(4)
-      END
-
-      SUBROUTINE LINES(Xn,WN,T,W_wv,W_o2,W_o3,W_n2,
-     &     W_n2O,W_co,W_so2,W_no2,W_oh,W_other,RADCT,
-     &     T0,OL_WV,OL_O2,OL_O3,OL_N2,OL_N2O,
-     &     OL_CO,OL_SO2,OL_NO2,OL_OH,
-     &     XN0,RFT,P,P0,SCLCPL,SCLHW,Y0RES)
-      PARAMETER (NNM=   9,IIM=   5000)
+      SUBROUTINE LINES(Xn,WN,T,NMOL,WK,
+     &     wbrod,RADCT, T0,o_by_mol,
+     &     XN0,RFT,P,P0,SCLCPL,SCLHW,Y0RES,scor)
+      PARAMETER (NNM=  39,IIM= 75000)
+      REAL WK(NMOL),o_by_mol(nmol)
       REAL*8 WN,XNU,XNU0(NNM,IIM)
       REAL DELTNU(NNM,IIM),E(NNM,IIM),ALPS(NNM,IIM),XG(NNM,IIM)
       REAL ALPF(NNM,IIM),X(NNM,IIM),A(4),S0(NNM,IIM),B(4),TEMPLC(4)
-      INTEGER MOL(NNM),NBLM(NNM),ISO(NNM,IIM),ICF(22)
-      COMMON/HITR/MOL,NBLM,ISO,XNU0,DELTNU,S0,E,ALPS,ALPF,X,XG,NMOLEC
+      INTEGER NBLM(NNM),ISO(NNM,IIM)
+      real scor(42,9)
+
+      COMMON/HITR/NBLM,ISO,XNU0,DELTNU,S0,E,ALPS,ALPF,X,XG,NMOLEC
       DATA TEMPLC /200.0,250.0,296.0,340.0 /
-      DATA ICF /1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1/
       DATA MOL_WV/1/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,MOL_N2O/4/
       DATA MOL_CO/5/,MOL_SO2/9/,MOL_NO2/10/,MOL_OH/13/
+
       deltnuC=25.          !cm-1
-      WTOT=W_wv+W_o2+W_o3+W_n2+W_n2O+W_co+W_so2+W_no2+W_oh+W_other
+      WTOT=sum(wk)+wbrod
       RP=P/P0                   !ratio of pressure
       RP2=RP*RP                 !square of the ratio of pressure
       DO IL=1,3                 !find correct temp. interval for interpolation
@@ -373,27 +255,12 @@ C-------------------------------------------------------------------------------
       TMPDIF=T-TEMPLC(ILC)                                             
       RT=T/T0                   !ratio of temperature
       RN=(Xn/XN0)               !ratio of number density
-      OL_WV  = 0.               !initialization
-      OL_O2  = 0.               !initialization
-      OL_O3  = 0.               !initialization
-      OL_N2  = 0.               !initialization
-      OL_N2O = 0.               !initialization
-      OL_CO  = 0.               !initialization
-      OL_SO2 = 0.               !initialization
-      OL_NO2 = 0.               !initialization
-      OL_OH  = 0.               !initialization
-      DO I=1,NMOLEC
-         IF (MOL(I).EQ.MOL_WV)  W_SPECIES=W_WV
-         IF (MOL(I).EQ.MOL_O2)  W_SPECIES=W_O2
-         IF (MOL(I).EQ.MOL_O3)  W_SPECIES=W_O3
-         IF (MOL(I).EQ.MOL_N2)  W_SPECIES=W_N2
-         IF (MOL(I).EQ.MOL_N2O) W_SPECIES=W_N2O
-         IF (MOL(I).EQ.MOL_CO)  W_SPECIES=W_CO
-         IF (MOL(I).EQ.MOL_SO2) W_SPECIES=W_SO2
-         IF (MOL(I).EQ.MOL_NO2) W_SPECIES=W_NO2
-         IF (MOL(I).EQ.MOL_OH)  W_SPECIES=W_OH
+      o_by_mol(:)  = 0.         !initialization
+
+      DO I=1,NMOL
+         W_SPECIES = WK(i)
          IF (W_SPECIES.EQ.0.) THEN
-            OL=0.
+            OL = 0.
             GOTO 10
          ENDIF
          SF=0.
@@ -426,16 +293,16 @@ C-------------------------------------------------------------------------------
             ENDIF
             Xnu=Xnu0(I,J)+(deltnu(I,J)*(Xn/xn0))
             !check line within 25cm-1 from WN, (except for O2, cause line coupling)
-            IF ((ABS(WN-Xnu).GT.deltnuC).and.(MOL(I).NE.MOL_O2)) 
+            IF ((ABS(WN-Xnu).GT.deltnuC).and.(I.NE.7)) 
      &           GOTO 30   
-            CALL QOFT (MOL(I),ISO(I,J),296.,QT_296) 
-            CALL QOFT (MOL(I),ISO(I,J),T,QT) 
-            XIPSF = QT_296/QT
+
+            XIPSF = scor(i,iso(i,j))
+
             CALL INTENS(T,S0(I,J),E(I,J),RADCT,T0,Xnu,STILD,XIPSF)
             XTILD=1-X(I,J)
-            HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RN,MOL(I),
+            HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RN,I,
      &           RAT)
-            HWHM_D=HALFWHM_D(MOL(I),ISO(I,J),Xnu,T)
+            HWHM_D=HALFWHM_D(I,ISO(I,J),Xnu,T)
             IF(XG(I,J).EQ.-3.) THEN
                HWHM_C=HWHM_C*(1-(AIP*(RP))-(BIP*(RP2)))
             ENDIF
@@ -443,152 +310,253 @@ C-------------------------------------------------------------------------------
             ilshp=1                            !=0->Lorentz, =1->Voigt
             if ((ABS(WN-Xnu).GT.(10.*HWHM_D)).or.(zeta.GT.0.99)) ilshp=0
             IF (ilshp.eq.0) CALL LSF_LORTZ(XG(I,J),RP,RP2,AIP,BIP,
-     &           HWHM_C,WN,Xnu,ICF(MOL(I)),SLS)
+     &           HWHM_C,WN,Xnu,SLS,I)
             IF (ilshp.eq.1) CALL LSF_VOIGT(XG(I,J),RP,RP2,AIP,BIP,
-     &           HWHM_C,WN,Xnu,ICF(MOL(I)),SLS,HWHM_D,MOL(I))
+     &           HWHM_C,WN,Xnu,SLS,HWHM_D,I)
             SF=SF+(STILD*SLS)
  30         CONTINUE
             J=JJ
          END DO
          SPSD=W_species*SF
-         OL=RFT*SPSD
- 10      IF (MOL(I).EQ.MOL_WV)  OL_WV  = OL
-         IF (MOL(I).EQ.MOL_O2)  OL_O2  = OL
-         IF (MOL(I).EQ.MOL_O3)  OL_O3  = OL
-         IF (MOL(I).EQ.MOL_N2)  OL_N2  = OL
-         IF (MOL(I).EQ.MOL_N2O) OL_N2O = OL
-         IF (MOL(I).EQ.MOL_CO)  OL_CO  = OL
-         IF (MOL(I).EQ.MOL_SO2) OL_SO2 = OL
-         IF (MOL(I).EQ.MOL_NO2) OL_NO2 = OL
-         IF (MOL(I).EQ.MOL_OH)  OL_OH  = OL
+         OL =RFT*SPSD
+ 10      o_by_mol(i)  = OL
       ENDDO
       END 
 
       FUNCTION HALFWHM_D(MOL,ISO,XNU,T)
-      PARAMETER (NMOL=36,Nspeci=85)
+      PARAMETER (NMOL=39,Nspeci=85)
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
      $     RADCN1,RADCN2 
       REAL C,K,T,M,AVOG
       REAL*8 XNU  
       INTEGER ILOC,ISO
-      COMMON /ISVECT/ ISOVEC(NMOL),ISO82(Nspeci),ISONM(NMOL),
-     *     smassi(Nspeci)
-      ILOC = ISOVEC(MOL)+ISO                                       
-      M=SMASSI(ILOC)
+      COMMON /ISVECT/ ISO_MAX(NMOL),SMASS(nmol,9)
+      common /iso_id/ iso_82(98)
+      
+      M=SMASS(mol,iso)
       HALFWHM_D=(XNU/CLIGHT)*SQRT(2.*LOG(2.)*((BOLTZ*T)/(M/AVOGAD)))
       END
 
 
-      SUBROUTINE LSF_VOIGT(XF,RP,RP2,AIP,BIP,HWHM,WN,Xnu,ICF,SLS,
+      SUBROUTINE LSF_VOIGT(XF,RP,RP2,AIP,BIP,HWHM,WN,Xnu,SLS,
      &     AD,MOL)
-      REAL*8 WN,Xnu,deltXNU,deltnuC
-      DATA MOL_WV/1/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,MOL_N2O/4/
+      REAL*8 WN,Xnu,deltXNU,deltnuC,CHI
+      DATA MOL_WV/1/,MOL_CO2/2/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,
+     &     MOL_N2O/4/
       deltnuC=25.          !cm-1
       DIFF=(WN+Xnu)-deltnuC
-      IF (ICF .EQ. 1) THEN        !continuum modeled:substract the 25cm-1
-         deltXNU=(WN-Xnu)
-         XL1=VOIGT(deltXNU,HWHM,AD)  !VOIGT for (+) osc.
-         XL3=VOIGT(deltnuC,HWHM,AD)  !VOIGT for 25cm-1 wn
-         IF (DIFF .LE. 0.) THEN
-            deltXNU=(WN+Xnu)
-            XL2=VOIGT(deltXNU,HWHM,AD) !VOIGT for (-) osc.
-            SLS = (XL1 + XL2 - (2 * XL3)) 
-         ELSE
-            SLS = (XL1 - XL3) 
-         ENDIF
-      ENDIF
-      IF (ICF .EQ. 0) THEN      !continuum not modeled
-         IF (MOL.NE.MOL_O2) THEN !all cases except  (O2) 
-            deltXNU=(WN-Xnu)
-            XL1=VOIGT(deltXNU,HWHM,AD) !VOIGT for (+) osc.
-            IF (DIFF .LE. 0.) THEN
-               deltXNU=(WN+Xnu)
-               XL2=VOIGT(deltXNU,HWHM,AD) !VOIGT for (-) osc.
-               IF (XF.EQ.-1) THEN
-                  Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
-                  Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2))
-                  SLS = (XL1*(Y1)+XL2*(Y2))
-               ELSE
-                  SLS = (XL1+XL2)
-               ENDIF
-            ELSE
-               IF (XF.EQ.-1) THEN
-                  Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
-                  SLS = (XL1*(Y1)) 
-               ELSE
-                  SLS = (XL1)
-               ENDIF
-            ENDIF
-         ENDIF
-         IF (MOL.EQ.MOL_O2) THEN !case of the O2 
-            SLS=0.
-            IF ((ABS(WN-Xnu).LE.deltnuC).and.(XF.NE.-1).and.
-     &           (XF.NE.-3)) THEN    !no O2 line coupling 
-               deltXNU=(WN-Xnu)
-               XL1=VOIGT(deltXNU,HWHM,AD) !VOIGT for (+) osc.
-               IF (DIFF .LE. 0.) THEN
-                  deltXNU=(WN+Xnu)
-                  XL2=VOIGT(deltXNU,HWHM,AD) !VOIGT for (-) osc.
-                  SLS = (XL1+XL2)
-               ELSE
-                  SLS = (XL1)
-               ENDIF
-            ENDIF
-            IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN !O2 line coupling
-               deltXNU=(WN-Xnu)
-               XL1=VOIGT(deltXNU,HWHM,AD) !VOIGT for (+) osc.
-               deltXNU=(WN+Xnu)
-               XL2=VOIGT(deltXNU,HWHM,AD) !VOIGT for (-) osc.
-               IF (XF.EQ.-1) THEN
-                  Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
-                  Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2))
-                  SLS = (XL1*(Y1)+XL2*(Y2))
-               ELSE
-                  Y1=1.
-                  Y2=1.
-                  SLS=(XL1+XL2)
-               ENDIF
-            ENDIF
-         ENDIF
-      ENDIF
-      END 
+      SLS = 0.
+      chi = 1.
+
+C JULY 2008 VHP: 
+C                Note that there is currently no pedestal subtraction here for O2.
+C                This choice was made in order to avoid discontinuities due to O2 line coupling.
+C                We could get around this by generating an O2 continuum in the same way
+C                that we generate the CO2 continuum.
+      
+      IF ((MOL.NE.MOL_O2).AND.(MOL.NE.MOL_CO2)) THEN ! no possibility of line coupling
+                                                     ! check for line within 25cm-1 has already
+                                                     ! been performed in modm.f
+
+          deltXNU=(WN-Xnu)
+          XL1=VOIGT(deltXNU,HWHM,AD) !VOIGT for (+) osc.
+          XL3=VOIGT(deltnuC,HWHM,AD) !VOIGT for 25cm-1 wn    
+          IF (DIFF .LE. 0.) THEN
+             deltXNU=(WN+Xnu)
+              XL2=VOIGT(deltXNU,HWHM,AD) !VOIGT for (-) osc.
+              SLS = (XL1 + XL2 - (2 * XL3)) 
+          ELSE
+              SLS = (XL1 - XL3) 
+          ENDIF
+      ELSE ! O2 or CO2 (check for line within 25 cm-1 has to be performed here for O2)
+          IF ((ABS(WN-Xnu).LE.deltnuC).and.(XF.NE.-1).and.
+     &           (XF.NE.-3)) THEN    !no line coupling 
+              deltXNU=(WN-Xnu)
+              XL1=VOIGT(deltXNU,HWHM,AD) !VOIGT for (+) osc.
+              IF (MOL.EQ.MOL_O2) THEN ! O2, no line coupling
+                  IF (DIFF .LE. 0.) THEN
+                      deltXNU=(WN+Xnu)
+                      XL2=VOIGT(deltXNU,HWHM,AD) !VOIGT for (-) osc.
+                      SLS = (XL1+XL2) ! no pedestal subtraction for O2
+                  ELSE
+                      SLS = (XL1)
+                  ENDIF
+              ELSE ! CO2, no line coupling (no CO2 lines within 25cm-1 of zero: don't need (-) osc)
+                  deltXNU = (WN-Xnu)
+                  CALL CHI_FN(deltXNU,CHI)
+                  XL3 = VOIGT(deltnuC,HWHM,AD) !VOIGT for 25cm-1 wn
+C           multiply the co2 pedestal contribution by the chi factor
+                  XL3 = XL3*(2.-(deltXNU**2/(deltXNU**2+HWHM**2))) ! co2 pedestal
+                  SLS = CHI*(XL1-XL3)
+              ENDIF
+          ELSE ! line has line coupling
+              IF (MOL.EQ.MOL_O2) THEN  
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN !O2 line coupling: don't implement 25cm-1 check
+                      deltXNU=(WN-Xnu)
+                      XL1=VOIGT(deltXNU,HWHM,AD) !VOIGT for (+) osc.
+                      deltXNU=(WN+Xnu)
+                      XL2=VOIGT(deltXNU,HWHM,AD) !VOIGT for (-) osc.
+                      IF (XF.EQ.-1) THEN
+                          Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
+                          Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2))
+                          SLS = (XL1*(Y1)+XL2*(Y2))
+                      ELSE
+                          Y1=1.
+                          Y2=1.
+                          SLS=(XL1+XL2)
+                      ENDIF
+                  ENDIF
+              ELSE ! co2
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN ! CO2 line coupling
+                                ! For CO2 (unlike O2) contributions beyond 25 cm-1 are in the cntnm
+                                ! The "within 25cm-1" check for CO2 has already been performed in modm.f
+                                ! calculate pedestal contribution without line coupling (impact)
+                                ! multiply this by the chi factor
+                                ! calculate the pedestal contribution from line coupling
+                                ! multiply this by the chi factor
+                                ! add the pedestal contributions from impact and line coupling
+                      deltXNU = (WN-Xnu)
+
+                      CALL CHI_FN(deltXNU,CHI)
+
+                      XL1=VOIGT(deltXNU,HWHM,AD) !VOIGT for (+) osc.
+                      deltXNU=(WN+Xnu)
+C                     no negative oscillation, since no CO2 lines within 25cm-1 of zero cm-1
+                      XL3 = VOIGT(deltnuC,HWHM,AD) !VOIGT for 25cm-1 wn
+                      IF (XF.EQ.-1) THEN
+                          Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
+                          XP4=XL3*
+     &                        (1./((deltnuC)**2+HWHM**2)) *
+     &                        (2.-((WN-Xnu)**2/((deltnuC)**2+HWHM**2))) ! co2 impact pedestal
+                          YP1=(Y1-1.)*
+     &                        (2.-(WN-Xnu)**2/((deltnuC)**2+HWHM**2)) ! line coupling contributions to pedestal
+                          SLS=CHI*(XL1*
+     &                        (Y1)-XP4-XL3*(YP1))
+                      ELSE
+                          deltXNU = (WN-Xnu)
+                          CALL CHI_FN(deltXNU,CHI)
+                          Y1 = 1.
+                          Y2 = 1.
+                          XP4=XL3*
+     &                        (1./((deltnuC)**2+HWHM**2)) *
+     &                        (2.-(WN-Xnu)**2/((deltnuC)**2+HWHM**2)) ! co2 impact pedestal
+                          SLS = CHI*(XL1-XP4)
+                      ENDIF
+                  ENDIF ! end test for CO2 line coupling
+              ENDIF ! end test to distinguish between CO2 and O2
+          ENDIF ! end test for line coupled lines within CO2 OR O2
+      ENDIF ! end test for any possibility of line coupling
+
+      END
 
       
-      SUBROUTINE LSF_LORTZ(XF,RP,RP2,AIP,BIP,HWHM,WN,Xnu,ICF,SLS)
-      REAL*8 WN,Xnu,deltnuC
+      SUBROUTINE LSF_LORTZ(XF,RP,RP2,AIP,BIP,HWHM,WN,Xnu,SLS,
+     &    MOL)
+      REAL*8 WN,Xnu,deltnuC,deltXNU,CHI
+      DATA MOL_WV/1/,MOL_CO2/2/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,
+     &     MOL_N2O/4/
       deltnuC=25.          !cm-1
       DIFF=(WN+Xnu)-deltnuC
-      IF (ICF .EQ. 1) THEN      !continuum modeled:substract the 25cm-1
-         XL1=XLORENTZ((WN-Xnu)/HWHM) !Lorentz for (+) osc.
-         XL3=XLORENTZ(deltnuC/HWHM)  !Lorentz for 25cm-1 wn
-         IF (DIFF .LE. 0.) THEN
-            XL2=XLORENTZ((WN+Xnu)/HWHM) !Lorentz for (-) osc.
-            SLS = (XL1 + XL2 - (2 * XL3)) / HWHM
-         ELSE
-            SLS = (XL1 - XL3) / HWHM
-         ENDIF
-      ENDIF
-      IF (ICF .EQ. 0) THEN      !continuum not modeled
-         XL1=XLORENTZ((WN-Xnu)/HWHM) !Lorentz for (+) osc.
-         IF (DIFF .LE. 0.) THEN
-            XL2=XLORENTZ((WN+Xnu)/HWHM) !Lorentz for (-) osc.
-            IF (XF.EQ.-1) THEN
-               Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
-               Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2))
-               SLS = (XL1*(Y1)+XL2*(Y2))/HWHM
-            ELSE
-               SLS = (XL1+XL2)/HWHM
-            ENDIF
-         ELSE
-            IF (XF.EQ.-1) THEN
-               Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
-               SLS = (XL1*(Y1)) / HWHM
-            ELSE
-               SLS = (XL1) / HWHM
-            ENDIF
-         ENDIF
-      ENDIF
-      END 
+       SLS = 0.
+       chi= 1.
+
+C JULY 2008 VHP: 
+C                Note that there is currently no pedestal subtraction here for O2.
+C                This choice was made in order to avoid discontinuities due to O2 line coupling.
+C                In the future we could generate an O2 continuum in the same way
+C                that we generate the CO2 continuum.
+
+      IF ((MOL.NE.MOL_O2).AND.(MOL.NE.MOL_CO2)) THEN ! no possibility of line coupling
+                                                     ! check for line within 25cm-1 has already
+                                                     ! been performed in modm.f
+
+          deltXNU=(WN-Xnu)
+          XL1=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (+) osc.
+          XL3=XLORENTZ((deltnuC)/HWHM) !LORENTZ for 25cm-1 wn    
+          IF (DIFF .LE. 0.) THEN
+              deltXNU=(WN+Xnu)
+              XL2=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (-) osc.
+              SLS = (XL1 + XL2 - (2 * XL3)) / HWHM
+          ELSE
+              SLS = (XL1 - XL3) / HWHM
+          ENDIF
+      ELSE                      ! O2 or CO2 (check for line within 25 cm-1 has to be performed for O2)
+          IF ((ABS(WN-Xnu).LE.deltnuC).and.(XF.NE.-1).and.
+     &           (XF.NE.-3)) THEN    !no line coupling 
+              deltXNU=(WN-Xnu)
+              XL1=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (+) osc.
+              IF (MOL.EQ.MOL_O2) THEN ! O2, no line coupling
+                  IF (DIFF .LE. 0.) THEN
+                      deltXNU=(WN+Xnu)
+                      XL2=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (-) osc.
+                      SLS = (XL1+XL2 ) / HWHM
+                  ELSE
+                      SLS = (XL1) / HWHM
+                  ENDIF
+              ELSE ! CO2, no line coupling (no CO2 lines within 25cm-1 of zero: don't need (-) osc)
+                  deltXNU = (WN-Xnu)
+                  CALL CHI_FN(deltXNU, CHI)
+                  XL3=XLORENTZ((deltnuC)/HWHM) !LORENTZ for 25cm-1 wn
+C           multiply the co2 pedestal contribution by the chi factor
+                  XL3=XL3*(2.-(deltXNU**2/(deltXNU**2+HWHM**2))) ! co2 pedestal
+                  SLS = CHI*(XL1-XL3) / HWHM
+              ENDIF
+          ELSE ! line has line coupling
+              IF (MOL.EQ.MOL_O2) THEN ! for O2 line-coupled lines the 25 cm-1 check is not implemented
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN !O2 line coupling
+                      deltXNU=(WN-Xnu)
+                      XL1=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (+) osc.
+                      deltXNU=(WN+Xnu)
+                      XL2=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (-) osc.
+                      IF (XF.EQ.-1) THEN
+                          Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
+                          Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2))
+                          SLS = (XL1*(Y1)+XL2*(Y2)) / HWHM
+                      ELSE
+                          Y1=1.
+                          Y2=1.
+                          SLS=(XL1+XL2) / HWHM
+                      ENDIF
+                  ENDIF
+              ELSE
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN ! CO2 line coupling
+                                ! For CO2 (unlike O2) contributions beyond 25 cm-1 are in the cntnm
+                                ! The "within 25cm-1" check for CO2 has already been performed in modm.f
+                                ! calculate pedestal contribution without line coupling (impact)
+                                ! multiply this by the chi factor
+                                ! calculate the pedestal contribution from line coupling
+                                ! multiply this by the chi factor
+                                ! add the pedestal contributions from impact and line coupling
+                      deltXNU = (WN-Xnu)
+                      CALL CHI_FN(deltXNU, CHI)
+                      XL1=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (+) osc.
+                      deltXNU=(WN+Xnu)
+c                     no negative oscillation, since no co2 lines within 25cm-1 of zero
+                      XL3 = XLORENTZ((deltnuC)/HWHM) !LORENTZ for 25cm-1 wn
+                      IF (XF.EQ.-1) THEN
+                          Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
+                          XP4=XL3*
+     &                        (1./((deltnuC)**2+HWHM**2)) *
+     &                        (2.-((WN-Xnu)**2/((deltnuC)**2+HWHM**2))) ! co2 impact pedestal
+                          YP1=(Y1-1.)*
+     &                        (2.-(WN-Xnu)**2/((deltnuC)**2+HWHM**2))
+                          SLS=CHI*(XL1*
+     &                        (Y1)-XP4-XL3*(YP1))/HWHM
+                      ELSE
+                          Y1 = 1.
+                          Y2 = 1.
+                          XP4=XL3*
+     &                        (1./((deltnuC)**2+HWHM**2)) *
+     &                        (2.-((WN-Xnu)**2/((deltnuC)**2+HWHM**2))) ! co2 impact pedestal
+                          SLS = CHI*(XL1 - XP4) / HWHM
+                      ENDIF
+                  ENDIF ! end test for CO2 line coupling
+              ENDIF ! end test to distinguish between CO2 and O2
+          ENDIF ! end test for line coupled lines within CO2 OR O2
+      ENDIF ! end test for any possibility of line coupling
+
+      END
+
 
       
       FUNCTION HALFWHM_C(AF,AS,RT,XTILD,RN,MOL,RAT)
@@ -604,80 +572,44 @@ C-------------------------------------------------------------------------------
      &(Xnus*(1-EXP(-(RADCT*Xnus/T0)))))
       END 
 
-      SUBROUTINE INITI(P,T,RADCT,T0,P0,W_wv,W_o2,
-     &     W_o3,W_n2,W_n2O,W_co,W_so2,W_no2,W_oh,
-     &     W_other,XN0,Xn,Xn_WV,RHOFAC)
+      SUBROUTINE INITI(P,T,RADCT,T0,P0,NMOL,WK,WBROD,XN0,
+     $                 Xn,Xn_WV)
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
      $     RADCN1,RADCN2 
       DATA WVMOLMASS /18.016 /, DRYMOLMASS/28.97/   
+      REAL wk(39),wbrod
       RADCT=PLANCK*CLIGHT/BOLTZ !in K/cm-1
       T0=296.                   !in K
       P0=1013.25                !in HPa
       XN0=(P0/(BOLTZ*T0))*1.E+3
       XN =(P /(BOLTZ*T ))*1.E+3
-      WDRY=W_o2+W_o3+W_n2+W_n2O+W_co+W_so2+W_no2+W_oh+W_other
-      RATIOMIX=(W_wv*WVMOLMASS)/(WDRY*DRYMOLMASS)
-      !WVPRESS=(RATIOMIX/(RATIOMIX+0.622))*P
+      WDRY=sum(wk(2:nmol))+wbrod
+      RATIOMIX=(Wk(1)*WVMOLMASS)/(WDRY*DRYMOLMASS)
       WVPRESS=(RATIOMIX/(RATIOMIX+(WVMOLMASS/DRYMOLMASS)))*P
       Xn_WV=(WVPRESS/(BOLTZ*T))*1.E+3
-      RHOFAC=(W_n2/(WDRY+W_wv))*(P/P0)*(273.15/T)
       END 
       
-      SUBROUTINE QofT(Mol, Iso, Tout, QT) !version of October 28th 1998
-      PARAMETER (NMOL=36,Nspeci=85)       !OPTIMIZED ON 10/28/1998 S.A.BOUKABARA
-      COMMON /ISVECT/ ISOVEC(NMOL),ISO82(Nspeci),ISONM(NMOL),
-     *     sdum(Nspeci)
-      common/Qtot/ Qcoef(Nspeci,3,5), Q296(Nspeci), aQ(Nspeci), 
-     + bQ(Nspeci), gj(Nspeci)
-      ivec = isovec(Mol) + iso
-      irange = 1
-      QT = (((Qcoef(ivec,irange,5)*Tout+Qcoef(ivec,irange,4))*Tout+
-     &     Qcoef(ivec,irange,3))*Tout+Qcoef(ivec,irange,2))*Tout+
-     &     Qcoef(ivec,irange,1)
-      RETURN
-      END
-
-      SUBROUTINE vecIso          !version got on october 28th 1998
-      PARAMETER (NMOL=36,Nspeci=85)
-      COMMON /ISVECT/ ISOVEC(NMOL),ISO82(Nspeci),ISONM(NMOL),
-     *     sdum(Nspeci)
-         ISOVEC(1) = 0
-         DO 20 I = 2,NMOL
-          ISOVEC(I) = 0
-          DO 10 J = 1,I-1
-           ISOVEC(I) = ISOVEC(I)+ISONM(J)
-   10     CONTINUE
-   20    CONTINUE
-      RETURN
-      END
         
-      SUBROUTINE READ_HITR(ICP,HFILE,ISPD)
-      PARAMETER (NNM=   9,IIM=    5000)
+      SUBROUTINE READ_HITR(ICP,HFILE,ISPD,MINWN,MAXWN)
+      PARAMETER (NNM=  39,IIM=  75000)
       REAL*8 XNU0(NNM,IIM),nu0
       REAL DELTNU(NNM,IIM),E(NNM,IIM),ALPS(NNM,IIM),ALPF(NNM,IIM)
       REAL X(NNM,IIM),XG(NNM,IIM),S0(NNM,IIM)
-      INTEGER MOL(NNM),NBLM(NNM),ISO(NNM,IIM)
+      INTEGER NBLM(NNM),ISO(NNM,IIM)
       Character Q1*9,Q2*9,HFILE*80,CXID*1,HVRSPEC*15
       character(len=100) cxidline
       character*25 cdate
       COMMON /CVRSPEC/ HVRSPEC
-      COMMON/HITR/MOL,NBLM,ISO,XNU0,DELTNU,S0,E,ALPS,ALPF,X,XG,NMOLEC
+      COMMON/HITR/NBLM,ISO,XNU0,DELTNU,S0,E,ALPS,ALPF,X,XG,NMOLEC
       COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,  
      $     NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
      $     NLTEFL,LNFIL4,LNGTH4                                 
       DATA MOL_WV/1/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,MOL_N2O/4/
       DATA MOL_CO/5/,MOL_SO2/9/,MOL_NO2/10/,MOL_OH/13/
       EQUIVALENCE (CXID,CXIDLINE)                    
-      I_WV=0
-      I_O3=0
-      I_O2=0
-      I_N2=0
-      I_N2O=0
-      I_CO=0
-      I_SO2=0
-      I_NO2=0
-      I_OH=0
-      NMOLEC=0
+
+      NMOLEC=NNM
+
       OPEN(9,FILE=HFILE,form='formatted',status='old',ERR=20)
       !---We read comments /put them in LOG file
       IKOUNT = 0
@@ -708,10 +640,16 @@ c      endif
 
       ikount = ikount + 1
 
-      IF (CXID.NE.'$') GO TO 23                            
+      IF (CXID.EQ.'$'.OR.CXID.EQ.'>'.OR.CXID.EQ.'%'.OR.CXID.EQ.'C'.OR.
+     &    CXID.EQ.'c') then
+         GO TO 23                            
+      else
+         backspace (unit=9)
+      end if
 
       ILINE=0
       ILINE_O2=0
+
  22   READ(9,100,END=3,ERR=30) mo,iso_scal,nu0,S0_scal,R,
      &     alpf_scal,alps_scal,E_scal,X_scal,deltnu_scal,
      &     iv1,iv2,Q1,Q2,ier1,ier2,ier3,iref1,iref2,iref3,iflg
@@ -736,15 +674,10 @@ c      endif
       IF (mo.EQ.mol_o2) ILINE_O2=ILINE_O2+1
       ILINE=ILINE+1
       IF (ILINE.EQ.1) MINWN=nu0
-      CALL S_INDX(mo,mol_wv,I_WV,NMOLEC,NMOL_WV,MOL,II,JJ)
-      CALL S_INDX(mo,mol_o2,I_O2,NMOLEC,NMOL_O2,MOL,II,JJ)
-      CALL S_INDX(mo,mol_o3,I_O3,NMOLEC,NMOL_O3,MOL,II,JJ)
-      CALL S_INDX(mo,mol_n2,I_N2,NMOLEC,NMOL_N2,MOL,II,JJ)
-      CALL S_INDX(mo,mol_n2o,I_N2O,NMOLEC,NMOL_N2O,MOL,II,JJ)
-      CALL S_INDX(mo,mol_co,I_CO,NMOLEC,NMOL_CO,MOL,II,JJ)
-      CALL S_INDX(mo,mol_so2,I_SO2,NMOLEC,NMOL_SO2,MOL,II,JJ)
-      CALL S_INDX(mo,mol_no2,I_NO2,NMOLEC,NMOL_NO2,MOL,II,JJ)
-      CALL S_INDX(mo,mol_oh,I_OH,NMOLEC,NMOL_OH,MOL,II,JJ)
+      jj = mo
+      nblm(jj) = nblm(jj)+1
+      ii = nblm(jj)
+
       ISO(JJ,II)=iso_scal
       XNU0(JJ,II)=nu0
       DELTNU(JJ,II)=deltnu_scal
@@ -755,15 +688,8 @@ c      endif
       X(JJ,II)=X_scal
       XG(JJ,II)=iref3
       IF (((iref3.EQ.-1).OR.(iref3.EQ.-3)).AND.(ICP.EQ.1)) THEN !Lines Coupling
-         CALL COUPL_INDX(mo,mol_wv,I_WV,II)
-         CALL COUPL_INDX(mo,mol_o2,I_O2,II)
-         CALL COUPL_INDX(mo,mol_o3,I_O3,II)
-         CALL COUPL_INDX(mo,mol_n2,I_N2,II)
-         CALL COUPL_INDX(mo,mol_n2o,I_N2O,II)
-         CALL COUPL_INDX(mo,mol_co,I_CO,II)
-         CALL COUPL_INDX(mo,mol_so2,I_SO2,II)
-         CALL COUPL_INDX(mo,mol_no2,I_NO2,II)
-         CALL COUPL_INDX(mo,mol_oh,I_OH,II)
+         nblm(jj) = nblm(jj)+1
+         ii = nblm(jj)
          READ(9,2,END=3,ERR=30)J,XNU0(JJ,II),DELTNU(JJ,II),
      &        S0(JJ,II),E(JJ,II),ALPS(JJ,II),ALPF(JJ,II),
      &        X(JJ,II),XG(JJ,II)
@@ -791,27 +717,16 @@ c      endif
       WRITE(*,*) 'Minimum Wavenumber:',MINWN,' cm-1'
       WRITE(*,*) 'Maximum Wavenumber:',MAXWN,' cm-1'
       WRITE(*,*)
-      WRITE(*,'(2x,a8,8x,a8,3x,a8)') '','Molecule','# lines' 
+      WRITE(*,'(2x,a8,8x,a8,3x,a8)') 'Molecule','# lines' 
       DO J=1,NMOLEC
-         IF (MOL(J).EQ.MOL_WV)  NBLM(J)=I_WV
-         IF (MOL(J).EQ.MOL_O2)  NBLM(J)=I_O2
-         IF (MOL(J).EQ.MOL_O3)  NBLM(J)=I_O3
-         IF (MOL(J).EQ.MOL_N2)  NBLM(J)=I_N2
-         IF (MOL(J).EQ.MOL_N2O) NBLM(J)=I_N2O
-         IF (MOL(J).EQ.MOL_CO)  NBLM(J)=I_CO
-         IF (MOL(J).EQ.MOL_SO2) NBLM(J)=I_SO2
-         IF (MOL(J).EQ.MOL_NO2) NBLM(J)=I_NO2
-         IF (MOL(J).EQ.MOL_OH)  NBLM(J)=I_OH
-         IF (MOL(J).NE.MOL_O2) WRITE(*,'(2x,i8,5x,i8,5x,i8)') J,
-     &        MOL(J),NBLM(J)
-         IF (MOL(J).EQ.MOL_O2) WRITE(*,'(2x,i8,5x,i8,5x,i8)') J,
-     &        MOL(J),ILINE_O2
+          WRITE(IPR,'(2x,i8,5x,i8,5x,i8)') J, NBLM(J)
       ENDDO
       WRITE(*,*)
       WRITE(*,*) '****************************************'
       CLOSE(9)
  100  FORMAT (I2,I1,F12.6,1P,2E10.3,0P,2F5.4,F10.4,F4.2,F8.6,
      &     2I3,2A9,3I1,3I2,I2)
+1000  FORMAT (I2,I1,F12.6,1P,2E10.3)
  2    FORMAT (I2,1P,4(E13.6,E11.4),0P,I2)                           
       RETURN
  20   PRINT *, 'ERROR OPENING HITRAN FILE:',HFILE
@@ -820,28 +735,7 @@ c      endif
       STOP
       END   
 
-      SUBROUTINE S_INDX(mo,molSP,I_SP,NMOLEC,NMOL_SP,MOL,II,JJ)
-      DIMENSION MOL(*)
-      IF(mo.eq.molsp) THEN
-         I_SP=I_SP+1
-         IF (I_SP.EQ.1) THEN
-            NMOLEC=NMOLEC+1
-            NMOL_SP=NMOLEC
-            MOL(NMOLEC)=molSP
-         ENDIF
-         II=I_SP
-         JJ=NMOL_SP
-      ENDIF
-      END
-
-      SUBROUTINE COUPL_INDX(mo,mol_sp,I_SP,II)
-      IF(mo.eq.mol_sp) THEN
-         I_SP=I_SP+1
-         II=I_SP
-      ENDIF
-      END
       INCLUDE 'isotope.dat'     !INCLUDE HITRSID DATA-STATEMENTS
-      INCLUDE 'continuumDATASTAT.dat'!INCLUDE CONTINUUM DATA-STATEMENTS
 
       FUNCTION ODCLW(WN,TEMP,CLW)
       !INPUTS: WN (WaveNUmber in cm-1)
@@ -993,4 +887,107 @@ C     ***   REGION IV
      &     U*(61.57037-U*(1.841439-U)))))))
       RETURN
       END
+
+      subroutine zero_cntnm(molec,xself,xfrgn,xco2c,xo3cn,xo2cn,xn2cn)
+
+c zeroes out all continua EXCEPT for molecule molec, but saves initial scaling factors
+c if molec is 99 then restores initial factors
       
+      save xself_safe, xfrgn_safe, xco2c_safe,xo3cn_safe, xo2cn_safe, 
+     &     xn2cn_safe
+
+      if(molec.ne.99) then
+	 xself_safe = xself
+	 xfrgn_safe = xfrgn
+	 xco2c_safe = xco2c
+	 xo2cn_safe = xo2cn
+	 xo3cn_safe = xo3cn
+	 xn2cn_safe = xn2cn
+      end if
+      select case (molec)
+         case (1)
+            xco2c = 0.
+            xo2cn = 0.
+            xo3cn = 0.
+            xn2cn = 0.
+         case (2)
+            xself = 0.
+            xfrgn = 0.
+            xo2cn = 0.
+            xo3cn = 0.
+            xn2cn = 0.
+         case (3)
+            xself = 0.
+            xfrgn = 0.
+            xco2c = 0.
+            xo2cn = 0.
+            xn2cn = 0.
+         case (7)
+            xself = 0.
+            xfrgn = 0.
+            xco2c = 0.
+            xo3cn = 0.
+            xn2cn = 0.
+         case (22)
+            xself = 0.
+            xfrgn = 0.
+            xco2c = 0.
+            xo2cn = 0.
+            xo3cn = 0.
+         case (99)
+            xself= xself_safe
+            xfrgn= xfrgn_safe
+            xco2c= xco2c_safe
+            xo2cn= xo2cn_safe
+            xo3cn= xo3cn_safe
+            xn2cn= xn2cn_safe
+          case default
+            xself = 0.
+            xfrgn = 0.
+            xco2c = 0.
+            xo2cn = 0.
+            xo3cn = 0.
+            xn2cn = 0.
+       end select
+
+       return
+       end
+      
+      subroutine chi_fn (deltXNU,chi)
+c
+      real chi, deltXNU
+c
+      DATA ASUBL / 0.800 /,BSUBL / 10.0 /
+C                                                                         
+C     SET UP CHI SUB-LORENTZIAN FORM FACTOR FOR CARBON DIOXIDE            
+C     POLYNOMIAL MATCHED TO AN EXPONENTIAL AT X0 = 10 CM-1                
+C                                                                         
+
+C Commented lines here are lines contained, but NOT currently used in LBLRTM
+C LBLRTM_v11.3 has chi=1 for all circumstances
+
+C      X0 = 10.                                                            
+C      Y0 = asubl*EXP(-x0/bsubl) 
+C      F  = 1./bsubl
+C      Y1 = -F*Y0                                                          
+C      Y2 = Y1*((BSUBL-1)/X0-F)                                            
+C      Z0 = (Y0-1)/X0**2                                                   
+C      Z1 = Y1/(2*X0)                                                      
+C      Z2 = Y2/2.                                                          
+C      C6 = (Z0-Z1+(Z2-Z1)/4.)/X0**4                                       
+C      C4 = (Z1-Z0)/X0**2-2.*X0**2*C6                                      
+C      C2 = Z0-X0**2*C4-X0**4*C6                                           
+C
+      FI = abs(deltaXnu)
+      IF (FI.LT.X0) THEN                                               
+          CHI = 1.+C2*FI**2+C4*FI**4+C6*FI**6                   
+      ELSE                                                            
+          CHI = asubl*EXP(-FI/bsubl) 
+      ENDIF                                                           
+
+c**%%$$
+      chi = 1.
+
+      return
+c
+      end

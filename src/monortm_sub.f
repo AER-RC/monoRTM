@@ -63,8 +63,7 @@ C
 C       Note:
 C       -----
 C       RTM takes into account the cosmic background contribution.
-C       The cosmic radiation is hard coded (2.75 Kelvin). But this should
-C       be read from the input file (to be updated in next version).
+C       The cosmic radiation is hard coded (2.75 Kelvin). 
 C
 C-------------------------------------------------------------------------------
 	include "declar.incl"
@@ -223,8 +222,8 @@ c
 
 
 	SUBROUTINE RDLBLINP(IATM,IPLOT,IRT,NWN,WN,
-     1       FILEIN,ICNTNM,    INP,IBMAXOUT,ZBNDOUT,
-     2       H1fout,H2fout,ISPD)
+     1       FILEIN,ICNTNM,IXSECT,IBMAXOUT,ZBNDOUT,
+     2       H1fout,H2fout,ISPD,IPASSATM)
 C-------------------------------------------------------------------------------
 C
 C     SUBROUTINE:  RDLBLINP
@@ -299,6 +298,8 @@ C-------------------------------------------------------------------------------
      2       PZ,TZ                          
 	common /profil_scal/ nmol_scal,hmol_scal(64),xmol_scal(64)
 
+        COMMON /PATHX/ IXMAX,IXMOLS,IXINDX(mx_xs),XAMNT(mx_xs,MXLAY)
+
 	COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,  
      1       NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
      2       NLTEFL,LNFIL4,LNGTH4                                 
@@ -312,17 +313,20 @@ C-------------------------------------------------------------------------------
 	COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4),  
      1       WK(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   
      2       EMISIV,FSCDID(17),NMOL,LAYRS ,YI1,YID(10),LSTWDF    
+        COMMON /CNTSCL/ XSELF,XFRGN,XCO2C,XO3CN,XO2CN,XN2CN,XRAYL
+
 	DATA CDOL / '$'/,CPRCNT / '%'/
 	DATA CONE / '1'/,CTWO / '2'/,CTHREE / '3'/,CFOUR / '4'/,       
      1       CA / 'A'/,CB / 'B'/,CC / 'C'/                   
 	character*6 idcntl(15)
 	DATA IDCNTL / ' HIRAC',' LBLF4',' CNTNM',' AERSL',' EMISS', 
      *                ' SCNFN',' FILTR','  PLOT','  TEST','  IATM',    
-     *                'CMRG_1','CMRG_2','  ILAS','   INP','  ISPD' /            
+     *                'CMRG_1','CMRG_2','  ILAS','  ISPD',' XSECT'/
 	CHARACTER CEX*2,CEXST*2,CPRGID*60    
 	DATA CEXST/'EX'/
 	EQUIVALENCE (CXID,CXIDLINE)                    
-			
+	EQUIVALENCE (FSCDID(3),IXSCNT)
+				
  20	READ (IRD,905,END=80,ERR=6000) CXIDLINE         	!---record 1.1
 	IF (CXID.EQ.CPRCNT) THEN
 	   WRITE(*,*) '-END OF FILE:',FILEIN
@@ -334,23 +338,19 @@ C-------------------------------------------------------------------------------
 	READ(IRD,925,END=80,ERR=6000) IHIRAC,ILBLF4,    	!---record 1.2           
      1       ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,    
      2       ITEST,IATM, CMRG,ILAS, IOD,IXSECT,
-     3       MPTS,NPTS,INP,ISPD  
-	
+     3       MPTS,NPTS,ISPD  
+
+	IXSCNT = IXSECT*10 + ICNTNM
+
 	WRITE (IPR,935) (IDCNTL(I),I=1,15)  
  935	FORMAT (15(A6,3X)) 
+
  	Write(ipr,940)                 IHIRAC,ILBLF4,          	!---record 1.2           
      1       ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT,    
      2       ITEST,IATM,CMRG(1),CMRG(2),ILAS,
-     3       INP,ISPD  
+     3       ISPD,IXSECT
 	
  940	FORMAT (1X,I4,9I9,2(8x,a1),3I9)
-
-	IF ((INP.LE.1).OR.(INP.GE.4)) INP=1
-	!---IF INP=1 !MONORTM.IN INPUT
-	!---IF INP=2 !ARM SONDES INPUTS
-	!---IF INP=3 !MONORTM_PROF.IN INPUT FILE
-	
-	IF (INP.EQ.2 .AND. IATM.NE.1) STOP 'INP=2 => IATM=1'
 
 	!----CHECKING THE INPUTS FROM RECORD 1.2
 	IF (IAERSL.GT.0) THEN
@@ -370,12 +370,12 @@ C-------------------------------------------------------------------------------
 	   WRITE(*,*) 'IN ',FILEIN,' IEMIT=',IEMIT
 	ENDIF
 	IF (ISCAN.NE.0) THEN
-	   PRINT *, 'MONORTM DOES NOT SCANNING/INTERPOL/FFT'
+	   PRINT *, 'MONORTM DOES NOT HANDLE SCANNING/INTERPOL/FFT'
 	   PRINT *, 'PLEASE CHECK YOUR FILE:',FILEIN
 	   STOP
 	ENDIF
 	IF (IFILTR.NE.0) THEN
-	   PRINT *, 'MONORTM DOES NOT ANY FILTERING'
+	   PRINT *, 'MONORTM DOES NOT HANDLE ANY FILTERING'
 	   PRINT *, 'PLEASE CHECK YOUR FILE:',FILEIN
 	   STOP
 	ENDIF
@@ -388,11 +388,6 @@ C-------------------------------------------------------------------------------
 	   WRITE(*,*) '----------------------------------------'
 	   WRITE(*,*) 'WARNING: IOD IS IGNORED IN MONORTM'
 	   WRITE(*,*) 'IN ',FILEIN,' IOD=',IOD
-	ENDIF
-	IF (IXSECT.NE.0) THEN
-	   PRINT *, 'MONORTM DOES NOT ACCEPT CROSS SECTIONS INPUTS'
-	   PRINT *, 'PLEASE CHECK YOUR FILE:',FILEIN
-	   STOP
 	ENDIF
 	IF (MPTS.GT.0) THEN
 	   WRITE(*,*) '----------------------------------------'
@@ -418,6 +413,65 @@ C-------------------------------------------------------------------------------
 	   IF (CMRG(1).EQ.CFOUR) IMRG = IMRG+40
 	ENDIF                                                  
 	!------END CHECKING RECORD 1.2
+
+
+      IF (ICNTNM.EQ.0) THEN
+         XSELF = 0.0
+         XFRGN = 0.0
+         XCO2C = 0.0
+         XO3CN = 0.0
+         XO2CN = 0.0
+         XN2CN = 0.0
+         XRAYL = 0.0
+      ELSEIF (ICNTNM.EQ.1) THEN
+         XSELF = 1.0
+         XFRGN = 1.0
+         XCO2C = 1.0
+         XO3CN = 1.0
+         XO2CN = 1.0
+         XN2CN = 1.0
+         XRAYL = 1.0
+      ELSEIF (ICNTNM.EQ.2) THEN
+         XSELF = 0.0
+         XFRGN = 1.0
+         XCO2C = 1.0
+         XO3CN = 1.0
+         XO2CN = 1.0
+         XN2CN = 1.0
+         XRAYL = 1.0
+         ICNTNM = 1
+      ELSEIF (ICNTNM.EQ.3) THEN
+         XSELF = 1.0
+         XFRGN = 0.0
+         XCO2C = 1.0
+         XO3CN = 1.0
+         XO2CN = 1.0
+         XN2CN = 1.0
+         XRAYL = 1.0
+         ICNTNM = 1
+      ELSEIF (ICNTNM.EQ.4) THEN
+         XSELF = 0.0
+         XFRGN = 0.0
+         XCO2C = 1.0
+         XO3CN = 1.0
+         XO2CN = 1.0
+         XN2CN = 1.0
+         XRAYL = 1.0
+         ICNTNM = 1
+      ELSEIF (ICNTNM.EQ.5) THEN
+         XSELF = 1.0
+         XFRGN = 1.0
+         XCO2C = 1.0
+         XO3CN = 1.0
+         XO2CN = 1.0
+         XN2CN = 1.0
+         XRAYL = 0.0
+         ICNTNM = 1
+      ELSEIF (ICNTNM.EQ.6) THEN
+         READ(IRD,*) XSELF, XFRGN, XCO2C, XO3CN, XO2CN, XN2CN, XRAYL   !---record 1.2a
+         ICNTNM = 1
+      ENDIF   
+
 			
 	IF (IEMIT.EQ.2) THEN
 	   READ(IRD,1010,ERR=6000) INFLAG,IOTFLG,JULDAT         	!---record 1.2.1
@@ -500,6 +554,7 @@ c
 	      DO IWN=1,NWN
 		 READ(IRD,'(E19.7)',ERR=6000) WN(IWN)               !---record 1.3.2
 	      ENDDO
+              dvset=0.
 	   ELSE
 	      IF (DVSET.NE.0.) THEN 
 		 NWN=NINT(((V2-V1)/DVSET)+1.)
@@ -573,77 +628,15 @@ C
 	   ENDIF
 	ENDIF
 				!---record 2.1
-	IF (IATM.EQ.0) THEN 
-	   READ (IRD,901,ERR=6000) IFORM,NLAYRS,NMOL,SECNT0,HEAD20,ZH1,
-     1          HEAD4,ZH2,HEAD5,ANGLE,HEAD7    
-
-				!---record 2.1.1
-	   DO 30 L = 1, NLAYRS                                      
-	      IF (L.EQ.1) THEN                                       
-		 IF (IFORM.EQ.1) THEN
-		    READ (IRD,910,ERR=6000) PAVE,TAVE,SECNTK,
-     1                   CINP,IPTHRK,ALTZ(L-1),     
-     1                   PZ(L-1),TZ(L-1),ALTZ(L),PZ(L),TZ(L),CLW(L)  
-		 ELSE
-		    READ (IRD,911,ERR=6000) PAVE,TAVE,SECNTK,
-     1   		 CINP,IPTHRK,ALTZ(L-1),
-     1                   PZ(L-1),TZ(L-1),ALTZ(L),PZ(L),TZ(L),CLW(L) 
-		 ENDIF
-	      ELSE                                                   
-		 IF (IFORM.EQ.1) THEN
-		    READ (IRD,915,ERR=6000) PAVE,TAVE,SECNTK,
-     1                   CINP,IPTHRK,ALTZ(L),PZ(L),TZ(L),CLW(L)     
-		 ELSE
-		    READ (IRD,916,ERR=6000) PAVE,TAVE,SECNTK,
-     1                   CINP,IPTHRK,ALTZ(L),PZ(L),TZ(L),CLW(L) 
-		 ENDIF
-	      ENDIF                                                  
-	      IF (TZ(L).EQ.0.) TZ(L) = TAVE
-	      P(L) = PAVE                                         
-	      T(L) = TAVE                                        
-	      SECANT = SECNT0                                        
-	      SECL(L) = SECANT                                        
-	      SECNTA(L) = SECANT                                     
-				!---record 2.1.2
-	      IF (IFORM.EQ.1) THEN
-		 READ (IRD,9255,ERR=6000) 
-     1                (WKL(M,L),M=1,7),WBRODL(L)
-				!---record 2.1.3
-		 IF (NMOL.GT.7) 
-     1                READ (IRD,9255,ERR=6000) (WKL(M,L),M=8,NMOL)   
-	      ELSE
-		 READ (IRD,927,ERR=6000) (WKL(M,L),M=1,7),WBRODL(L)
-				!---record 2.1.3
-		 IF (NMOL.GT.7) 
-     1                READ (IRD,927,ERR=6000) (WKL(M,L),M=8,NMOL)
-	      ENDIF
-				!---MIXING RATIO INPUT
-	      WDNSTY = WBRODL(L)
-	      WMXRAT = 0.0
-	      DO 22 M = 2,NMOL
-		 IF (WKL(M,L).GT.1) THEN
-		    WDNSTY = WDNSTY + WKL(M,L)
-		 ELSE
-		    WMXRAT = WMXRAT + WKL(M,L)
-		 ENDIF
- 22	      CONTINUE
-	      IF (WDNSTY.EQ.0.0) THEN
-		 WRITE(*,920) L
-		 STOP 'WDNSTY ERROR IN PATH'
-	      ENDIF
-	      IF (WMXRAT.LT.1.0) THEN
-		 WDRAIR(L) = WDNSTY/(1.0-WMXRAT)
-	      ELSE
-		 WRITE(*,1000) L,WMXRAT, WDNSTY
-		 STOP 'WMXRAT ERROR IN PATH'
-	      ENDIF
-	      DO 25 M = 1,NMOL
-		 IF (WKL(M,L).LT.1) WKL(M,L) = WKL(M,L)*WDRAIR(L)
- 25	      CONTINUE
- 30	   CONTINUE        
-	ENDIF 
-	IF (INP.EQ.3) RETURN !In case inp=3 we need only the wave# info.
+	IF (IATM.EQ.0)  return
 c
+C  IPASSATM=0 means this is the first call to RDLBLINP
+C  For the first call to this routine, we don't need to go any further
+	IF (IPASSATM.EQ.0) THEN 
+	    IPASSATM = 1
+	    RETURN
+	ENDIF
+
 	IF (IATM.EQ.1) then
 
 c          clw is not returned from lblatm	   
@@ -662,7 +655,6 @@ c
 	do i=1,ibmax
 	   ZBNDOUT(i)=ZBND(i)
 	enddo
-	IF ((INP.EQ.2).AND.(H1F.GE.H2F)) STOP 'INP=2 -> H1<H2'
 	!---CHECKING RECORD 2.1
 	IF (NLAYRS.GT.200) THEN
 	   WRITE(*,*) '----------------------------------------'
@@ -697,7 +689,7 @@ c
  915	FORMAT (E15.7,F10.4,F10.6,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)
  916	FORMAT (2F10.4,f10.6,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)         
  920	FORMAT (I3)                                                 
- 925	FORMAT (10(4X,I1),3X,2A1,3(4X,I1),1X,I4,1X,I4,1X,I4,1X,I4)    
+ 925	FORMAT (10(4X,I1),3X,2A1,3(4X,I1),1X,I4,1X,I4,6X,I4)    
  9255	FORMAT (8E15.7)
  927	FORMAT (8E10.3)                                          
  930	FORMAT (I1)                                               
@@ -813,54 +805,94 @@ c
 	END
 
 
-	SUBROUTINE STOREOUT(NWN,WN,RAD,TB,TRTOT,SCLCPL,SCLHW,NR,
-     1       WVCOLMN,M,XSLF,K,Y0RES,N,INP,NPR,ilaunchdate,
-     1       ilaunchtime,ibasetime,iserialnumber,isondeage,
-     2       CLWCOLMN,TMPSFC,REFLC,EMISS,
-     4                               NLAY,P,FILEOUT,ANGLE)
+	SUBROUTINE STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT,
+     1       NPR,WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS,
+     4       NLAY,NMOL,ANGLE,IOT,FILEOUT)
 	include "declar.incl"
-	INTEGER I,NWN,NR,K,M,N,NLAY,J
-	REAL OTOT,OTOT_WV,OTOT_O2,OTOT_N2,OTOT_O3,OTOT_N2O
-	REAL FREQ,OTOT_CO,OTOT_SO2,OTOT_NO2,OTOT_OH,ANGLE
-	INTEGER INP,NPR,ilaunchdate,ilaunchtime,ibasetime,
-     1       iserialnumber,isondeage
-	REAL SCLCPL,SCLHW,Y0RES,CLWCOLMN,TMPSFC,WVCOLMN,XSLF
-	CHARACTER FILEOUT*60
+
+	INTEGER I,J,NWN,NLAY,NMOL,NPR
+	REAL FREQ,ANGLE
+	REAL CLWCOLMN,TMPSFC,WVCOLMN
+ 	CHARACTER FILEOUT*60
+        character*8 hmolc(mxmol),cmol(mxmol)
+        logical giga
+
+	REAL OTOT,otot_by_mol(mxmol),wk_tot(mxmol),odxtot
+        integer id_mol(mxmol)
+
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
      1       RADCN1,RADCN2 
-	DO I=1,NWN
-	   FREQ=WN(I)*CLIGHT/1.E9
+
+        save cmol, id_mol, kount
+
+      DATA HMOLC / '  H2O   ' , '  CO2   ' , '   O3   ' , '  N2O   ' ,   FA12260
+     *             '   CO   ' , '  CH4   ' , '   O2   ' , '   NO   ' ,   FA12270
+     *             '  SO2   ' , '  NO2   ' , '  NH3   ' , ' HNO3   ' ,   FA12280
+     *             '   OH   ' , '   HF   ' , '  HCL   ' , '  HBR   ' ,   FA12290
+     *             '   HI   ' , '  CLO   ' , '  OCS   ' , ' H2CO   ' ,   FA12300
+     *             ' HOCL   ' , '   N2   ' , '  HCN   ' , ' CH3CL  ' ,   FA12310
+     *             ' H2O2   ' , ' C2H2   ' , ' C2H6   ' , '  PH3   ' ,   FA12320
+     *             ' COF2   ' , '  SF6   ' , '  H2S   ' , ' HCOOH  ' ,   FA12330
+     *             '  HO2   ' , '   O+   ' , ' ClONO2 ' , '   NO+  ' ,
+     *             '  HOBr  ' , ' C2H4   ' , ' CH3OH  '/
+
+    ! set up headers: assumes same molecules used in all profiles!!!
+	
+	otot  = 0.
+	odxtot = 0.
+	otot_by_mol(:) = 0.
+
+        if (npr.eq.1) then
+           if (nmol.lt.22) wkl(22,:) = wbrodl
+           wk_tot = sum(wkl,2)
+           kount = 0
+           do im=1,mxmol
+              if(wk_tot(im).gt.0) then
+                kount=kount+1
+                id_mol(kount) = im
+                cmol(kount) = hmolc(im)
+              end if
+           end do
+        end if
+
+	!---Write header in output file
+	WRITE(IOT,'(a)') 'MONORTM RESULTS:'
+	WRITE(IOT,'(a)') '----------------' 
+	WRITE(IOT,'(a5,I8,90x,a42)') 'NWN :',NWN ,
+     &           'Molecular Optical Depths -->'
+
+           
+        write(iot,11)'PROF','FREQ','BT(K) ','  RAD(W/cm2_ster_cm-1)',
+     &                    'TRANS','PWV',
+     &                   'CLW','SFCT','EMIS','REFL','ANGLE',
+     &                    'TOTAL_OD',cmol(1:kount), 'XSEC_OD' 
+       ! Convert to GHz for small wavenumbers
+        if (wn(1).lt.100) giga = .true.
+	DO Iw=1,NWN
+	   if (giga) then
+              FREQ=WN(Iw)*CLIGHT/1.E9
+           else
+              FREQ=WN(Iw)
+           end if
+             
 	   !----Computation of the integrated optical depths
-	   OTOT=0.
-	   OTOT_WV=0.
-	   OTOT_O2=0.
-	   OTOT_N2=0.
-	   OTOT_O3=0.
-	   OTOT_N2O=0.
-	   OTOT_CO=0.
-	   OTOT_SO2=0.
-	   OTOT_NO2=0.
-	   OTOT_OH=0.
-	   DO J=1,NLAY
-	      OTOT=OTOT+O(I,J)
-	      OTOT_WV=OTOT_WV+OL_WV(I,J)+OS_WV(I,J)+OF_WV(I,J)
-	      OTOT_O2=OTOT_O2+OL_O2(I,J)
-	      OTOT_N2=OTOT_N2+OL_N2(I,J)+OC_N2(I,J)
-	      OTOT_O3=OTOT_O3+OL_O3(I,J)
-	      OTOT_N2O=OTOT_N2O+OL_N2O(I,J)
-	      OTOT_CO=OTOT_CO+OL_CO(I,J)
-	      OTOT_SO2=OTOT_SO2+OL_SO2(I,J)
-	      OTOT_NO2=OTOT_NO2+OL_NO2(I,J)
-	      OTOT_OH=OTOT_OH+OL_OH(I,J)
+	   DO J = 1,NLAY
+	       OTOT = OTOT + O(IW,J)
+	       ODXTOT = ODXTOT + ODXSEC(IW,J)
+	       DO IK = 1,KOUNT
+		   OTOT_BY_MOL(IK) =  OTOT_BY_MOL(IK) + 
+     &               O_BY_MOL(IW,ID_MOL(IK),J) + 
+     &               OC(IW,ID_MOL(IK),J)
+	       ENDDO
 	   ENDDO
-	   WRITE(1,21) NPR,NR,i,FREQ,TB(I),RAD(I),TRTOT(I),
-     2          WVCOLMN,CLWCOLMN,TMPSFC,EMISS(I),REFLC(I),
-     3          ANGLE,
-     2          OTOT,OTOT_WV,OTOT_O2,OTOT_N2,OTOT_O3,
-     3          OTOT_N2O,OTOT_CO,OTOT_SO2,OTOT_NO2,OTOT_OH
+
+          WRITE(IOT,21) NPR,FREQ,TB(Iw),RAD(Iw),TRTOT(Iw),
+     2          WVCOLMN,CLWCOLMN,TMPSFC,EMISS(Iw),REFLC(Iw),
+     3          ANGLE,OTOT,otot_by_mol(1:kount), odxtot
 	ENDDO
- 21	format (3i5,f9.3,f11.5,1p,E17.9,0p,f9.5,2f8.4,3f8.2,f9.3,
-     1                                                  1p,10E12.4)
+ 11	format (a5,a9,a11,a22,a8,2a8,3a8,a9,36a12)
+ 21	format (i5,f9.3,f11.5,1p,E21.9,0p,f9.5,2f8.4,3f8.2,f9.3,
+     1                                                  1p,36E12.4)
 	RETURN
  1000	WRITE(*,*) 'ERROR OPENING FILE:',FILEOUT
 	STOP
@@ -911,185 +943,7 @@ c       value from vpayne 2006/07/23
 
 
 
-	SUBROUTINE ARM2LBLATM(filearm,IFLAG,ilaunchdate,
-     1       ilaunchtime,ibasetime,iserialnumber,isondeage,
-     2       NWN,WN,V1,V2,DVSET,FILEIN,NLAYRS,IBMAX,ZBND,
-     3       angle,H1F,H2F,NMOL,IPUNCH)
-	!This subroutine simply reads the file 'filearm'
-	!containing the ARM sonde data (extracted as follow:
-	!> > > ftp to vernlaw.er.anl.gov
-	!> > > log in as user anonymous
-	!> > > enter your e-mail address as a password
-	!> > > cd to directory /pub/arm/sonde/YYYY/corr/asc or
-	!> > /pub/arm/sonde/YYYY/corr/cdf
-	!> > > get the files)
-	!and puts them into the file MONORTM.IN to be read by
-	!LBLATM and then put in common for MONORTM.
-	!---Output
-	!IF IFLAG=0 profile is valid
-	!IF IFLAG=1 profile valid but levls with same press removed
-	!IF IFLAG=2 profile is rejected
-	!Sid Ahmed Boukabara
-	include "declar.incl"	
-	INTEGER ibmax
-	PARAMETER (MXLEV=4000)
-	REAL PRESS(MXLEV),TEMP(MXLEV),HUMID(MXLEV),ALTIT(MXLEV)
-	real ZBND(IBMAX)
-	REAL*8 V1,V2
-	REAL DVSET
-	character filearm*90,filein*60,ligne*80,hmod*60
-	CHARACTER*1 JCHARP,JCHART,JCHAR(35)
-	INTEGER ilaunchdate,ilaunchtime,iserialnumber,ibasetime
-	INTEGER isondeage
-
-	character*1 hmol_scal
-	common /profil_scal/ nmol_scal,hmol_scal(64),xmol_scal(64)
-
-	data 	JCHAR /'H','6','6','6','6','6','6','6','6','6','6','6',
-     1       '6','6','6','6','6','6','6','6','6','6','6','6','6','6',
-     2       '6','6','6','6','6','6','6','6','6'/
-
-	open(33,file=filein,status='unknown',form='formatted',err=1000)
-	open(44,file=filearm,status='old',form='formatted',err=2000)
-	read(44,10) ilaunchdate
-	read(44,10) ilaunchtime
-	read(44,10) ibasetime
-	read(44,10) iserialnumber
-	read(44,10) isondeage
-	read(44,11) PWVorig
-	read(44,11) PWVcorr
-	read(44,10) nlevels
-	read(44,'(a)') ligne
-	nlev=0
-	Pr_old=2000.
-	alt_old=-2000.
-	IFLAG=0
-	IF ((nlevels.le.5).or.(nlevels.gt.MXLEV)) THEN  !minimum levels number is 5
-	   close(44)
-	   close(33)
-	   IFLAG=2
-	   RETURN
-	ENDIF
-
-	DO 230 i=1,nlevels
-	   read(44,12) iTOff,Pr,Tp,RHorig,RHcor,xLat,xLon,iAlt
-	   !---To avoid negative values 
-	   IF (Pr.lt.0..or.RHcor.lt.0.) THEN
-	      GOTO 230
-	   ENDIF
-	   !---to avoid two levels with the same pressure/altitude
-	   IF (Pr.lt.Pr_old .and. iAlt/1000. .gt. alt_old) THEN
-	      nlev=nlev+1
-	      PRESS(nlev)=Pr
-	      TEMP(nlev)=Tp
-	      HUMID(nlev)=RHcor
-	      ALTIT(nlev)=iAlt/1000.
-	      alt_old=ALTIT(nlev)
-	   ENDIF
-	   IF (Pr.ge.Pr_old) IFLAG=1
-	   Pr_old=Pr
- 230	ENDDO
-	IF ((nlev.le.5).or.(nlev.gt.MXLEV)) THEN  !minimum levels number is 5
-	   close(44)
-	   close(33)
-	   IFLAG=2
-	   RETURN
-	ENDIF
- 100	IHIRAC=1
-	ILBLF4=0
-	ICNTNM=1
-	IAERSL=0
-	IEMIT=1
-	ISCAN=0
-	IFILTR=0
-	IPLOT=1
-	ITEST=0
-	IATM=1
-	ILAS= 0   
-	IOD=0
-	IXSECT=0
-	MPTS=0
-	NPTS=0 
-	INP=2
-	TMPBND=2.75
-	model=0
-	itype=2
-	nozero=1
-	noprnt=0
-	immax=nlev
-	H1=max(H1F,ALTIT(1))
-	H2=min(H2F,ALTIT(IMMAX))
-	IBMAXSELECT=ibmax
-	IBMINSELECT=1
-	DO i=1,ibmax
-	   IF (ZBND(i).GT.ALTIT(IMMAX)) GOTO 123
-	   IBMAXSELECT=I
-	   IF (ZBND(i).LT.H1) IBMINSELECT=I
-	ENDDO
- 123	CONTINUE
-	JCHARP='A'
-	JCHART='B'
-	write(hmod,'(i12.12)') iserialnumber
-	write(33,'(a)') '$ Rundeck'
-	write(33,13) IHIRAC,ILBLF4,ICNTNM,IAERSL,IEMIT,             
-     1       ISCAN,IFILTR,IPLOT,ITEST,IATM,ILAS,      
-     2       IOD,IXSECT,MPTS,NPTS,INP 
-	write(33,14) V1,V2,0.,DVSET,0.,0.,0.,0.,0,0.,nmol_scal 
-
-c       write scaling information to file 33!
-
-	if (nmol_scal .gt.0) then
-	   if (nmol_scal .gt. 38) stop ' nmol_scal .gt. 38 '
-	   write (33,9701) (hmol_scal(m),m=1,nmol_scal)
-	   write (33,9702) (xmol_scal(m),m=1,nmol_scal)
- 9701	   FORMAT (64a1)
- 9702	   FORMAT (7e15.7,/,(8e15.7,/))
-	endif
-
-	IF ((V1.LT.0.).OR.(V2.LT.0.)) THEN
-	   write(33,'(I8)') NWN
-	   DO I=1,NWN
-	      WRITE(33,'(E19.7)') WN(I)
-	   ENDDO
-	ENDIF
-	
-
-	write(33,14) TMPBND,1.,0.,0.,0.,0.,0.  
-	write(33,15) model,itype,ibmaxselect-IBMINSELECT+1,nozero,
-     1       noprnt,nmol,ipunch
-	write(33,16) H1,H2,angle
-	write(33,17) H1,(ZBND(i),i=IBMINSELECT+1,ibmaxselect)
-	write(33,18) immax,hmod
-	Do i=1,immax
-	   write(33,19) ALTIT(i),PRESS(i),TEMP(i),JCHARP,JCHART,
-     1          (JCHAR(j),j=1,nmol)
-	   write(33,20) HUMID(i),(0.,j=1,nmol-1)
-	enddo
-	write(33,'(a)') '-1'
-	write(33,'(a)') '%%%%%%%%%%%%%%%%'
-	close(44)
-	close(33)
- 22	format(2f10.4,2f10.3,20x,I5)
- 21	format(4f10.4)
- 10	format(19x,i12)
- 11	format(19x,f12.3)
- 12	format(i8,f13.1,f10.1,f9.1,f11.1,f13.5,f12.5,i8)
- 13	FORMAT (10(4X,I1),3X,2X ,3(4X,I1),1X,I4,1X,I4,1X,I4)    
- 14	FORMAT (8E10.3,4X,I1,5x,e10.3,i5)                         
- 15	FORMAT (7I5)                                      
- 16	FORMAT (3f10.3)                                      
- 17	FORMAT (8f10.3)                                      
- 18	FORMAT (I5,' Serial#',3A8)                        
- 19	FORMAT (3f10.3,5x,2A1,3x,28A1)                          
- 20	FORMAT (8f10.3)                                      
-	RETURN
- 1000	PRINT *, 'ERROR OPENING in ARM2LBLATM:',filein
-	STOP
- 2000	PRINT *, 'ERROR OPENING in ARM2LBLATM:',filearm
-	STOP
-	END
-
-	SUBROUTINE START(nprof,INP)
+	SUBROUTINE START(nprof,IATM)
 	CHARACTER*15 HVRREL
 	COMMON /CVRREL  / HVRREL
 
@@ -1099,9 +953,8 @@ c       write scaling information to file 33!
 	WRITE(*,'(a40)') '*        '//HVRREL//'         *'
 	WRITE(*,'(a40)') '**********************************'
 	WRITE(*,*) 'NUMBER OF PROFILES:',nprof
-	IF (INP.EQ.1) WRITE(*,*) 'INPUTS FROM MONORTM.IN'
-	IF (INP.EQ.2) WRITE(*,*) 'INPUTS FROM ARM.IN'
-	IF (INP.EQ.3) WRITE(*,*) 'INPUTS FROM MONORTM_PROF.IN'
+	IF (IATM.EQ.1) WRITE(*,*) 'INPUTS FROM MONORTM.IN'
+	IF (IATM.EQ.0) WRITE(*,*) 'INPUTS FROM MONORTM_PROF.IN'
 	WRITE(*,*)
 	WRITE(*,*)
 	WRITE(*,*)
@@ -1109,7 +962,7 @@ c       write scaling information to file 33!
 	END
 
 
-	SUBROUTINE GETPROFNUMBER(INP,FILEIN,fileARMlist,fileprof,
+	SUBROUTINE GETPROFNUMBER(IATM,FILEIN,fileARMlist,fileprof,
      1       NPROF,filearmTAB)
 	include "declar.incl"
 	CHARACTER FILEIN*60,filearm*90,CXID*1
@@ -1119,41 +972,37 @@ c       write scaling information to file 33!
 	DATA CDOL / '$'/,CPRCNT / '%'/
 	NPROF=0
 
-	!---Get first the INP info
+	!---Get first the IATM info
 	OPEN (90,FILE=FILEIN,STATUS='OLD',ERR=1000) 
  40	READ (90,'(a1)',END=80) CXID
 	IF (CXID.NE.CDOL) THEN
 	   GO TO 40     
 	ENDIF
-	READ (90,'(81X,I4)',END=80,ERR=6000) INP  
+	READ (90,'(49X,I1,19x,I1)',END=80,ERR=6000) IATM,ixsect 
 	close(90)
 
-	IF (INP.EQ.1) THEN
+	IF (IATM.EQ.1) THEN
 	   OPEN (90,FILE=FILEIN,STATUS='OLD',ERR=1000) 
  20	   READ (90,'(a1)',END=80) CXID  
 	   IF (CXID.EQ.CDOL) NPROF=NPROF+1
 	   GO TO 20
 	ENDIF
-	IF (INP.EQ.2) THEN
-	   open(90,file=fileARMlist,status='old',
-     1          form='formatted',err=2000)
-	   DO WHILE (.true.)
-	      read(90,'(a)',end=80,err=1000) filearm
-	      NPROF=NPROF+1
-	      IF (NPROF.GT.NPROFMX) STOP' ERROR: NPROF>NPROFMX'
-	      filearmTAB(NPROF)=filearm
-	   ENDDO
-	ENDIF
-	IF (INP.EQ.3) THEN
+	IF (IATM.EQ.0) THEN
 	   open(90,file=fileprof,status='old',
      1          form='formatted',err=1000)
 	   DO WHILE (.true.) 
-	      READ (90,972,end=80,ERR=22) IFORM,LMAX,NMOL,SECNT0,HMOD,
-     1	           HMOD,H1,H2,ANGLE,LEN  
-	      NPROF=NPROF+1
- 22	      CONTINUE
+	       READ (90,972,end=70,ERR=22) IFORM,
+     1               LMAX,NMOL,SECNT0,HMOD,
+     1	             HMOD,H1,H2,ANGLE,LEN  
+		   NPROF=NPROF+1
+  22		   CONTINUE
 	   ENDDO
+C  If there are cross-sections, there will be two records consistent with Format
+C statement 972 for each profile.
+  70	   continue
+	   if (ixsect. eq. 1) nprof = nprof/2
 	ENDIF
+	
  80	IF (NPROF.EQ.0) THEN 
 	   WRITE(*,*) 'NO PROFILE FOUND IN GETPROFNUMBER'
 	   STOP
@@ -1169,18 +1018,12 @@ c       write scaling information to file 33!
 	STOP
 	END
 
-	SUBROUTINE CHECKINPUTS(NWN,NPROF,NWNMX,NPROFMX,INP)
+	SUBROUTINE CHECKINPUTS(NWN,NPROF,NWNMX,NPROFMX)
 	INTEGER NWN,NPROF,NWNMX,NPROFMX
 	IF (NWN.GT.NWNMX) THEN
 	   WRITE(*,*) 'Number of wavenumbers too big:',NWN
 	   WRITE(*,*) 'Maximum Allowed:',NWNMX
 	   WRITE(*,*) 'Must extend NWNMX in declar.incl AND RECOMPILE'
-	   STOP
-	ENDIF
-	IF (NPROF.GT.NPROFMX .AND. INP.EQ.2) THEN
-	   WRITE(*,*) 'Number of profiles too big:',NPROF
-	   WRITE(*,*) 'Maximum Allowed:',NPROFMX
-	   WRITE(*,*) 'Must extend NPROFMX  AND RECOMPILE'
 	   STOP
 	ENDIF
 	RETURN
@@ -1504,6 +1347,688 @@ C********************************************************************
 	RETURN
 	END
 
-	SUBROUTINE XSREAD (XV1,XV2)   	
+
+	SUBROUTINE XSREAD (ipf,XV1,XV2)   	
+C                                                                         E00020
+      IMPLICIT REAL*8           (V)                                     ! E00030
+C                                                                         E00040
+C**********************************************************************   E00050
+C     THIS SUBROUTINE READS IN THE DESIRED "CROSS-SECTION"                E00060
+C     MOLECULES WHICH ARE THEN MATCHED TO THE DATA CONTAINED              E00070
+C     ON INPUT FILE FSCDXS.                                               E00080
+C**********************************************************************   E00090
+      include "declar.incl"
+
+C                                                                         E00100
+C     IFIL CARRIES FILE INFORMATION                                       E00110
+C                                                                         E00120
+C
+      COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,         E00130
+     *              NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,        E00140
+     *              NLTEFL,LNFIL4,LNGTH4                                  E00150
+C                                                                         E00160
+C     IXMAX=MAX NUMBER OF X-SECTION MOLECULES, IXMOLS=NUMBER OF THESE     E00170
+C     MOLECULES SELECTED, IXINDX=INDEX VALUES OF SELECTED MOLECULES       E00180
+C     (E.G. 1=CLONO2), XAMNT(I,L)=LAYER AMOUNTS FOR I'TH MOLECULE FOR     E00190
+C     L'TH LAYER, ANALOGOUS TO AMOUNT IN /PATHD/ FOR THE STANDARD         E00200
+C     MOLECULES.                                                          E00210
+C                                                                         E00220
+      COMMON /PATHX/ IXMAX,IXMOLS,IXINDX(mx_xs),XAMNT(mx_xs,MXLAY)              E00230
+C                                                                         E00240
+C     COMMON BLOCKS AND PARAMETERS FOR THE PROFILES AND DENSITIES         E00250
+C     FOR THE CROSS-SECTION MOLECULES.                                    E00260
+C     XSNAME=NAMES, ALIAS=ALIASES OF THE CROSS-SECTION MOLECULES          E00270
+C                                                                         E00280
+c%%%%%LINUX_PGI90 (-i8)%%%%%      integer*4 iostat
+      CHARACTER*10 XSFILE,XSNAME,ALIAS,XNAME,XFILS(6),BLANK               E00290
+      COMMON /XSECTF/ XSFILE(6,5,mx_xs),XSNAME(mx_xs),ALIAS(4,mx_xs)
+      COMMON /XSECTR/ V1FX(5,MX_XS),V2FX(5,MX_XS),DVFX(5,MX_XS),     
+     *                WXM(MX_XS),NTEMPF(5,MX_XS),NSPECR(MX_XS),      
+     *                IXFORM(5,MX_XS),XSMASS(MX_XS),XDOPLR(5,MX_XS), 
+     *                NUMXS,IXSBIN                                   
+C                                                                         E00330
+      DIMENSION IXFLG(mx_xs)                                                 E00340
+C                                                                         E00350
+      CHARACTER*120 XSREC                                                 E00360
+      CHARACTER*1 CFLG,CASTSK,CPRCNT,CFRM,CN,CF                           E00370
+      EQUIVALENCE (CFLG,XSREC)                                            E00380
+C                                                                         E00390
+      DATA CASTSK / '*'/,CPRCNT / '%'/,CN / 'N'/,CF / 'F'/                E00400
+      DATA BLANK / '          '/                                          E00410
+C                                                                         E00411
+C     T296 IS TEMPERATURE FOR INITAL CALCULATIN OF DOPPLER WIDTHS         E00412
+C                                                                         E00413
+      DATA T296 / 296.0 /                                                 E00414
+C                                                                         E00420
+      IXMAX = mx_xs                                                          E00430
+      DO 10 I = 1, IXMAX                                                  E00440
+         XSNAME(I) = BLANK                                                E00450
+   10 CONTINUE                                                            E00460
+C                                                                         E00470
+C     READ IN THE NAMES OF THE MOLECULES                                  E00480
+C                                                                         E00490
+      IF (IXMOLS.GT.7) THEN                                               E00500
+         READ (Ipf,'(7A10)') (XSNAME(I),I=1,7)                            E00510
+         READ (Ipf,'(8A10)') (XSNAME(I),I=8,IXMOLS)                       E00520
+      ELSE                                                                E00530
+         READ (Ipf,'(7A10)') (XSNAME(I),I=1,IXMOLS)                       E00540
+      ENDIF   
+
+C                                                                         E00560
+C     Left-justify all inputed names                                      E00570
+C                                                                         E00580
+      DO 15 I=1,IXMOLS                                                    E00582
+         CALL CLJUST (XSNAME(I),10)                                       E00590
+ 15   CONTINUE
+C                                                                         E00600
+CPRT  WRITE(IPR,'(/,''  THE FOLLOWING MOLECULES ARE REQUESTED:'',//,      E00610
+CPRT 1    (5X,I5,2X,A1))') (I,XSNAME(I),I=1,IXMOLS)                        E00620
+C                                                                         E00630
+C     MATCH THE NAMES READ IN AGAINST THE NAMES STORED IN ALIAS           E00640
+C     AND DETERMINE THE INDEX VALUE.  STOP IF NO MATCH IS FOUND.          E00650
+C     NAME MUST BE ALL IN CAPS.                                           E00660
+C                                                                         E00670
+      DO 40 I = 1, IXMOLS                                                 E00680
+         DO 20 J = 1, IXMAX                                               E00690
+
+            IF ((XSNAME(I).EQ.ALIAS(1,J)) .OR.                            E00700
+     *          (XSNAME(I).EQ.ALIAS(2,J)) .OR.                            E00710
+     *          (XSNAME(I).EQ.ALIAS(3,J)) .OR.                            E00720
+     *          (XSNAME(I).EQ.ALIAS(4,J))) THEN                           E00730
+               IXINDX(I) = J                                              E00740
+               GO TO 30                                                   E00750
+            ENDIF                                                         E00760
+   20    CONTINUE                                                         E00770
+C                                                                         E00780
+C         NO MATCH FOUND                                                  E00790
+C                                                                         E00800
+         WRITE (IPR,900) XSNAME(I)                                        E00810
+         STOP 'STOPPED IN XSREAD'                                         E00820
+C                                                                         E00830
+   30    CONTINUE                                                         E00840
+         IXFLG(I) = 0                                                     E00850
+   40 CONTINUE                                                            E00860
+C                                                                         E00870
+C     READ IN "CROSS SECTION" MASTER FILE FSCDXS                          E00880
+C                                                                         E00890
+      IXFIL = 8                                                           E00900
+      OPEN (IXFIL,FILE='FSCDXS',STATUS='OLD',FORM='FORMATTED',
+     *       IOSTAT=iostat)
+        if (IOSTAT.gt.0) stop 'FSCDXS does not exist - XSREAD'
+      REWIND IXFIL                                                        E00920
+      READ (IXFIL,905)                                                    E00930
+C                                                                         E00940
+   50 READ (IXFIL,910,END=80) XSREC                                       E00950
+C                                                                         E00960
+
+      IF (CFLG.EQ.CASTSK) GO TO 50                                        E00970
+      IF (CFLG.EQ.CPRCNT) GO TO 80                                        E00980
+C                                                                         E00990
+      READ (XSREC,915) XNAME,V1X,V2X,DVX,NTEMP,IFRM,CFRM,                 E01000
+     *                 (XFILS(I),I=1,NTEMP)                               E01010
+C                                                                         E01020
+C     LEFT-JUSTIFY INPUTED NAME                                           E01030
+C                                                                         E01040
+      CALL CLJUST (XNAME,10)                                              E01050
+C                                                                         E01060
+C     CHECK MASTER FILE FOR CROSS SECTION AND STORE DATA                  E01070
+C                                                                         E01080
+      NUMXS = IXMOLS                                                      E01090
+      DO 70 I = 1, IXMOLS                                                 E01100
+         IF ((XNAME.EQ.ALIAS(1,IXINDX(I))) .OR.                           E01110
+     *       (XNAME.EQ.ALIAS(2,IXINDX(I))) .OR.                           E01120
+     *       (XNAME.EQ.ALIAS(3,IXINDX(I))) .OR.                           E01130
+     *       (XNAME.EQ.ALIAS(4,IXINDX(I)))) THEN                          E01140
+            IXFLG(I) = 1                                                  E01150
+            IF (V2X.GT.XV1.AND.V1X.LT.XV2) THEN                           E01160
+               NSPECR(I) = NSPECR(I)+1                                    E01170
+               IF (NSPECR(I).GT.6) THEN                                   E01180
+                  WRITE (IPR,920) I,XSNAME(I),NSPECR(I)                   E01190
+                  STOP ' XSREAD - NSPECR .GT. 6'                          E01200
+               ENDIF                                                      E01210
+               IXFORM(NSPECR(I),I) = 91                                   E01220
+               IF (IFRM.EQ.86) IXFORM(NSPECR(I),I) = IFRM                 E01230
+               IF (CFRM.NE.CN)                                            E01240
+     *             IXFORM(NSPECR(I),I) = IXFORM(NSPECR(I),I)+100          E01250
+               IF (CFRM.EQ.CF)                                            E01260
+     *             IXFORM(NSPECR(I),I) = -IXFORM(NSPECR(I),I)             E01270
+               NTEMPF(NSPECR(I),I) = NTEMP                                E01280
+               V1FX(NSPECR(I),I) = V1X                                    E01290
+               V2FX(NSPECR(I),I) = V2X                                    E01300
+C                                                                         E01301
+C     3.58115E-07 = SQRT( 2.* LOG(2.)*AVOGAD*BOLTZ/(CLIGHT*CLIGHT) ) 
+C                                                                         E01303
+               XDOPLR(NSPECR(I),I)=3.58115E-07*(0.5*(V1X+V2X))*           E01304
+     *                             SQRT(T296/XSMASS(IXINDX(I)))           E01305
+C                                                                         E01306
+               DO 60 J = 1, NTEMP                                         E01310
+                  XSFILE(J,NSPECR(I),I) = XFILS(J)                        E01320
+   60          CONTINUE                                                   E01330
+            ENDIF                                                         E01340
+         ENDIF                                                            E01350
+   70 CONTINUE                                                            E01360
+C                                                                         E01370
+      GO TO 50                                                            E01380
+C                                                                         E01390
+   80 IXFLAG = 0                                                          E01400
+      DO 90 I = 1, IXMOLS                                                 E01410
+         IF (IXFLG(I).EQ.0) THEN                                          E01420
+            WRITE (IPR,925) XSNAME(I)                                     E01430
+            IXFLAG = 1                                                    E01440
+         ENDIF                                                            E01450
+   90 CONTINUE                                                            E01460
+      IF (IXFLAG.EQ.1) STOP ' IXFLAG - XSREAD '                           E01470
+C                                                                         E01480
+      RETURN                                                              E01490
+C                                                                         E01500
+  900 FORMAT (/,'  THE NAME: ',A10, ' IS NOT ONE OF THE ',                E01510
+     *        'CROSS SECTION MOLECULES. CHECK THE SPELLING.')             E01520
+  905 FORMAT (/)                                                          E01530
+  910 FORMAT (A120)                                                       E01540
+  915 FORMAT (A10,2F10.4,F10.8,I5,5X,I5,A1,4X,6A10)                       E01550
+  920 FORMAT (/,'******* ERROR IN XSREAD ** MOLECULE SECLECTED -',A10,    E01560
+     *        '- HAS ',I2,' SPECTRAL REGIONS ON FILE FSCDXS, BUT THE',    E01570
+     *        ' MAXIMUM ALLOWED IS 6 *******',/)                          E01580
+  925 FORMAT (/,'******* MOLECULE SELECTED -',A10,'- IS NOT FOUND ON',    E01590
+     *        ' FILE FSCDXS *******',/)                                   E01600
+C                                                                         E01610
+
 	RETURN
 	END
+
+      BLOCK DATA BXSECT                                                   E01630
+C                                                                         E01640
+      IMPLICIT REAL*8           (V)                                     ! E01650
+
+	include "declar.incl"
+c      parameter (mx_xs=38)
+C                                                                         E01660
+C**   XSNAME=NAMES, ALIAS=ALIASES OF THE CROSS-SECTION MOLECULES          E01670
+C**            (NOTE: ALL NAMES ARE LEFT-JUSTIFIED)                       E01680
+C                                                                         E01690
+      CHARACTER*10 XSFILE,XSNAME,ALIAS                                    E01700
+      COMMON /XSECTI/ XSMAX(6,5,mx_xs),XSTEMP(6,5,mx_xs),   
+     *                NPTSFX(5,mx_xs),NFILEX(5,mx_xs),NLIMX 
+      COMMON /XSECTF/ XSFILE(6,5,mx_xs),XSNAME(mx_xs),ALIAS(4,mx_xs) 
+      COMMON /XSECTR/ V1FX(5,MX_XS),V2FX(5,MX_XS),DVFX(5,MX_XS),     
+     *                WXM(MX_XS),NTEMPF(5,MX_XS),NSPECR(MX_XS),      
+     *                IXFORM(5,MX_XS),XSMASS(MX_XS),XDOPLR(5,MX_XS), 
+     *                NUMXS,IXSBIN                                   
+      COMMON /XSECTS/ JINPUT,NMODES,NPANEL,NDUM,V1XS,V2XS,DVXS,NPTSXS     E02870
+C                                                                         E01750
+      DATA NMODES / 1 /,NPANEL / 0 /,V1XS / 0.0 /,V2XS / 0.0 /,           E02990
+     *     DVXS / 0.0 /,NPTSXS / 0 /                                      E03000
+      DATA XSMAX / 1140*0.0 /                                             E03010
+      DATA (ALIAS(1,I),I=1,mx_xs)/                                           E01760
+     *    'CLONO2    ', 'HNO4      ', 'CHCL2F    ', 'CCL4      ',         E01770
+     *    'CCL3F     ', 'CCL2F2    ', 'C2CL2F4   ', 'C2CL3F3   ',         E01780
+     *    'N2O5      ', 'HNO3      ', 'CF4       ', 'CHCLF2    ',         E01790
+     *    'CCLF3     ', 'C2CLF5    ', 'NO2       ',
+     *	  23*' ZZZZZZZZ ' / 
+      DATA (ALIAS(2,I),I=1,mx_xs)/                                           E01810
+     *    'CLNO3     ', ' ZZZZZZZZ ', 'CFC21     ', ' ZZZZZZZZ ',         E01820
+     *    'CFCL3     ', 'CF2CL2    ', 'C2F4CL2   ', 'C2F3CL3   ',         E01830
+     *    ' ZZZZZZZZ ', ' ZZZZZZZZ ', ' ZZZZZZZZ ', 'CHF2CL    ',         E01840
+     *    ' ZZZZZZZZ ', ' ZZZZZZZZ ', 24*' ZZZZZZZZ ' /                   E01850
+      DATA (ALIAS(3,I),I=1,mx_xs)/                                           E01860
+     *    ' ZZZZZZZZ ', ' ZZZZZZZZ ', 'CFC21     ', ' ZZZZZZZZ ',         E01870
+     *    'CFC11     ', 'CFC12     ', 'CFC114    ', 'CFC113    ',         E01880
+     *    ' ZZZZZZZZ ', ' ZZZZZZZZ ', 'CFC14     ', 'CFC22     ',         E01890
+     *    'CFC13     ', 'CFC115    ', 24*' ZZZZZZZZ ' /                   E01900
+      DATA (ALIAS(4,I),I=1,mx_xs)/                                           E01910
+     *    ' ZZZZZZZZ ', ' ZZZZZZZZ ', 'F21       ', ' ZZZZZZZZ ',         E01920
+     *    'F11       ', 'F12       ', 'F114      ', 'F113      ',         E01930
+     *    ' ZZZZZZZZ ', ' ZZZZZZZZ ', 'F14       ', 'F22       ',         E01940
+     *    'F13       ', 'F115      ', 24*' ZZZZZZZZ ' /                   E01950
+C                                                                         E01960
+C     XSMASS IS MASS OF EACH CROSS-SECTION                                E01961
+C                                                                         E01962
+c     note 23 =  mx_xs - 15 = 38 - 15
+
+      DATA XSMASS/                                                        E01963
+     1      97.46     ,   79.01     ,  102.92     ,  153.82     ,         E01964
+     2     137.37     ,  120.91     ,  170.92     ,  187.38     ,         E01965
+     3     108.01     ,   63.01     ,   88.00     ,   86.47     ,         E01966
+     4     104.46     ,  154.47     ,   45.99     , 23*0.00 /             E01967
+C                                                                         E01969
+      DATA V1FX / 190*0.0 /,V2FX / 190*0.0 /,DVFX / 190*0.0 /,            E01970
+     *     WXM / mx_xs*0.0 /                                                 E01980
+      DATA NTEMPF / 190*0 /,NSPECR / mx_xs*0 /,IXFORM / 190*0 /,             E01990
+     *     NUMXS / 0 /                                                    E02000
+C                                                                         E02010
+      END                                                                 E02020
+
+      SUBROUTINE CLJUST (CNAME,NCHAR)                                     E02030
+C                                                                         E02040
+C     THIS SUBROUTINE LEFT-JUSTIFIES THE CHARACTER CNAME                  E02050
+C                                                                         E02060
+      CHARACTER*(*) CNAME                                                 E02070
+      CHARACTER*25 CTEMP                                                  E02070
+      CHARACTER*1  CTEMP1(25),BLANK                                       E02080
+      EQUIVALENCE (CTEMP,CTEMP1(1))                                       E02090
+C                                                                         E02100
+      DATA BLANK / ' '/                                                   E02110
+C                                                                         E02120
+         CTEMP = CNAME                                                    E02140
+         JJ=0                                                             E02145
+         DO 10 J = 1, NCHAR                                               E02150
+            IF (CTEMP1(J).NE.BLANK) THEN                                  E02160
+               JJ = J                                                     E02170
+               IF (JJ.EQ.1) GO TO 50                                      E02180
+               GO TO 20                                                   E02190
+            ENDIF                                                         E02200
+   10    CONTINUE                                                         E02210
+         IF (JJ .EQ. 0) GO TO 50                                          E02215
+C                                                                         E02220
+   20    KCNT = 0                                                         E02230
+         DO 30 K = JJ, NCHAR                                              E02240
+            KCNT = KCNT+1                                                 E02250
+            CTEMP1(KCNT) = CTEMP1(K)                                      E02260
+   30    CONTINUE                                                         E02270
+C                                                                         E02280
+         KK = NCHAR-JJ+2                                                  E02290
+         DO 40 L = KK,NCHAR                                               E02300
+            CTEMP1(L) = BLANK                                             E02310
+   40    CONTINUE                                                         E02320
+         CNAME = CTEMP                                                    E02330
+   50 CONTINUE                                                            E02340
+C                                                                         E02350
+      RETURN                                                              E02360
+C                                                                         E02370
+      END                                                                 E02380
+
+	FUNCTION MAXIMUM(ARRAY, NSIZE)
+	DIMENSION ARRAY(NSIZE)
+	MAXIMUM = ARRAY(1)
+	DO 10 J=2,NSIZE
+	    IF (MAXIMUM.LT.ARRAY(J)) MAXIMUM=ARRAY(J)
+   10	CONTINUE
+	RETURN
+	END
+
+	FUNCTION MINIMUM(ARRAY, NSIZE)
+	DIMENSION ARRAY(NSIZE)
+	MINIMUM = ARRAY(1)
+	DO 10 J=2,NSIZE
+	    IF (MINIMUM.GT.ARRAY(J)) MINIMUM=ARRAY(J)
+   10	CONTINUE
+	RETURN
+	END
+
+        SUBROUTINE MONORTM_XSEC_SUB(wn,nwn,p,t,nlay)
+
+C----------------------------------------------------------------
+C Authors: Eli Mlawer and Vivienne Payne, AER Inc.
+C
+C Created: July 2008
+C
+C Description: Calculates cross-section optical depths for MonoRTM.
+C              Method follows that of LBLRTM. 
+C              Results are consistent with LBLRTM. 
+C              Note that only the total optical depth for all 
+C              cross-section molecules is returned.  The "odxsec" array 
+C              does not distinguish between different xsec molecules.     
+C
+C Input:
+C      wn       array of wavenumbers
+C      nwn      number of wavenumbers 
+C      p        pressure of layer
+C      t        temperature of layer
+C      nlay     number of layers
+C
+C Output:  
+C      odxsec   total optical depth for all cross-sections in array odxsec
+C               (stored through declar.incl)
+C    
+C----------------------------------------------------------------
+
+      IMPLICIT REAL*8           (V) ! for consistency with LBLRTM routines
+
+      Include "declar.incl"
+
+
+C                                                                         
+C     COMMON BLOCKS AND PARAMETERS FOR THE PROFILES AND DENSITIES         
+C     FOR THE CROSS-SECTION MOLECULES.                                    
+C     XSNAME=NAMES, ALIAS=ALIASES OF THE CROSS-SECTION MOLECULES          
+
+C     IXMAX=MAX NUMBER OF X-SECTION MOLECULES, IXMOLS=NUMBER OF THESE    
+C     MOLECULES SELECTED, IXINDX=INDEX VALUES OF SELECTED MOLECULES       
+C     (E.G. 1=CLONO2), XAMNT(I,L)=LAYER AMOUNTS FOR I'TH MOLECULE FOR     
+C     L'TH LAYER, ANALOGOUS TO AMOUNT IN /PATHD/ FOR THE STANDARD         
+C     MOLECULES.                                                          
+C                                                                         
+C     NUMXS IS THE NUMBER OF 'CROSS SECTION' MOLECULES TO BE USED         
+C                                                                         
+C     XSFILE(ITEMP,ISPEC,NXS) IS THE NAME OF THE FILE CONTAINING THE      
+C                             'CROSS SECTION' DATA.  THE THREE INDICES    
+C                             ARE DEFINED AS FOLLOWS:                     
+C                                                                         
+C                             ITEMP - DENOTES THE TEMPERATURE FOR WHICH   
+C                                     THE 'CROSS SECTION' IS VALID        
+C                                     (IMPLEMENTED FOR HITRAN 91 TAPE)    
+C                             ISPEC - DENOTES THE SECTRAL REGION FOR      
+C                                     WHICH THE FILE PERTAINS             
+C                             NXS   - IS THE INCREMENT FOR THE 'CROSS     
+C                                     SECTION' INDEX                      
+C                                                                         
+C     NTEMPF(ISPEC,NXS) IS THE NUMBER OF TEMPERATURE FILES TO BE USED     
+C                       FOR EACH SPECTRAL REGION OF EACH MOLECULE         
+C                                                                         
+C     NSPECR(NXS) IS THE NUMBER OF SPECTRAL REGIONS FOR THE MOLECULE NX   
+C**********************************************************************   
+C                        
+
+      CHARACTER*10 XSFILE,XSNAME,ALIAS,XNAME,XFILS(6),BLANK,xxfile,ctorr               
+      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+     $     RADCN1,RADCN2 
+      COMMON /PATHX/ IXMAX,IXMOLS,IXINDX(mx_xs),XAMNT(mx_xs,MXLAY)        
+      COMMON /XSECTF/ XSFILE(6,5,mx_xs),XSNAME(mx_xs),ALIAS(4,mx_xs)
+      COMMON /XSECTR/ V1FX(5,MX_XS),V2FX(5,MX_XS),DVFX(5,MX_XS),     
+     *                WXM(MX_XS),NTEMPF(5,MX_XS),NSPECR(MX_XS),      
+     *                IXFORM(5,MX_XS),XSMASS(MX_XS),XDOPLR(5,MX_XS), 
+     *                NUMXS,IXSBIN                                   
+C                                                                         
+      DIMENSION IXFLG(mx_xs),tx(6,5,mx_xs),pdx(6,5,mx_xs)
+      dimension xsdat(150000,6),xspd(150000)
+      dimension xspave(nwnmx),xsmoltot(nwnmx,mxlay),xstot(nwnmx,mxlay)
+C                                                                         
+      CHARACTER*120 XSREC
+      character*10 source(3)
+
+      data dvbuf /1.0/         ! used to check if a particular xs file needs to be processed
+      DATA CTORR / '      TORR'/
+
+C     DEFINE PRESSURE CONVERSIONS                                         E07160
+C                                                                         E07170
+C        PTORMB = 1013. MB / 760. TORR  (TORR TO MILLIBARS)               E07180
+C        PATMMB = 1013. MB / 1.0  ATM   (ATMOPHERES TO MILLIBARS)         E07190
+C                                                                         E07200
+      PTORMB = 1013./760.                                                 E07210
+      PATMMB = 1013.   
+
+C Initialize variables.
+      xstot(1:nwn,1:nlay) = 0.
+
+c loop over cross-section molecules
+      DO 6000 IXMOL = 1,IXMOLS
+          xsmoltot(1:nwn,1:nlay) = 0.
+
+C loop over the spectral regions for this molecule
+          DO 5000 IXSR = 1,NSPECR(IXMOL)
+C Check to see if this spectral region needs to be processed.
+              ipt = 1
+ 2100         continue
+              if (wn(ipt) .ge. v1fx(ixsr,ixmol)-dvbuf .and.
+     &            wn(ipt) .le. v2fx(ixsr,ixmol)+dvbuf) goto 2200
+              ipt = ipt + 1
+              if (ipt .gt. nwn) goto 5000
+              goto 2100
+
+ 2200         continue
+
+C Getting here means that this spectral region for this molecule needs to be handled.
+C Loop over the temperatures for which this molecule has stored values in this region.
+
+C The filenames are arranged in FSCDXS in order of ascending temperature
+              DO 3000 IXTEMP=1,NTEMPF(IXSR,IXMOL)
+                  ifile = 100 + ixtemp
+                  xxfile = xsfile(ixtemp,ixsr,ixmol)
+                  open(ifile,file=xxfile,form='formatted')
+                  READ (ifile,910) AMOL,V1x,V2x,NPTSx,
+     &                TX(ixtemp,ixsr,ixmol),PRES,    
+     &                              SMAX,SOURCE
+                  if (source(3) .eq. ctorr) then
+                      pdx(ixtemp,ixsr,ixmol) = pres * ptormb
+                  else
+                      pdx(ixtemp,ixsr,ixmol) = pres
+                  endif
+                  read(ifile,*)(xsdat(i,ixtemp),i=1,nptsx)
+ 3000         continue
+
+C Interpolate absorption coefficients to given temperature.
+              
+              do 4000 il = 1, nlay
+                  pave = p(il)
+                  tave = t(il)
+                  coef1 = 1.
+                  ind2 = 1
+                  coef2 = 0.
+                  it = 1
+C The temperatures at which the xsecs are stored are in ascending order (as in LBLRTM).
+C it=1 is the lowest temperature
+                  if (ntempf(ixsr,ixmol).eq.1 .or. 
+     &                tave.le.tx(it,ixsr,ixmol)) then
+                      ind1 = 1
+                  else
+ 3100                 continue
+                      it = it + 1
+                      if (it. gt. ntempf(ixsr,ixmol)) then
+                          ind1 = ntempf(ixsr,ixmol)
+                          ind2 = ntempf(ixsr,ixmol)
+                      elseif (tave. le. tx(it,ixsr,ixmol)) then                      
+                          ind1 = it-1 ! ind1 is a lower temperature than ind2
+                          ind2 = it
+                          coef1 = (tave - tx(it,ixsr,ixmol))/
+     &                        (tx(it-1,ixsr,ixmol) - tx(it,ixsr,ixmol))
+                          coef2 = 1. - coef1
+                      else
+                          goto 3100
+                      endif
+                  endif
+
+                  pd = coef1 * pdx(ind1,ixsr,ixmol)+ 
+     &                coef2* pdx(ind2,ixsr,ixmol)
+                  xkt1 = tx(ind1,ixsr,ixmol)/radcn2
+                  xkt2 = tx(ind2,ixsr,ixmol)/radcn2
+                  
+                  delvx =  (v2x-v1x) / float(nptsx-1)
+                  do 3300 i = 1, nptsx
+                      vv = v1x + float(i-1) * delvx
+                      xspd(i) = coef1 * xsdat(i,ind1) / radfn(vv,xkt1)                  
+     &                    + coef2 * xsdat(i,ind2) / radfn(vv,xkt2)
+ 3300             continue
+
+C Perform convolution from appropriate pressure for stored values to layer pressure.
+C (296K is the temperature used in the calculation of the Doppler width)
+                  hwdop = xdoplr(ixsr,ixmol) * sqrt(tave/296.)
+                  call convolve(xspd,v1x,v2x,delvx,pd,hwdop,
+     &                tave,pave,x,wn,nwn,xspave)
+                  xsmoltot(1:nwn,il) = xsmoltot(1:nwn,il) + 
+     &                xspave(1:nwn)
+ 4000         continue
+C Finished processing this spectral range of this molecule.
+
+ 5000     continue
+
+C Multiply by absorber amount.
+          do 5500 il = 1, nlay
+              xstot(1:nwn,il) = xstot(1:nwn,il) + 
+     &            xamnt(ixmol,il) * xsmoltot(1:nwn,il)
+ 5500     continue
+C Finished prcoessing this molecule.
+
+ 6000 continue
+C Finished processing all molecules.
+C Put the radiation field back in.
+      do 6500 il = 1, nlay
+          xkt = t(il)/radcn2
+          do 6300 iwn = 1, nwn              
+              odxsec(iwn,il) = xstot(iwn,il) * radfn(wn(iwn),xkt)
+ 6300     continue
+ 6500 continue
+
+       RETURN  
+  910 FORMAT (A10,2F10.4,I10,3G10.3,3A10)              
+
+       END
+
+      subroutine convolve(xspd,v1x,v2x,delvx,pd,hwdop,
+     &    tave,pave,x,wn,nwn,xspave)
+
+c performs pressure convolution for cross sections
+
+      Include "declar.incl"
+      dimension xspd(150000),xspave(nwnmx),xspd_int(0:10000000)
+      data p0 /1013./
+
+C     Set up the halfwidths needed.
+      hwpave = 0.1 * (pave/p0) * (273.15/tave)
+      hwd = 0.1 * (pd/p0) * (273.15/tave)
+      hwd = max (hwd,hwdop)
+C Don't want hwd to be bigger than hwpave
+      if (hwd.gt.hwpave) then hwpave = 1.001*hwd
+      hwb = hwpave - hwd
+
+C Step size is at least ~4 pts per halfwidth.
+      ratio = 0.25
+      step = ratio * hwb
+      if (step .gt. delvx) step = delvx
+      npts = int((v2x-v1x)/step)
+      step = (v2x - v1x) / float(npts)
+      ratio = step / hwb
+C Linearly interpolate incoming values to desired grid.
+      do 500 i = 0, npts
+          vv = v1x + float(i) * step
+          delvv = vv - v1x
+          ind = int(delvv / delvx)
+          coef = (delvv - float(ind) * delvx) / delvx
+          xspd_int(i) = (1.-coef)*xspd(ind+1) + coef*xspd(ind+2)
+  500 continue
+
+      hwb2 = hwb**2
+      do 4000 iwn = 1, nwn
+          if (wn(iwn) .lt. v1x .or. wn(iwn) .gt. v2x) then
+              xspave(iwn) = 0.
+              goto 4000
+          endif
+          if (hwb/hwd .gt. 0.1) then
+C Perform convolution using Lorentzian with width hwb.
+              wn_v1x = wn(iwn) - v1x
+              ind = int(wn_v1x / step)
+              dvlo = wn(iwn) - (v1x + float(ind) * step)
+              dvhi = wn(iwn) - (v1x + float(ind+1) * step)
+              answer = (hwb/(hwb2 + dvlo**2)) * xspd_int(ind) +
+     &            (hwb/(hwb2 + dvhi**2)) * xspd_int(ind+1)
+              j = 1
+ 1000         continue
+              vlo = v1x + float(ind-j) * step
+              if (vlo .gt. v1x) then
+                  dvlo = wn(iwn) - vlo
+                  contlo = (hwb/(hwb2 + dvlo**2)) * xspd_int(ind-j)
+              else
+                  contlo = 0.
+              endif
+              vhi = v1x + float(ind+j+1) * step
+              if (vhi .lt. v2x) then
+                  dvhi = wn(iwn) - vhi
+                  conthi = (hwb/(hwb2 + dvhi**2)) * xspd_int(ind+j+1)
+              else
+                  conthi = 0.
+              endif
+              xincr = contlo + conthi
+              if ((xincr/answer) .lt. ratio*1e-6) goto 1800
+              answer = answer + xincr
+              j = j + 1
+              goto 1000
+ 1800         continue
+C Done with convolution.  Multiply by step size and Lorentzian normalization.
+              xspave(iwn) = answer * step / 3.14159
+          else
+C     Use linearly interpolated values.
+              wn_v1x = wn(iwn) - v1x
+              ind = int(wn_v1x / delvx)
+              coef = (wn_v1x - float(ind) * delvx) / delvx
+              xspave(iwn) = (1.-coef)*xspd(ind) + coef*xspd(ind+1)
+          endif
+ 4000 continue
+
+      return
+      
+      end
+
+      subroutine calctmr(nlayrs, nwn, wn, T, tz, tmr)
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+CAuthor: Dave Turner, January 2008
+C   
+CThis routine computes the mean radiating temperature from the optical depth
+C and temperature profiles.  The logic was provided by Vivienne Payne, AER,
+C in an email on 10 Jan 2008.
+C
+C This routine is currently not connected to the body of the code, but can 
+C easily be called from the subroutine rtm.
+C
+C Results have been checked against results from a modified version of rtm.f 
+C that Tony Clough had supplied to Jim Liljegren and Maria Caddedu at ANL 
+c pre-2006 for the purposes of calculations for Jim's statistical retrievals.
+C
+C Note that this routine is currently only applicable to downwelling 
+C calculations
+C
+C Inputs:
+C    nlayrs:	The number of layers in the model atmosphere
+C    nwn: 	The number of spectral channels
+C    wn:	The wavenumber array, in cm-1 (NWN)
+C    T:		The layer-averaged temperature profile, in K (NLAYRS)
+C    O:		The optical depth data, in nepers (NWN x NLAYRS) 
+C Output:
+C    Tmr:	The mean radiating temperature spectrum, in K (NWN)
+C
+C  Vivienne Payne, AER Inc, 2008
+C------------------------------------------------------------------------------
+	include "declar.incl"
+	integer nlayrs, nwn
+        integer ifr, ilay
+	real    sumtau, sumexp
+        real    bbvec(MXLAY),bbavec(0:MXLAY),odtot(NWNMX)
+        real    odt, odvi, vv, beta, beta_a
+        real    radtmr, x
+	bb_fn(v,fbeta)  = radcn1*(v**3)/(exp(v*fbeta)-1.)
+        real    tmr(*)
+        COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
+     1       RADCN1,RADCN2 
+
+
+	do ifr=1,nwn
+            sumtau = 0.
+            sumexp = 0.
+            vv=wn(ifr)
+            trtot(ifr) = 1.
+            odtot(ifr)=0.
+            do ilay=1,nlayrs
+                odtot(ifr)=odtot(ifr)+O(ifr,ilay)
+                beta  = radcn2/t(ilay)
+                beta_a= radcn2/tz(ilay)
+                bbvec(ilay)  = bb_fn(VV,beta)
+                bbavec(ilay) = bb_fn(VV,beta_a)
+                beta_a= radcn2/tz(ilay-1)
+                bbavec(ilay-1) = bb_fn(VV,beta_a)
+            enddo
+
+            odt=odtot(ifr)
+            do ilay = nlayrs,1,-1
+                bb  = bbvec(ilay)           
+                bba = bbavec(ilay-1)
+                odvi = O(ifr,ilay)
+                odt=odt-odvi
+                tri = exp(-odvi)
+                trtot(ifr)= EXP(-odt)
+C calculate the "effective emissivity" of the layer using "linear in tau"
+C (see Clough et al 1992)
+                pade=0.193*odvi+0.013*odvi**2
+                beff = (bb + pade*bba)/(1.+pade)
+                sumexp = sumexp + beff*trtot(ifr)*(1-tri)
+            enddo
+
+C this bit is based on Han & Westwater (2000) eq 14
+            radtmr = sumexp / (1. - exp(-1*odtot(ifr)))
+            x=radcn1*(wn(ifr)**3)/radtmr+1.
+            tmr(ifr) = radcn2*wn(ifr) / log(x)
+
+        enddo
+        
+        return
+       end
+
+
+

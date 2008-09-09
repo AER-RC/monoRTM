@@ -9,12 +9,12 @@ C	lines at 0.74 cm-1 (22.233 GHz), 6.11 cm-1 (183 GHz), 10.84 cm-1 (325 GHz) and
 C       12.68 cm-1 (380 GHz) and the oxygen lines.  
 C        Intensities of the 22, 183, 325 and 380 GHz water  lines are based on 
 C	work performed by S.A. Clough 2002. The air-broadened width of the 22 GHz line is from work 
-C       with MWRP data described in Payne et al (2007).  The air-broadened width of the 183 GHz 
-C       line is from CRB calculations by Bob Gamache, also described in Payne et al (2007). 
+C       with MWRP data described in Payne et al (2008).  The air-broadened width of the 183 GHz 
+C       line is from CRB calculations by Bob Gamache, also described in Payne et al (2008). 
 C       The air-broadened halfwidth of the 325 GHz line is from Bob Gamache's calculations,
 C       while the self-broadened halfwidth of this line is from Koshelev et al (2007). 
 C       Temperature dependences and pressure shifts for these water lines are from Bob Gamache's CRB 
-C       calculations (2007).  The air and self broadened halfwidths of the 380 GHz line are from
+C       calculations.  The air and self broadened halfwidths of the 380 GHz line are from
 C       Koshelev et al (2007).  O2 line widths and line coupling 
 C       parameters for the 60 GHz band and the 120 GHz line have been 
 C       changed to those of Tretyakov et al, 2005. This file covers the microwave and the 
