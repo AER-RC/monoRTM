@@ -30,7 +30,7 @@
 
 ;----File opening MONORTM----
 	
-        fic0 = 'out/MONORTM.OUT' $
+        fic0 = 'out/MONORTM.OUT'
         
         print, 'FILE ',fic0,' OPEN FOR READ ....'
 	OPENR,1,fic0
