@@ -76,6 +76,9 @@ Assuming you are in the main directory.
 . Running (to generate example output):
   > cd run
   > run_monortm_examples
+ (Note that you may have to modify the executable name in 
+ "run_monortm_examples" to match the name of the executable that you 
+  have created.)
 
 . Visualization of the output (from the "run" directory):
   >idl
