@@ -77,8 +77,7 @@ Assuming you are in the main directory.
   > cd run
   > run_monortm_examples
 
-. Visualization of the output:
-  >cd idl
+. Visualization of the output (from the "run" directory):
   >idl
   IDL> .run monortm.pro
   > cd ..
