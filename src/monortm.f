@@ -301,13 +301,25 @@ c	      READ (IPF,'(1x,i5,10a8)') ipass, xid
 	      IF (ANGLE.EQ.90.) IRT = 2 !limb measurements
 	      DO IL=1,NLAYRS
 		 SECNTA(IL)=SECNT0
-		 IF (IL.EQ.1) THEN  
-		    READ (IPF,*,END=110,ERR=50) P(IL),T(IL),  
-     1                   IPATH,ALTZ(IL-1),PZ(IL-1),        
-     2	                 TZ(IL-1),ALTZ(IL),  PZ(IL),  TZ(IL)  
+                 print *,'iform =',iform
+		 IF (IFORM.EQ.0) THEN  
+                    if (il.eq.1) then 
+		       READ (IPF,974,END=110,ERR=50) P(IL),T(IL),secnt,ipath,  
+     1                   ALTZ(IL-1),PZ(IL-1), TZ(IL-1),       
+     2	                 ALTZ(IL),  PZ(IL),  TZ(IL), CLW(IL)  
+                    else
+		       READ (IPF,9742,END=110,ERR=50) P(IL),T(IL),secnt,ipath,  
+     2	                 ALTZ(IL),  PZ(IL),  TZ(IL), CLW(IL)  
+                    endif
 		 ELSE                                             
-		    READ (IPF,*,END=110,ERR=50) P(IL),T(IL),  
-     1	                 IPATH,ALTZ(IL),PZ(IL),TZ(IL)   
+                    if (il.eq.1) then 
+		       READ (IPF,975,END=110,ERR=50) P(IL),T(IL),secnt,ipath,  
+     1                   ALTZ(IL-1),PZ(IL-1),TZ(IL-1),        
+     2	                 ALTZ(IL),PZ(IL),TZ(IL) , CLW(IL)  
+                     else
+		       READ (IPF,9752,END=110,ERR=50) P(IL),T(IL),secnt,ipath,  
+     2	                 ALTZ(IL),PZ(IL),TZ(IL) , CLW(IL)  
+                     endif
 		 ENDIF                                              
 		 READ(IPF,978,END=110,ERR=50) (WKL(K,IL),K=1,7),
      1	              WBRODL(IL)          
@@ -424,9 +436,13 @@ C
  937	FORMAT (/,'***** IXMOL = ',I5,' .NE. IXMOLS = ',I5,' *****',/)     
  940	FORMAT (/,'***** NLAYRS = ',I5,' .NE. NLAYXS = ',I5,' *****',/)     
  942	FORMAT (/,'0 SECANTX  =',F13.4,/'0 NLAYXS=',I4,/'0 ISMOLS=',I4,/,   
-	1 '0',15A4)                                                   
+     &   '0',15A4)                                                   
  972	FORMAT (64a1)
  973	FORMAT (7e15.7,/,(8e15.7,/))
+ 974    FORMAT (3f10.4,3x,i2,1x,2(f7.2,f8.3,f7.2),f7.2)
+ 9742   FORMAT (3f10.4,3x,i2,1x,22x,1(f7.2,f8.3,f7.2),f7.2)
+ 975    FORMAT (e15.7,2f10.4,3x,i2,1x,2(f7.2,f8.3,f7.2),f7.2)
+ 9752   FORMAT (e15.7,2f10.4,3x,i2,1x,22x,1(f7.2,f8.3,f7.2),f7.2)
  978	FORMAT (1P8E15.7)                                             
  1000	FORMAT ('Modules and versions used in this calculation:',/,/,
      &    A15,/,/,
