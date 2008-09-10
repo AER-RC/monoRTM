@@ -25,6 +25,7 @@ time ../monortm_v4.0_pgf90_dbl
 
 \rm   MONORTM.IN
 \rm   spectral_lines.dat
+cp    MONORTM.OUT     out/MONORTM.OUT
 mv    MONORTM.OUT     out/$prefix{MONORTM.OUT_MDL_ATM_dn}
 mv    MONORTM.LOG     out/$prefix{MONORTM.LOG_MDL_ATM_dn}
 mv    TAPE7           out/$prefix{MONORTM.TAPE7_MDL_ATM_dn}
