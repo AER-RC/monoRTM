@@ -1,5 +1,3 @@
-;PRO monortm, monortm_orig, freq_orig, npar, nchan, nprof, nmol, outfil=outfil
-
 ; Modified: August 2008 VHP Update for new Monortm v4.0 output format
 ; Modified: 10-FEB-06  VHP Changed formatting of reading to match changes made in MONORTM 
 ;                           
@@ -32,8 +30,7 @@
 
 ;----File opening MONORTM----
 	
-	IF NOT( KEYWORD_SET(OUTFIL)) THEN fic0='../out/MONORTM.OUT' $
-          ELSE fic0 = outfil
+        fic0 = 'out/MONORTM.OUT' $
         
         print, 'FILE ',fic0,' OPEN FOR READ ....'
 	OPENR,1,fic0
