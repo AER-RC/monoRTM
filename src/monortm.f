@@ -301,7 +301,6 @@ c	      READ (IPF,'(1x,i5,10a8)') ipass, xid
 	      IF (ANGLE.EQ.90.) IRT = 2 !limb measurements
 	      DO IL=1,NLAYRS
 		 SECNTA(IL)=SECNT0
-                 print *,'iform =',iform
 		 IF (IFORM.EQ.0) THEN  
                     if (il.eq.1) then 
 		       READ (IPF,974,END=110,ERR=50) P(IL),T(IL),secnt,ipath,  
