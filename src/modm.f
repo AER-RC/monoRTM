@@ -230,7 +230,7 @@ c calculate TIPS using Gamache routine rather that QOFT
                 O(M,K) = o(m,k) + O_BY_MOL(M,imol,K) 
             enddo
             o(m,k) = o(m,k) + odxsec(m,k) + 
-     &              +sum(oc(m,1:index_cont(5),k))+O_CLW(M,K)
+     &              sum(oc(m,1:index_cont(5),k))+O_CLW(M,K)
 
          ENDDO
 
