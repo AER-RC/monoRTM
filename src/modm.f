@@ -176,6 +176,7 @@ C
 !  Initialize
         oc(1:nwn,1:ncont,1:nlay) = 0.
         odxsec(1:nwn,1:nlay) = 0.
+        o(1:nwn,1:nlay) = 0
 
          if (ixsect .eq. 1) 
      &       call monortm_xsec_sub(wn,nwn,p,t,nlay)
