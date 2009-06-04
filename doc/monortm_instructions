@@ -120,6 +120,8 @@ RECORD 1.2a   (required if ICNTNM = 6)
            NMOL_SCAL  -->  Enables the scaling of the atmospheric profile for selected species
                            NMOL_SCAL is the highest molecule number for which scaling will be applied
                            See Record(s) 1.3.a/1.3.b.n
+			   Note that this scaling option is applied in LBLATM and therefore
+			   only works for IATM=1.
 
 --------------   
  RECORD 1.3.a    (required if NMOL_SCAL > 0;  otherwise omit)
