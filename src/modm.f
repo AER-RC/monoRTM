@@ -4,6 +4,7 @@ C     revision:	        $Revision$
 C     created:	        $Date$
 
       SUBROUTINE MODM(ICP,NWN,WN,dvset,NLAY,P,T,
+     &            O,O_BY_MOL, OC, O_CLW, ODXSEC,
      &                 NMOL,WKL,WBRODL,
      &           SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ixsect,ISPD)
 C
@@ -115,6 +116,9 @@ C-------------------------------------------------------------------------------
       parameter (n_absrb=5050,ncont=5)
       real *8  v1abs,v2abs
       real*8 v1, v2
+      real   O(NWNMX,MXLAY),OC(NWNMX,MXMOL,MXLAY),
+     &       O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY),
+     &	     odxsec(nwnmx,mxlay)
       real scor(42,9)
       integer index_cont(ncont), imol
       COMMON /ABSORB/ V1ABS,V2ABS,DVABS,NPTABS,ABSRB(n_absrb)                
@@ -176,10 +180,10 @@ C
 !  Initialize
         oc(1:nwn,1:ncont,1:nlay) = 0.
         odxsec(1:nwn,1:nlay) = 0.
-        o(1:nwn,1:nlay) = 0
+        o(1:nwn,1:nlay) = 0.
 
          if (ixsect .eq. 1) 
-     &       call monortm_xsec_sub(wn,nwn,p,t,nlay)
+     &       call monortm_xsec_sub(wn,nwn,p,t,nlay,odxsec)
 
       DO K=1,NLAY            !Loop over the Temp/Press/Amount profile 
 ! Set up variables for call to contnm
