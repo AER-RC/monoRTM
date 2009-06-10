@@ -3,7 +3,7 @@ C     author:		$Author $
 C     revision:	        $Revision$
 C     created:	        $Date$
 
-	SUBROUTINE RTM(IOUT,IRT,NWN,WN,NLAY,T,TZ,
+	SUBROUTINE RTM(IOUT,IRT,NWN,WN,NLAY,T,TZ,O,
      &    TMPSFC,  RUP,TRTOT,RDN,REFLC,EMISS,RAD,TB,IDU)
 
 C
@@ -85,6 +85,7 @@ C-------------------------------------------------------------------------------
 	REAL*8 V
 	CHARACTER HVRSUB*15
 	REAL TMPSFC,ESFC,RSFC,SURFRAD,ALPH,COSMOS,TSKY
+	REAL O(NWNMX,MXLAY)
 	REAL fbeta,beta,bb_fn,X
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
      1       RADCN1,RADCN2 
@@ -94,7 +95,7 @@ C-------------------------------------------------------------------------------
 
 	!---Up and Down radiances
 
-	CALL RAD_UP_DN(T,NLAY,TZ,WN,rup,trtot,rdn,  NWN,IDU,IRT)
+	CALL RAD_UP_DN(T,NLAY,TZ,WN,rup,trtot,O,rdn,NWN,IDU,IRT)
 
 	!---RADIATIVE TRANSFER
 	TSKY=2.75 !Cosmic background in Kelvin
@@ -138,7 +139,7 @@ c
 	END 
 
 
-	SUBROUTINE RAD_UP_DN(T,nlayer,TZ,WN,rup,trtot,rdn,  NWN,
+	SUBROUTINE RAD_UP_DN(T,nlayer,TZ,WN,rup,trtot,O,rdn,NWN,
      1       IDU,IRT)
 	IMPLICIT REAL*8 (V)      
 	include "declar.incl"
@@ -148,6 +149,7 @@ c
 	REAL          beta,beta_a,bb,bba
 	!---local variables
 	REAL          bbVEC(MXLAY),bbaVEC(0:MXLAY),ODTOT(NWNMX)
+	REAL  O(NWNMX,MXLAY)
 	BB_fn(V,fbeta)  = RADCN1*(V**3)/(EXP(V*fbeta)-1.)
 	IF (IDU.NE.1) STOP 'ERROR IN IDU. OPTION NOT SUPPORTED YET'
 	lmin=nlayer
@@ -234,7 +236,7 @@ c
 
 
 
-	SUBROUTINE RDLBLINP(IATM,IPLOT,IRT,NWN,WN,
+	SUBROUTINE RDLBLINP(IATM,IPLOT,IOD,IRT,NWN,WN,
      1       FILEIN,ICNTNM,IXSECT,IBMAXOUT,ZBNDOUT,
      2       H1fout,H2fout,ISPD,IPASSATM)
 C-------------------------------------------------------------------------------
@@ -392,14 +394,18 @@ C-------------------------------------------------------------------------------
 	   PRINT *, 'PLEASE CHECK YOUR FILE:',FILEIN
 	   STOP
 	ENDIF
+	IF (IPLOT.NE.1) THEN 
+	    WRITE(*,*), 'WARNING: IPLOT MUST BE SET TO 1 TO OUTPUT TBs'
+	    WRITE(*,*)  'IN ', FILEIN, ' IPLOT=', IPLOT
+	ENDIF
 	IF (ILAS.GT.0) THEN
 	   WRITE(*,*) '----------------------------------------'
 	   WRITE(*,*) 'WARNING: ILAS IS IGNORED IN MONORTM'
 	   WRITE(*,*) 'IN ',FILEIN,' ILAS=',ILAS
 	ENDIF
-	IF (IOD.GT.0) THEN
+	IF (IOD.EQ.1) THEN
 	   WRITE(*,*) '----------------------------------------'
-	   WRITE(*,*) 'WARNING: IOD IS IGNORED IN MONORTM'
+	   WRITE(*,*) 'IOD FLAG SET TO OUTPUT LAYER OPTICAL DEPTHS'
 	   WRITE(*,*) 'IN ',FILEIN,' IOD=',IOD
 	ENDIF
 	IF (MPTS.GT.0) THEN
@@ -412,19 +418,17 @@ C-------------------------------------------------------------------------------
 	   WRITE(*,*) 'WARNING: NPTS IS IGNORED IN MONORTM'
 	   WRITE(*,*) 'IN ',FILEIN,' NPTS=',NPTS
 	ENDIF
-	IF (CMRG(2).EQ.CA) THEN                               
-	   IMRG = 12                                          
-	ELSEIF (CMRG(2).EQ.CB) THEN                              
-	   IMRG = 22                                             
-	ELSEIF (CMRG(2).EQ.CC) THEN                           
-	   IMRG = 32                                            
-	ELSE                                                    
-	   READ (CMRG(2),930) IMRG                              
-	   IF (CMRG(1).EQ.CONE) IMRG = IMRG+10                    
-	   IF (CMRG(1).EQ.CTWO) IMRG = IMRG+20                      
-	   IF (CMRG(1).EQ.CTHREE) IMRG = IMRG+30               
-	   IF (CMRG(1).EQ.CFOUR) IMRG = IMRG+40
-	ENDIF                                                  
+	IF (CMRG(1).NE.'') THEN                  
+	   WRITE(*,*) '----------------------------------------'
+	   WRITE(*,*) 'WARNING: IMRG IS IGNORED IN MONORTM'
+	   WRITE(*,*) 'IN ',FILEIN,' IMRG=',CMRG
+	ENDIF
+	IF (CMRG(2).NE.'') THEN                  
+	   WRITE(*,*) '----------------------------------------'
+	   WRITE(*,*) 'WARNING: IMRG IS IGNORED IN MONORTM'
+	   WRITE(*,*) 'IN ',FILEIN,' IMRG=',CMRG
+	ENDIF
+
 	!------END CHECKING RECORD 1.2
 
 
@@ -633,13 +637,6 @@ C
 	      STOP 'BNDRFL OUTSIDE PHYSICAL RANGE'                    
 	   ENDIF                                     
 	ENDIF     
-				!---record 1.6a
-	IF (IMRG.GE.35) THEN
-	   READ (IRD,945,ERR=6000) PATH1,LAYTOT
-	   IF ((IMRG.GE.40).AND.(IEMIT.EQ.3)) THEN
-	      READ (IRD,946) PTHODT
-	   ENDIF
-	ENDIF
 				!---record 2.1
 	IF (IATM.EQ.0)  return
 c
@@ -818,20 +815,26 @@ c
 	END
 
 
-	SUBROUTINE STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT,
-     1       NPR,WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS,
-     4       NLAY,NMOL,ANGLE,IOT,FILEOUT)
+	SUBROUTINE STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT, NPR,
+     1       O,O_BY_MOL, OC, O_CLW, ODXSEC, 
+     2       WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS,
+     4       NLAY,NMOL,ANGLE,IOT,IOD,FILEOUT)
 	include "declar.incl"
 
-	INTEGER I,J,NWN,NLAY,NMOL,NPR
+	INTEGER I,J,NWN,NLAY,NMOL,NPR,IOD,IOL
 	REAL FREQ,ANGLE
 	REAL CLWCOLMN,TMPSFC,WVCOLMN
  	CHARACTER FILEOUT*60
+	CHARACTER FILEOD*22
+	character wnunits*12
         character*8 hmolc(mxmol),cmol(mxmol)
         logical giga
 
 	REAL OTOT,otot_by_mol(mxmol),wk_tot(mxmol),odxtot
         integer id_mol(mxmol)
+	REAL O(NWNMX,MXLAY),OC(NWNMX,MXMOL,MXLAY),
+     &     O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY),
+     &	   odxsec(nwnmx,mxlay)
 
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
      1       RADCN1,RADCN2 
@@ -874,13 +877,20 @@ c
 	WRITE(IOT,'(a5,I8,90x,a42)') 'NWN :',NWN ,
      &           'Molecular Optical Depths -->'
 
-           
-        write(iot,11)'PROF','FREQ','BT(K) ','  RAD(W/cm2_ster_cm-1)',
+       ! Use GHz for small wavenumbers
+        if (wn(1).lt.100) giga = .true.
+
+	if (giga) then
+	    wnunits = 'FREQ(GHz)'
+	else
+	    wnunits = 'FREQ(cm-1)'
+	end if
+
+        write(iot,11)'PROF ',wnunits,'BT(K) ','  RAD(W/cm2_ster_cm-1)',
      &                    'TRANS','PWV',
      &                   'CLW','SFCT','EMIS','REFL','ANGLE',
      &                    'TOTAL_OD',cmol(1:kount), 'XSEC_OD' 
        ! Convert to GHz for small wavenumbers
-        if (wn(1).lt.100) giga = .true.
 	DO Iw=1,NWN
 	   if (giga) then
               FREQ=WN(Iw)*CLIGHT/1.E9
@@ -903,19 +913,43 @@ c
      2          WVCOLMN,CLWCOLMN,TMPSFC,EMISS(Iw),REFLC(Iw),
      3          ANGLE,OTOT,otot_by_mol(1:kount), odxtot
 	ENDDO
- 11	format (a5,a9,a11,a22,a8,2a8,3a8,a9,36a12)
- 21	format (i5,f9.3,f11.5,1p,E21.9,0p,f9.5,2f8.4,3f8.2,f9.3,
+
+	IF (IOD.EQ.1) THEN ! write out layer optical depths to ascii files
+	    IOL = 11
+	    DO J=1,NLAY
+		WRITE(FILEOD,31) 'ODmono_prf', NPR, '_lay', J
+		OPEN(IOL,FILE=FILEOD,STATUS='UNKNOWN')
+		WRITE(IOL,'(a5,I8)') 'NWN :',NWN 
+		WRITE(IOL,'(2a10)') wnunits, ' LAYER_OD'
+		DO IW=1,NWN
+		    if (giga) then
+			FREQ=WN(Iw)*CLIGHT/1.E9
+		    else
+			FREQ=WN(Iw)
+		    end if
+		    WRITE(IOL,'(f10.3,e12.4)') FREQ, O(IW,J)
+		ENDDO
+		CLOSE(IOL)
+	    ENDDO
+	ENDIF
+	    
+		
+
+ 11	format (a5,a10,a11,a22,a8,2a8,3a8,a9,36a12)
+ 21	format (i5,f10.3,f11.5,1p,E21.9,0p,f9.5,2f8.4,3f8.2,f9.3,
      1                                                  1p,36E12.4)
+ 31	format (a10,i4.4,a4,i4.4) 
 	RETURN
  1000	WRITE(*,*) 'ERROR OPENING FILE:',FILEOUT
 	STOP
 	END
 
 
-	SUBROUTINE CORR_OPTDEPTH(INP,NLAY,SECNTA,NWN,ANGLE,  IRT)
+	SUBROUTINE CORR_OPTDEPTH(INP,NLAY,SECNTA,NWN,ANGLE,O,IRT)
 	include "declar.incl"
 	INTEGER INP,J,NLAY,NWN,I,IRT
 	REAL PI,SECNT,ALPHA,ANGLE
+	REAL O(NWNMX,MXLAY)
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
      1       RADCN1,RADCN2 
 	!----SANITY CHECK
@@ -1668,7 +1702,7 @@ C                                                                         E02370
 	RETURN
 	END
 
-        SUBROUTINE MONORTM_XSEC_SUB(wn,nwn,p,t,nlay)
+        SUBROUTINE MONORTM_XSEC_SUB(wn,nwn,p,t,nlay, odxsec)
 
 C----------------------------------------------------------------
 C Authors: Eli Mlawer and Vivienne Payne, AER Inc.
@@ -1740,7 +1774,8 @@ C
       COMMON /XSECTR/ V1FX(5,MX_XS),V2FX(5,MX_XS),DVFX(5,MX_XS),     
      *                WXM(MX_XS),NTEMPF(5,MX_XS),NSPECR(MX_XS),      
      *                IXFORM(5,MX_XS),XSMASS(MX_XS),XDOPLR(5,MX_XS), 
-     *                NUMXS,IXSBIN                                   
+     *                NUMXS,IXSBIN    
+      REAL ODXSEC(NWNMX,MXLAY)
 C                                                                         
       DIMENSION IXFLG(mx_xs),tx(6,5,mx_xs),pdx(6,5,mx_xs)
       dimension xsdat(150000,6),xspd(150000)
@@ -1960,7 +1995,7 @@ C     Use linearly interpolated values.
       
       end
 
-      subroutine calctmr(nlayrs, nwn, wn, T, tz, tmr)
+      subroutine calctmr(nlayrs, nwn, wn, T, tz, O, tmr)
 C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 CAuthor: Dave Turner, January 2008
 C   
@@ -1995,6 +2030,7 @@ C------------------------------------------------------------------------------
 	real    sumtau, sumexp
         real    bbvec(MXLAY),bbavec(0:MXLAY),odtot(NWNMX)
         real    odt, odvi, vv, beta, beta_a
+	real    O(nwnmx,mxlay)
         real    radtmr, x
 	bb_fn(v,fbeta)  = radcn1*(v**3)/(exp(v*fbeta)-1.)
         real    tmr(*)
