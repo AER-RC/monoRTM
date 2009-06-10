@@ -1,13 +1,17 @@
 
 ****************************************************************
-Version 4.0
+Version 4.1
 
-This version of MonoRTM represents a significant update
-previous versions where the version number begins with 3 or below.
+This version of MonoRTM includes the MT_CKD 2.4 continuum (updated from
+ MT_CKD 2.1). This continuum update includes significant changes 
+to both the self and foreign broadened water vapor continuum in the 
+microwave region.
+
+Note that versions 4.0 onwards of MonoRTM represent a significant update 
+to previous versions where the version number begins with 3 or below.
 The code has been updated to allow the use of MonoRTM beyond the
 microwave region (provided an appropriate spectral line file is used).
-Rather than using the CKD 2.4 continuum, MonoRTM now uses MT_CKD 2.1.
-A number of changes have also been made in order to make the input 
+A number of changes were also made in order to make the input 
 more consistent with that of LBLRTM.  Note that the INP option is no 
 longer available.  The INP=1 option can be reproduced by setting IATM=1.
 The INP=3 option may be reproduced by setting IATM=0. The INP=2 option 
@@ -23,7 +27,7 @@ Vivienne Payne, AER Inc., September 2008
 *      M O N O R T M       D I R E C T O R Y
 *
 *
-*      Note: Because a lot of effort is constantly being made
+*      Note: Since efforts are constantly being made
 *      to improve MonoRTM (at the spectroscopic level, the 
 *      line shape theory, the continuum, the radiative transfer
 *      model, line coupling, etc,..), the user is therefore strongly 
