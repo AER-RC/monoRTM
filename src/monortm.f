@@ -25,7 +25,7 @@ C                              THE JOINT CENTER FOR SATELLITE DATA ASSIMILATION
 C                                                                      
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C                                                                      
-C  Copyright 2002-2008, Atmospheric & Environmental Research, Inc. (AER).
+C  Copyright 2002-2009, Atmospheric & Environmental Research, Inc. (AER).
 C  This software may be used, copied, or redistributed as long as it is not sold and this copyright notice is
 C  reproduced on each copy made.  This model is provided as is without any express or implied warranties.
 C  (http://www.rtweb.aer.com/)
