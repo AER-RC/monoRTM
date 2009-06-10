@@ -5,7 +5,7 @@ Version 4.1
 This version of MonoRTM includes the MT_CKD 2.4 continuum (updated from
  MT_CKD 2.1). This continuum update includes significant changes 
 to both the self and foreign broadened water vapor continuum in the 
-microwave region.
+microwave region through to the far-IR.
 
 Note that versions 4.0 onwards of MonoRTM represent a significant update 
 to previous versions where the version number begins with 3 or below.
