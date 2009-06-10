@@ -111,6 +111,11 @@ C**********************************************************************
 	!     done in radiances. IOUT comes from MONORTM.IN
 	!     IOUT   : =0 -> radiances 
 	!     IOUT   : =1 -> TB+RAD
+        !
+        !   - output the optical depths for each layer
+	!     IOD comes from MONORTM.IN
+	!     IOD    : =0 -> do not write out layer optical depths
+	!     IOD    : =1 -> write out layer optical depths
 	!  
 	!   History of the modifications:
 	!   *****************************  
@@ -155,17 +160,21 @@ C**********************************************************************
         !     (see Payne et al., 2008)
 	!   - 2008: Extensive update to enable the use of MonoRTM beyond 
         !     the microwave region and to use the MT_CKD continuum.
-        !     Updates to self and foreign broadened microwave continuum based
-        !     on ARM SGP MWR data at 31.4 GHz and ARM FKB (COPS) data at 150 GHz.   
-        !     
+	!   - June 2009: Updates to self and foreign broadened H2O microwave 
+        !     continuum based on ARM SGP MWR and GVRP data at 31.4 and 170 GHz 
+        !     and ARM FKB (COPS) data at 150 GHz.   
+	!
 	!
 	!***************************************************************
 	IMPLICIT REAL*8           (V) ! for consistency with LBLRTM routines
 	include "declar.incl"
-	INTEGER NWN,I,ICPL,IS,IOUT,IRT,J,ICNTNM,IATM
+	INTEGER NWN,I,ICPL,IS,IOUT,IOD,IRT,J,ICNTNM,IATM
 	REAL*8 V1,V2,SECANT,XALTZ 
 	REAL TMPSFC,TPROF(mxlay),qprof(mxlay),press(mxlay)
         REAL zvec(mxlay),dzvec(mxlay),zbnd(mxfsc),zbnd2(mxfsc)
+	REAL O(NWNMX,MXLAY),OC(NWNMX,MXMOL,MXLAY),
+     &     O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY),
+     &	   odxsec(nwnmx,mxlay)
         CHARACTER HVRATM*15,HVRMODM*15,HVRSUB*15,HVRMON*15
         CHARACTER HVRREL*15, HVRSPEC*15
 	CHARACTER fileARMlist*64,hmod*60,CTYPE*3
@@ -209,6 +218,27 @@ C**********************************************************************
      2    NLTEFL,LNFIL4,LNGTH4                                 
 
 	DIMENSION WMT(64)
+
+c------------------------------------
+c Variables for analytic derivative calculation
+c These are not used in MonoRTM, but are initialized here in order
+c to maintain consistency between contnm.f for MonoRTM and LBLRTM
+c note: ipts  = same dimension as ABSRB
+c       ipts2 = same dimension as C
+	parameter (ipts=5050,ipts2=6000)
+	common /CDERIV/ icflg,iuf,v1absc,v2absc,dvabsc,nptabsc,delT_pert,
+     &    dqh2oC(ipts),dTh2oC(ipts),dUh2o
+
+	real cself(ipts),cfrgn_aj(ipts)
+
+	icflg = -999
+	iuf = 0
+	v1absc = 0
+	v2absc = 0
+	dvaabsc = 0
+	nptabsc = 0
+	deltT_pert = 0
+c------------------------------------
 
 	!---INPUTS & GENERAL CONTROL PARAMETERS
 	ICPL=1   !=1->cpl =0->nocpl
@@ -258,7 +288,7 @@ C**********************************************************************
 	IPASSATM = 0 ! flag to determine whether RDLBLINP has been called before
 
 	!---Get info about IBMAX/ZBND/H1/H2...
-	CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
+	CALL RDLBLINP(IATM,IOUT,IOD,IRT,NWN,WN,FILEIN,
      1    ICNTNM,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
 
 
@@ -283,7 +313,7 @@ C**********************************************************************
 		 REWIND(IRD)
 		 IPASS=0
 	      ENDIF
-	      CALL RDLBLINP(IATM,IOUT,IRT,NWN,WN,FILEIN,
+	      CALL RDLBLINP(IATM,IOUT,IOD,IRT,NWN,WN,FILEIN,
      1	         ICNTNM,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
 	   ENDIF
 
@@ -392,6 +422,7 @@ C
 	   !***********************************************	
 
            CALL MODM(ICPL,NWN,WN,dvset,NLAYRS,P,T,
+     1                 O,O_BY_MOL, OC, O_CLW, ODXSEC,
      4	               NMOL,WKL,WBRODL,
      5	        SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ixsect,ISPD)
 	   
@@ -399,15 +430,16 @@ C
 	   !* Fifth Step: RADIATIVE TRANSFER
 	   !***********************************************	   
 
-	   CALL RTM(IOUT,IRT,NWN,WN,NLAYRS,T,TZ,
+	   CALL RTM(IOUT,IRT,NWN,WN,NLAYRS,T,TZ,O,
      1          TMPSFC,  RUP,TRTOT,RDN,REFLC,EMISS,RAD,TB,IDU)				
 
 	   !***********************************************
 	   !* Sixth Step: WRITE OUT THE RESULTS
 	   !***********************************************	   
 	   CALL STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT,NPR,
-     1          WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS,
-     4	        NLAYRS,NMOL,ANGLE,IOT,FILEOUT)
+     1          O,O_BY_MOL, OC, O_CLW, ODXSEC,
+     2          WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS,
+     4	        NLAYRS,NMOL,ANGLE,IOT,IOD,FILEOUT)
 
 	   WRITE(*,'(a30,i5)') 'PROCESSING PROFILE NUMBER:',NPR
 
