@@ -7,7 +7,7 @@ C
 C
 C  --------------------------------------------------------------------------
 C |                                                                          |
-C |  Copyright 2002 - 2008, Atmospheric & Environmental Research, Inc. (AER).|
+C |  Copyright 2002 - 2009, Atmospheric & Environmental Research, Inc. (AER).|
 C |  This software may be used, copied, or redistributed as long as it is    |
 C |  not sold and this copyright notice is reproduced on each copy made.     |
 C |  This model is provided as is without any express or implied warranties. |
@@ -121,15 +121,22 @@ c
 
       x_vmr_h2o = wk(1)/wtot
       x_vmr_o2  = wk(7)/wtot
-      if (nmol.ge.22) then 
-         wn2 = wk(22)
-      else
-         wn2 = wbroad
-      end if
-      x_vmr_n2  = wn2/wtot
+      x_vmr_n2  = 1. - x_vmr_h2o - x_vmr_o2
 
-c zero derivative arrays and initialize panel information
+      wn2 = x_vmr_n2 * wtot
+
+c     H2O continuum derivatives are computed w.r.t. ln(q)
+c        dqh2o must be returned with the radiation field included
+
       if (icflg.ne.-999) then
+
+c     amounts except for species of interest and n2 have been set to zero in lblrtm.
+c     wn2 must be set to zero here:
+
+         wn2 = 0.
+         
+c     zero derivative arrays and initialize panel information
+
           do j=1,ipts              
               cself(j) = 0.0
               cfrgn_aj(j) = 0.0
@@ -140,7 +147,6 @@ c zero derivative arrays and initialize panel information
           dvabsc=dvabs
           nptabsc=nptabs
       endif
-
 C                                                                       
 C=======================================================================
 C
@@ -182,6 +188,20 @@ c
       Rfrgn_aj =     h2o_fac  * RHOave * 1.e-20 * xfrgn
 C
 C=======================================================================
+C
+C     CORRECTION TO THE WATER VAPOR CONTINUUM    mt_ckd_2.4   Nov 2008    sac
+C
+C     The following modifications to the water vapor continuum arise from new analyses of
+C     ARM measurements in the microwave and far-IR regions. Analyses of measurements
+C     in the microwave are based primarily on the two-channel MWR (23.8 and 31.4 GHz)
+C     at SGP, with supporting evidence from 150 GHz MWRHF measurements during the
+C     COPS campaign and from 170 GHz GVRP measurements at SGP (V. H. Payne, E. J.
+C     Mlawer and S. A. Clough). Measurements in the far-IR were from the AERI_ext at the
+C     NSA site, in the time surrounding and including the RHUBC-I campaign (J. Delamere
+C     and S. A. Clough).
+C
+C=======================================================================
+C
 C                             SELF
 
 C     Only calculate if V2 > -20. cm-1 and V1 <  20000. cm-1
@@ -195,6 +215,14 @@ c           Loop calculating self continuum optical depth
 C
             TFAC = (TAVE-T0)/(260.-T0)                                    F00540
 C
+C---------------------------------------------------------------------------
+C          CORRECTION TO SELF CONTINUUM   mt_ckd_2.4  Nov 2008    sac
+C---------------------------------------------------------------------------
+C
+            f1    = 0.25
+            beta  = 350.
+            n_s   = 6
+
             DO 20 J = 1, NPTC                                             F00560
                VJ = V1C+DVC* REAL(J-1)                                    F00570
                SH2O = 0.                                                  F00580
@@ -207,6 +235,8 @@ c
                      SFAC = XFACREV(JFAC)
                   ENDIF
 C                                                                         F00630
+                  sfac = sfac * ( 1 + ( f1/(1+(VJ/beta)**n_s) ) )
+
                   SH2O = SFAC * SH2O
 c
                ENDIF
@@ -245,30 +275,40 @@ C        Only calculate if V2 > -20. cm-1 and V1 <  20000. cm-1
 c
          if ((V2.gt.-20.0).and.(V1.lt.20000.) .and. xfrgn.gt.0.) then
 
-C--------------------------------------------------------------------
-C     *****    Continuum Correction Patches    ********
-C--------------------------------------------------------------------
+C---------------------------------------------------------------------------
+C           CORRECTION TO FOREIGN CONTINUUM   mt_ckd_2.4  Nov 2008    sac
+C---------------------------------------------------------------------------
 
-            V0F1 = 370.
-            HWSQF1 = 150.**2
-            BETAF1 = 2.e-08 
-            FACTRF1 = -0.1
+            f0     = 0.06
+            V0F1   = 255.67
+            HWSQ1  = 240.**2
+            BETA1  = 57.83 
+            C_1    = -0.42
+            N_1    = 8
+
+            C_2    = 0.3
+            BETA2  = 630.
+            N_2    = 8
 C
             CALL FRN296 (V1C,V2C,DVC,NPTC,FH2O)         
 C                                                               
             DO 24 J = 1, NPTC                                         
                VJ = V1C+DVC* REAL(J-1)                                    F00570
 C
-C              CORRECTION TO FOREIGN CONTINUUM
-C
-               VF2 = (VJ-V0F1)**2
-               VF6 = VF2 * VF2 * VF2
-               FSCAL = (1.+FACTRF1*(HWSQF1/(VF2+(BETAF1*VF6)+HWSQF1)))
+               vdelsq1  = (VJ-V0F1)**2
+               vdelmsq1 = (VJ+V0F1)**2
+               VF1  = ((VJ-V0F1)/beta1)**N_1
+               VmF1 = ((VJ+V0F1)/beta1)**N_1
+               VF2  = ((VJ     )/beta2)**N_2
+
+               FSCAL = 1. + 
+     *                (f0 + C_1*( (HWSQ1/(VDELSQ1 +HWSQ1+VF1))  +
+     *                            (HWSQ1/(VDELmSQ1+HWSQ1+VmF1)) ) ) /
+     *                                                 (1.+C_2*VF2) 
+
                FH2O(J)=FH2O(J)*FSCAL
 C     
-               C(J)        = WK(1) * (FH2O(J)*RFRGN)
-
-               cfrgn_aj(j) = wk(1) * fh2o(j) * rfrgn_aj
+               c_f = WK(1) * FH2O(J) 
 C                                          
 c********************************************
                cfh2o(j)=1.e-20 * fh2o(j) * xfrgn
@@ -276,8 +316,11 @@ c********************************************
 C              ---------------------------------------------------------
 C              Radiation field                                                  
 C                                                                    
-               IF (JRAD.EQ.1) C(J) = C(J)*RADFN(VJ,XKT)               
+               IF (JRAD.EQ.1) c_f = c_f * RADFN(VJ,XKT)               
 C              ---------------------------------------------------------
+
+               C(J)        = c_f * RFRGN
+               cfrgn_aj(j) = c_f * rfrgn_aj
 C
  24         CONTINUE                                                  
 C
@@ -288,13 +331,7 @@ c
             if  (icflg.eq.1) then
 
                do j=1,nptc
-
-                  if (jrad.eq.1) then
-                     vj = v1c + dvc*real(j-1)
-                     c(j) = (cself(j)-cfrgn_aj(j)) * radfn(vj,xkt)
-                  else
-                     c(j) =  cself(j)-cfrgn_aj(j)
-                  endif
+                  c(j) =  cself(j)-cfrgn_aj(j)
                enddo
 
                Call XINT (V1C,V2C,DVC,C,1.0,V1ABS,DVABS,ABSRB,1,NPTABS)
@@ -304,22 +341,6 @@ c
 C           ------------------------------------------------------------
 C                                                                         F00780
          endif
-
-c compute H2O continuum derivatives
-         if (icflg.eq.1) then
-
-            if ((V2.gt.-20.0).and.(V1.lt.20000.)) then
-
-               do j=1,nptc
-c w.r.t. ln(q)
-c                dqh2o must be returned with the radiation field included
-               enddo
-            else
-               write(ipr,*) 'WARNING:  ANALYTIC DERIVATIVE / CONTNM'
-               write(ipr,*) ' v1 - v2 out of range for H2O continuum'
-               write(ipr,*) '  (error trap - 1)'
-            endif               ! v1,v2 range
-         endif                  ! icflg
 
 C=======================================================================
 
@@ -679,10 +700,10 @@ C
 C                                                                         F01110
 C              Radiation field                                            F01120
 C                                                                         F01130
+
                IF (JRAD.EQ.1) C(J) = C(J)*RADFN(VJ,XKT)                   F01140
 
  40         CONTINUE                                                      F01150
-            
 
             CALL XINT (V1C,V2C,DVC,C,1.0,V1ABS,DVABS,ABSRB,1,NPTABS)      F01160
 
@@ -830,13 +851,13 @@ C                                                                         A10300
 C
       COMMON /CNTPR/ CINFO1,CINFO2,cnam3,CINFO3,cnam4,CINFO4
 C
-      CHARACTER*18 cnam3(9),cnam4(21)
-      CHARACTER*51 CINFO1(2,12),CINFO2(2,11),CINFO3(2,9),CINFO4(2,19)
+      CHARACTER*18 cnam3(9),cnam4(24)
+      CHARACTER*51 CINFO1(2,14),CINFO2(2,11),CINFO3(2,9),CINFO4(2,25)
 C                                                                         A10340
-      WRITE (IPR,910) ((CINFO1(I,J),I=1,2),J=1,12)
+      WRITE (IPR,910) ((CINFO1(I,J),I=1,2),J=1,13)
       WRITE (IPR,910) ((CINFO2(I,J),I=1,2),J=1,11)
       WRITE (IPR,915) (cnam3(j),(CINFO3(I,J),I=1,2),J=1,9)
-      WRITE (IPR,915) (cnam4(j),(CINFO4(I,J),I=1,2),J=1,21)
+      WRITE (IPR,915) (cnam4(j),(CINFO4(I,J),I=1,2),J=1,25)
 C                                                                         A10360
       RETURN                                                              A10370
 C                                                                         A10380
@@ -851,45 +872,48 @@ C     --------------------------------------------------------------
 C
 C     Continuum information for output to TAPE6 in SUBROUTINE PRCNTM
 C
-      CHARACTER*18 cnam3(9),cnam4(21)
-      CHARACTER*51 CINFO1(2,12),CINFO2(2,11),CINFO3(2,9),CINFO4(2,21)
-      COMMON /CNTPR/ CINFO1,CINFO2,cnam3,CINFO3,cnam4,CINFO4
+      CHARACTER*18 cnam3(9),cnam4(24)
+      CHARACTER*51 CINFO1(2,14),CINFO2(2,11),CINFO3(2,9),CINFO4(2,25)
+      COMMON /CNTPR/ CINFO1,CINFO2,CNAM3,CINFO3,CNAM4,CINFO4
 C
       DATA cnam3/
 c           123456789-123456789-123456789-123456789-123456789-1
-     1     '                 ',
-     2     '                 ',
-     3     '                 ',
-     4     ' ckd_1.0     2.2 ',
-     5     '     "           ',
-     6     ' ckd_2.1     3.3 ',
-     7     '     "           ',
-     8     ' ckd_2.2     3.7 ',
-     9     '     "           '/
+     1     '                  ',
+     2     '                  ',
+     3     '                  ',
+     4     ' ckd_1.0      2.2 ',
+     5     '     "            ',
+     6     ' ckd_2.1      3.3 ',
+     7     '     "            ',
+     8     ' ckd_2.2      3.7 ',
+     9     '     "            '/
 c
       DATA cnam4/
 c           123456789-123456789-123456789-123456789-123456789-1
-     1     '     "           ',
-     2     ' ckd_2.2.2   3.12',
-     3     ' ckd_2.4.1   5.12',
-     4     '     "           ',
-     5     '     "           ',
-     6     '     "           ',
-     7     '     "           ',
-     8     '     "           ',
-     9     '     "           ',
-     *     ' ckd_2.4.2   5.17',
-     1     '     "           ',
-     2     ' mt_ckd_1.00 7.01',
-     3     '     "           ',
-     4     ' mt_ckd_1.1  9.1 ',
-     5     ' mt_ckd_1.2  9.2 ',
-     6     ' mt_ckd_1.3 10.0 ',
-     7     ' mt_ckd_2.0 11.1 ',
-     8     ' mt_ckd_2.0 11.2 ',
-     9     ' mt_ckd_2.1 11.3 ',
-     *     '     "           ',
-     1     '                 '/
+     1     '     "            ',
+     2     ' ckd_2.2.2    3.12',
+     3     ' ckd_2.4.1    5.12',
+     4     '     "            ',
+     5     '     "            ',
+     6     '     "            ',
+     7     '     "            ',
+     8     '     "            ',
+     9     '     "            ',
+     *     ' ckd_2.4.2    5.17',
+     1     '     "            ',
+     2     ' mt_ckd_1.00  7.01',
+     3     '     "            ',
+     4     ' mt_ckd_1.1   9.1 ',
+     5     ' mt_ckd_1.2   9.2 ',
+     6     ' mt_ckd_1.3  10.0 ',
+     7     ' mt_ckd_2.0  11.1 ',
+     8     ' mt_ckd_2.01 11.2 ',
+     9     ' mt_ckd_2.1  11.3 ',
+     *     '     "            ',
+     1     ' mt_ckd_2.2  11.4 ',
+     2     ' mt_ckd_2.3  11.5 ',
+     3     ' mt_ckd_2.4  11.6 ',
+     4     '                  '/
 c
       DATA CINFO1/
 c           123456789-123456789-123456789-123456789-123456789-1
@@ -897,7 +921,7 @@ c           123456789-123456789-123456789-123456789-123456789-1
      1     '                                                   ',
      2     '                                                   ',
      2     '                                                   ',
-     3     '   *****  CONTINUA mt_ckd_2.0                      ',
+     3     '   *****  CONTINUA mt_ckd_2.4                      ',
      3     '                                                   ',
      4     '                                                   ',
      4     '                                                   ',
@@ -906,17 +930,21 @@ c           123456789-123456789-123456789-123456789-123456789-1
      6     '                           AIR   (T)      0 - 20000',
      6     ' CM-1    mt_ckd_1.1                   (August 2004)',
      7     '                           AIR   (T)      0 - 20000',
-     7     ' CM-1    mt_ckd_2.0                   (August 2007)',
+     7     ' CM-1    mt_ckd_2.01               (September 2007)',
      8     '                     CO2   AIR            0 - 20000',
      8     ' CM-1    co2 nu2 increased * 7          (July 2002)',
      9     '                           AIR            0 - 20000',
      9     ' CM-1    co2 nu2 decreased: now * 4.5    (May 2006)',
-     *     '                           AIR            0 - 20000',
-     *     ' CM-1    line mixing                  (August 2007)',
-     1     '                     N2    SELF           0 -   350',
-     1     ' CM-1    BORYSOW FROMMHOLD                         ',
-     2     '                           AIR         2085 -  2670',
-     2    ' CM-1                                  (March 1998)' /
+     *     '                           AIR            0 -  2600',
+     *     ' CM-1    line mixing                    (July 2007)',
+     1     '                           AIR            0 - 20000',
+     1     ' CM-1    full line mixing           (November 2007)',
+     2     '                                                   ',
+     2     '                                                   ',
+     3     '                     N2    SELF           0 -   350',
+     3     ' CM-1    BORYSOW FROMMHOLD                         ',
+     4     '                           AIR         2085 -  2670',
+     4     ' CM-1                                  (March 1998)' /
 C
       DATA CINFO2/
      1     '                     O2    AIR   (T)   1340 -  1850',
@@ -995,11 +1023,19 @@ C
      8     '  H2O foreign modified in 250-550 cm-1 region based',
      8     ' on analyses of nsa aeri_xr data.  (September 2007)',
      9     '  CO2: Fundamental change in the lblrtm fourth func',
-     9     'tion with consequent changes in continuum (Nov 2007',
+     9     'tion with consequent changes in continuum(Nov 2007)',
      *     '  Bug fix impacting the nitrogen continuum in the 0',
      *     '-350 cm-1 region.                   (November 2007)',
-     1     '  -------------------------------------------------',
-     1     '---------------------------------------------------'/
+     1     '  Analytic Derivative (species retrievals): n2 cont',
+     1     'inuum removed from Jacobian calculation(March 2008)',
+     2     '  Bug fix: corrects error in which Analytic Derivat',
+     2     'ive result depends on starting wavenumber(Aug 2008)',
+     3     '  H2O: modification to self and foreign continuum (',
+     3     'microwave and IR ARM data 0-600 cm-1)    (Nov 2008)',
+     4     '                                                   ',
+     4     '                                                   ',
+     5     '  -------------------------------------------------',
+     5     '---------------------------------------------------'/
 C
       END
 C
@@ -3771,7 +3807,7 @@ c
          sf_T   = sf_296(i)*((sf_220(i)/sf_296(i))**tfac)
 
 c        correct for incorporation of air mixing ratios in sf
-c        fo2 is now ~ the ration of alpha(n2-o2)/alpha(n2-n2)
+c        fo2 is now ~ the ratio of alpha(n2-o2)/alpha(n2-n2)
 c        Eq's 7 and 8 in the Boissoles paper.
 
 c        fo2(i) = (sf_T - 1.)*(xn2**2)/(xn2*xo2)

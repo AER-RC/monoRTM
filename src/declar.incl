@@ -6,10 +6,7 @@
 	PARAMETER (MX_XS=38)
         REAL*8 WN(NWNMX)
         common /path_1/ CLW(MXLAY)
-        common /path_2/ O(NWNMX,MXLAY),OC(NWNMX,MXMOL,MXLAY),
-     &     O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY),
-     &	   odxsec(nwnmx,mxlay)
-        REAL RAD(NWNMX),EMISS(NWNMX),REFLC(NWNMX)
+        Real RAD(NWNMX),EMISS(NWNMX),REFLC(NWNMX)
         REAL RUP(NWNMX),TRTOT(NWNMX),RDN(NWNMX),TB(NWNMX)
  
         REAL P(MXLAY),T(MXLAY),WKL(MXMOL,MXLAY),

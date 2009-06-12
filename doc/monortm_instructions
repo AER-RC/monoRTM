@@ -45,9 +45,9 @@
 --------------
 
  
-IHIRAC,       ICNTNM,                                       IATM,                  IXSECT             ISPD
-     5,           15,                                         50,                      70             87-90
- 4X,I1, 11X,      I1, 34X,                                     I1, 19X,                I1, 16X,        I4
+IHIRAC,       ICNTNM,     IEMIT,     IPLOT,           IATM,      IOD,            IXSECT             ISPD
+     5,           15,        25,        40,           50,         65,            70             87-90
+ 4X,I1, 9X,      I1, 9X,     I1, 14X,   I1,9X         I1, 14X,   I1,4X           I1, 16X,        I4
  
  
          IHIRAC -->  Should be one: Voigt profile.
@@ -59,9 +59,18 @@ IHIRAC,       ICNTNM,                                       IATM,               
                      = 4  H2O self and foreign not calculated, all other continua/Rayleigh extinction calculated
                      = 5  Rayleigh extinction not calculated, all other continua calculated
                      = 6  Individual continuum scale factors input (Requires Record 1.2a)
+	 IEMIT  -->  IEMIT will always be set internally to 1 within MonoRTM in order to calculate radiances
+	 IPLOT  -->  (0,1)   flag for calculation of brightness temperatures as well as radiance
+			     (Note that this flag is used differently in MonoRTM to LBLRTM)
+		     = 0  Calculate radiances, but not brightness temperatures
+                     = 1  Calculate both radiances and brightness temperatures
          IATM   -->  (0,1)   flag for LBLATM    1 = yes 
 	                                        0 = no.  If IATM=0, then user must supply an additional
                                                          input file (MONORTM_PROF.IN - See Record 2.1)
+	 IOD    -->  (0,1) flag for output of layer optical depths
+                           (Note that this flag has different meaning in MonoRTM than in LBLRTM)
+		     = 0  Do not output layer optical depths 
+		     = 1  Output layer optical depths to ascii files (one file per layer)
          IXSECT -->  (0,1) Cross section flag 
         *ISPD    -->  (0,1)
  	             =0 Slow version of MonoRTM (accurate) -default value-
@@ -111,6 +120,8 @@ RECORD 1.2a   (required if ICNTNM = 6)
            NMOL_SCAL  -->  Enables the scaling of the atmospheric profile for selected species
                            NMOL_SCAL is the highest molecule number for which scaling will be applied
                            See Record(s) 1.3.a/1.3.b.n
+			   Note that this scaling option is applied in LBLATM and therefore
+			   only works for IATM=1.
 
 --------------   
  RECORD 1.3.a    (required if NMOL_SCAL > 0;  otherwise omit)

@@ -21,7 +21,7 @@ echo " case1 :downwelling; U.S. Standard atmosphere; input: in/MONORTM.IN_MDL_AT
 ln -s in/MONORTM.IN_MDL_ATM_dn        MONORTM.IN
 ln -s in/spectral_lines.dat.0_80      spectral_lines.dat
 
-time ../monortm_v4.0_pgf90_dbl
+time ../monortm_v4.1_pgf90_dbl
 
 \rm   MONORTM.IN
 \rm   spectral_lines.dat
@@ -42,7 +42,7 @@ echo " case2 :upwelling; U.S. Standard atmosphere; input: in/MONORTM.IN_MDL_ATM_
 ln -s in/MONORTM.IN_MDL_ATM_up        MONORTM.IN
 ln -s in/spectral_lines.dat.0_80      spectral_lines.dat
 
-time ../monortm_v4.0_pgf90_dbl
+time ../monortm_v4.1_pgf90_dbl
 
 \rm   MONORTM.IN
 \rm spectral_lines.dat
@@ -63,7 +63,7 @@ echo " case3 :downwelling; user-defined atmosphere; input: in/MONORTM.IN_NOSCALE
 ln -s in/MONORTM.IN_NOSCALE_IATM1_dn        MONORTM.IN
 ln -s in/spectral_lines.dat.0_80            spectral_lines.dat
 
-time ../monortm_v4.0_pgf90_dbl
+time ../monortm_v4.1_pgf90_dbl
 
 \rm   MONORTM.IN
 \rm spectral_lines.dat
@@ -78,19 +78,19 @@ echo "---------------------------------------------------------------------"
 echo "---------------------------------------------------------------------"
 echo "---------------------------------------------------------------------"
 echo "---------------------------------------------------------------------"
-echo " case4 :downwelling; TAPE7 style input; input: in/MONORTM.IN_NOSCALE_IATM0_dn"
-
-ln -s in/MONORTM.IN_NOSCALE_IATM0_dn        MONORTM.IN
+echo " case4 :downwelling; TAPE7-style input; input: in/MONORTM.IN_IATM0_dn"
+ 
+ln -s in/MONORTM.IN_IATM0_dn               MONORTM.IN
 ln -s in/MONORTM_PROF.IN_sav               MONORTM_PROF.IN
 ln -s in/spectral_lines.dat.0_80           spectral_lines.dat
 
-time ../monortm_v4.0_pgf90_dbl
+time ../monortm_v4.1_pgf90_dbl
 
 \rm   MONORTM.IN
 \rm   MONORTM_PROF.IN
 \rm   spectral_lines.dat
-mv    MONORTM.OUT     out/$prefix{MONORTM.OUT_NOSCALE_IATM0_dn}
-mv    MONORTM.LOG     out/$prefix{MONORTM.LOG_NOSCALE_IATM0_dn}
+mv    MONORTM.OUT     out/$prefix{MONORTM.OUT_IATM0_dn}
+mv    MONORTM.LOG     out/$prefix{MONORTM.LOG_IATM0_dn}
 
 #---------------------------------------------------------------------
 #---------------------------------------------------------------------
@@ -99,12 +99,33 @@ echo "---------------------------------------------------------------------"
 echo "---------------------------------------------------------------------"
 echo "---------------------------------------------------------------------"
 echo "---------------------------------------------------------------------"
-echo " case5 :downwelling; user-defined atmosphere with scaled H2O; input: in/MONORTM.IN_SCALE_IATM1_MODEL0_HMOL1_dn"
+echo " case5 :downwelling; TAPE7-style input with 100 gm-2 liquid cloud; input: in/MONORTM.IN_IATM0_dn"
+
+ln -s in/MONORTM.IN_IATM0_dn                    MONORTM.IN
+ln -s in/MONORTM_PROF.IN_liquid_cloud           MONORTM_PROF.IN
+ln -s in/spectral_lines.dat.0_80               spectral_lines.dat
+
+time ../monortm_v4.1_pgf90_dbl
+
+\rm   MONORTM.IN
+\rm   MONORTM_PROF.IN
+\rm spectral_lines.dat
+mv    MONORTM.OUT     out/$prefix{MONORTM.OUT_IATM0_dn_liquid_cloud}
+mv    MONORTM.LOG     out/$prefix{MONORTM.LOG_IATM0_dn_liquid_cloud}
+
+#---------------------------------------------------------------------
+#---------------------------------------------------------------------
+# create monortm output files: MONORTM.OUT and MONORTM.LOG
+echo "---------------------------------------------------------------------"
+echo "---------------------------------------------------------------------"
+echo "---------------------------------------------------------------------"
+echo "---------------------------------------------------------------------"
+echo " case6 :downwelling; user-defined atmosphere with scaled H2O; input: in/MONORTM.IN_SCALE_IATM1_MODEL0_HMOL1_dn"
 
 ln -s in/MONORTM.IN_SCALE_IATM1_MODEL0_HMOL1_dn        MONORTM.IN
 ln -s in/spectral_lines.dat.0_80                       spectral_lines.dat
 
-time ../monortm_v4.0_pgf90_dbl
+time ../monortm_v4.1_pgf90_dbl
 
 \rm   MONORTM.IN
 \rm spectral_lines.dat
@@ -112,26 +133,6 @@ mv    MONORTM.OUT     out/$prefix{MONORTM.OUT_SCALE_IATM1_MODEL0_HMOL1_dn}
 mv    MONORTM.LOG     out/$prefix{MONORTM.LOG_SCALE_IATM1_MODEL0_HMOL1_dn}
 mv    TAPE7           out/$prefix{MONORTM.TAPE7_SCALE_IATM1_MODEL0_HMOL1_dn}
 
-#---------------------------------------------------------------------
-#---------------------------------------------------------------------
-# create monortm output files: MONORTM.OUT and MONORTM.LOG
-echo "---------------------------------------------------------------------"
-echo "---------------------------------------------------------------------"
-echo "---------------------------------------------------------------------"
-echo "---------------------------------------------------------------------"
-echo " case6 :downwelling; TAPE7-style input with scaled H2O; input: in/MONORTM.IN_SCALE_IATM0_HMOL1_dn"
-
-ln -s in/MONORTM.IN_SCALE_IATM0_HMOL1_dn        MONORTM.IN
-ln -s in/MONORTM_PROF.IN_sav                   MONORTM_PROF.IN
-ln -s in/spectral_lines.dat.0_80               spectral_lines.dat
-
-time ../monortm_v4.0_pgf90_dbl
-
-\rm   MONORTM.IN
-\rm   MONORTM_PROF.IN
-\rm spectral_lines.dat
-mv    MONORTM.OUT     out/$prefix{MONORTM.OUT_SCALE_IATM0_HMOL1_dn}
-mv    MONORTM.LOG     out/$prefix{MONORTM.LOG_SCALE_IATM0_HMOL1_dn}
 
 #---------------------------------------------------------------------
 #---------------------------------------------------------------------
@@ -142,7 +143,7 @@ echo " case7 :upwelling; user-defined atmosphere, lidar-type "on-line/off-line" 
 ln -s in/MONORTM.IN_IATM1_lidar_up                   MONORTM.IN
 ln -s in/spectral_lines.dat.6300_6700               spectral_lines.dat
 
-time ../monortm_v4.0_pgf90_dbl
+time ../monortm_v4.1_pgf90_dbl
 
 \rm   MONORTM.IN
 \rm spectral_lines.dat
