@@ -129,7 +129,7 @@ TMPSFC	: 	Surface/target temperature in K
 EMISS(I): 	Surface/target emissivity (no unit, between 0 and 1)
 REFLC(I): 	Surface/target Reflectivity (no unit , between 0 and 1)
 ANGLE	: 	Angle in degrees
-OTOT	: 	Total column-integrated optical depth due to all species (in Nepers)
+OTOT	: 	Total column-integrated optical depth due to all species
 OTOT_*	: 	Total column-integrated optical depth by molecules with line data
 ODXSEC	: 	Total column-integrated optical depth due to all cross-section molecules
 
