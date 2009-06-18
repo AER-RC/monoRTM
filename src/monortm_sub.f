@@ -395,7 +395,7 @@ C-------------------------------------------------------------------------------
 	   STOP
 	ENDIF
 	IF (IPLOT.NE.1) THEN 
-	    WRITE(*,*), 'WARNING: IPLOT MUST BE SET TO 1 TO OUTPUT TBs'
+	    WRITE(*,*) 'WARNING: IPLOT MUST BE SET TO 1 TO OUTPUT TBs'
 	    WRITE(*,*)  'IN ', FILEIN, ' IPLOT=', IPLOT
 	ENDIF
 	IF (ILAS.GT.0) THEN
