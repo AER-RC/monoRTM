@@ -854,10 +854,6 @@ c
 
     ! set up headers: assumes same molecules used in all profiles!!!
 	
-	otot  = 0.
-	odxtot = 0.
-	otot_by_mol(:) = 0.
-
         if (npr.eq.1) then
            if (nmol.lt.22) wkl(22,:) = wbrodl
            wk_tot = sum(wkl,2)
@@ -899,6 +895,11 @@ c
            end if
              
 	   !----Computation of the integrated optical depths
+	   otot  = 0.
+	   odxtot = 0.
+	   otot_by_mol(:) = 0.
+
+
 	   DO J = 1,NLAY
 	       OTOT = OTOT + O(IW,J)
 	       ODXTOT = ODXTOT + ODXSEC(IW,J)
