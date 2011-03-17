@@ -88,7 +88,7 @@ C-------------------------------------------------------------------------------
 	REAL O(NWNMX,MXLAY)
 	REAL fbeta,beta,bb_fn,X
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2 
+     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
 	COMMON /CVRSUB/ HVRSUB
 	BB_fn(V,fbeta)  = RADCN1*(V**3)/(EXP(V*fbeta)-1.)   
 	HVRSUB = '$Revision$' 
@@ -144,7 +144,7 @@ c
 	IMPLICIT REAL*8 (V)      
 	include "declar.incl"
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2 
+     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
 	INTEGER  layer,nlayer,NWN,IDU,lmin,lmax,nl
 	REAL          beta,beta_a,bb,bba
 	!---local variables
@@ -837,7 +837,7 @@ c
      &	   odxsec(nwnmx,mxlay)
 
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2 
+     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
 
         save cmol, id_mol, kount
 
@@ -952,7 +952,7 @@ c
 	REAL PI,SECNT,ALPHA,ANGLE
 	REAL O(NWNMX,MXLAY)
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2 
+     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
 	!----SANITY CHECK
 	IF (IRT.EQ.3) alpha=(angle*PI)/180.
 	IF ((IRT.EQ.1).and.(ANGLE.GT.90.)) alpha=((180.-angle)*PI)/180.
@@ -1769,7 +1769,7 @@ C
 
       CHARACTER*10 XSFILE,XSNAME,ALIAS,XNAME,XFILS(6),BLANK,xxfile,ctorr               
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     $     RADCN1,RADCN2 
+     $     RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /PATHX/ IXMAX,IXMOLS,IXINDX(mx_xs),XAMNT(mx_xs,MXLAY)        
       COMMON /XSECTF/ XSFILE(6,5,mx_xs),XSNAME(mx_xs),ALIAS(4,mx_xs)
       COMMON /XSECTR/ V1FX(5,MX_XS),V2FX(5,MX_XS),DVFX(5,MX_XS),     
@@ -2036,7 +2036,7 @@ C------------------------------------------------------------------------------
 	bb_fn(v,fbeta)  = radcn1*(v**3)/(exp(v*fbeta)-1.)
         real    tmr(*)
         COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2 
+     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
 
 
 	do ifr=1,nwn

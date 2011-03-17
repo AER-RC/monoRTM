@@ -390,8 +390,8 @@ c
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA03490
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL    
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
 C                                                                        FA03530
 C     BLANK COMMON FOR ZMDL                                              FA03540
 C                                                                        FA03550
@@ -1677,8 +1677,8 @@ C                                                                        FA11820
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA11840
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA11850
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
 C                                                                        FA11880
       CHARACTER*8      HMOLS                                            &FA11890
 C                                                                        FA11900
@@ -1730,8 +1730,7 @@ C                                                                        FA12250
 C                                                                        FA12350
 C     MOLECULAR WEIGHTS                                                  FA12360
 C                                                                        FA12370
-      DATA AIRMWT / 28.964 / ,                                           FA12380
-     *     AMWT /   18.015 ,  44.010 , 47.998 , 44.01 ,                  FA12390
+      DATA AMWT /   18.015 ,  44.010 , 47.998 , 44.01 ,                  FA12390
      *              28.011 ,  16.043 , 31.999 , 30.01 ,                  FA12400
      *              64.06  ,  46.01  , 17.03  , 63.01 ,                  FA12410
      *              17.00  ,  20.01  , 36.46  , 80.92 ,                  FA12420
@@ -3015,8 +3014,8 @@ c
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA24760
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA24770
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA24800
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA24810
       COMMON ABSC(5,47),EXTC(5,47),ASYM(5,47),AVX2(47),AWCCON(5)         FA24820
@@ -3245,8 +3244,8 @@ c
       character*1 jchar_st
 c      
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
 C                                                                        FA26740
 C     ***********************************************************        FA26750
 C                                                                        FA26760
@@ -3836,8 +3835,8 @@ C                                                                        FA30280
      *              NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       FA30300
      *              NLTEFL,LNFIL4,LNGTH4                                 FA30310
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON /DEAMT/ DENM(MXMOL,MXZMD),DENP(MXMOL,MXPDIM),DRYAIR(MXZMD)
 C                                                                        FA30340
 C
@@ -3956,8 +3955,8 @@ C                                                                        FA31260
      *              NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       FA31280
      *              NLTEFL,LNFIL4,LNGTH4                                 FA31290
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
 C                                                                        FA31320
       DATA C1 / 18.9766 /,C2 / -14.9595 /,C3 / -2.4388 /                 FA31330
 C                                                                        FA31340
@@ -4085,7 +4084,7 @@ C                                                                        FA32330
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA32380
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA32390
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
 C                                                                        FA32400
       ITER = 0                                                           FA32410
 C
@@ -5035,8 +5034,8 @@ C                                                                        FA40590
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA40640
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA40650
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA40680
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA40690
       COMMON ABSC(5,47),EXTC(5,47),ASYM(5,47),AVX2(47),AWCCON(5)         FA40700
@@ -5462,8 +5461,8 @@ C                                                                        FA44630
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA44680
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA44690
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA44720
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA44730
       COMMON ABSC(5,47),EXTC(5,47),ASYM(5,47),AVX2(47),AWCCON(5)         FA44740
@@ -5650,8 +5649,8 @@ C                                                                        FA46470
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA46520
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA46530
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA46560
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA46570
       COMMON ABSC(5,47),EXTC(5,47),ASYM(5,47),AVX2(47),AWCCON(5)         FA46580
@@ -5705,8 +5704,8 @@ C                                                                        FA46470
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA46520
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA46530
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA46560
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA46570
       COMMON ABSC(5,47),EXTC(5,47),ASYM(5,47),AVX2(47),AWCCON(5)         FA46580
@@ -5769,8 +5768,8 @@ C                                                                        FA47020
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA47070
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA47080
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA47110
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA47120
       COMMON ABSC(5,47),EXTC(5,47),ASYM(5,47),AVX2(47),AWCCON(5)         FA47130
@@ -5935,8 +5934,8 @@ C
       CHARACTER*8  EXTID
 
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
 C
       DATA I_2/2/
 C
@@ -6051,8 +6050,8 @@ C     LAMCHN CARRIES HARDWARE SPECIFIC PARAMETERS                        FX00350
 C                                                                        FX00360
       COMMON /LAMCHN/ ONEPL,ONEMI,EXPMIN,ARGMIN                          FX00370
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON /ADRIVE/ LOWFLG,IREAD,MODEL,ITYPE,NOZERO,NOP,H1F,H2F,       FX00400
      *                ANGLEF,RANGEF,BETAF,LENF,AV1,AV2,RO,IPUNCH,XVBAR,  FX00410
      *                HMINF,PHIF,IERRF,HSPACE                            FX00420
@@ -6862,8 +6861,8 @@ C                                                                        FX05730
      *              NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       FX05750
      *              NLTEFL,LNFIL4,LNGTH4                                 FX05760
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
-      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AIRMWT,AMWT(MXMOL)
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+      COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
 C                                                                        FX05790
 C     LAMCHN CARRIES HARDWARE SPECIFIC PARAMETERS                        FX05800
 C                                                                        FX05810
@@ -7767,7 +7766,7 @@ C**************************************************************
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA00920
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL  
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
 C
       REAL PM(MXZMD),TM(MXZMD),DENW(MXZMD),ZMDL(MXZMD)
       REAL H2O_MIXRAT(MXZMD),COMP_FACTOR(MXZMD),ZTEMP(MXZMD)
