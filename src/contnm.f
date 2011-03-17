@@ -3,18 +3,26 @@ C     author:    $Author$
 C     revision:  $Revision$
 C     created:   $Date$
 C
-      SUBROUTINE CONTNM(JRAD)                                             F00010
-C
 C  --------------------------------------------------------------------------
+C |  Copyright ©, Atmospheric and Environmental Research, Inc., 2011         |
 C |                                                                          |
-C |  Copyright 2002 - 2009, Atmospheric & Environmental Research, Inc. (AER).|
-C |  This software may be used, copied, or redistributed as long as it is    |
-C |  not sold and this copyright notice is reproduced on each copy made.     |
-C |  This model is provided as is without any express or implied warranties. |
+C |  All rights reserved. This source code is part of the LBLRTM software    |
+C |  and is designed for scientific and research purposes. Atmospheric and   |
+C |  Environmental Research, Inc. (AER) grants USER the right to download,   |
+C |  install, use and copy this software for scientific and research         |
+C |  purposes only. This software may be redistributed as long as this       |
+C |  copyright notice is reproduced on any copy made and appropriate         |
+C |  acknowledgment is given to AER. This software or any modified version   |
+C |  of this software may not be incorporated into proprietary software or   |
+C |  commercial software offered for sale.                                   |
+C |                                                                          |
+C |  This software is provided as is without any express or implied          |
+C |  warranties.                                                             |
 C |                       (http://www.rtweb.aer.com/)                        |
-C |                                                                          |
 C  --------------------------------------------------------------------------
 C
+C
+      SUBROUTINE CONTNM(JRAD)                                             F00010
 C                                                                         F00020
       IMPLICIT REAL*8           (V)                                     ! F00030
 
@@ -38,7 +46,7 @@ C                                                                         F00120
      *                WK(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   F00140
      *                EMISIV,FSCDID(17),NMOL,LAYER ,YI1,YID(10),LSTWDF    F00150
       COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2 
+     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,         F00170
      *              NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,        F00180
      *              NLTEFL,LNFIL4,LNGTH4                                  F00190
@@ -78,15 +86,127 @@ c
      *            (C2,FH2O,CT2)                                           F00250
 C                                                                         F00260
       DATA P0 / 1013. /,T0 / 296. /                                       F00270
-      DATA XLOSMT / 2.68675E+19 /                                         F00280
+      DATA XLOSMT / 2.68675E+19 /                                         F00280                                   
 c     
-      DIMENSION XFACREV(0:14)
+      DIMENSION XFACCO2(500)
+C     Correction factors for CO2 from 2000-3000 cm-1 (mt_ckd_2.5)
+C     (stored every 2 cm-1 - same as CO2 continuum).
+      DATA XFACCO2/
+     &    1.0000,0.9998,0.9997,0.9996,0.9995,0.9994,0.9992,0.9991,
+     &    0.9991,0.9990,0.9990,0.9989,0.9988,0.9988,0.9987,0.9986,
+     &    0.9985,0.9984,0.9983,0.9982,0.9981,0.9980,0.9979,0.9978,
+     &    0.9976,
+     &    0.9975,0.9973,0.9972,0.9970,0.9969,0.9967,0.9965,0.9963,
+     &    0.9961,0.9958,0.9956,0.9954,0.9951,0.9948,0.9946,0.9943,
+     &    0.9940,0.9936,0.9933,0.9929,0.9926,0.9922,0.9918,0.9913,
+     &    0.9909,
+     &    0.9904,0.9899,0.9894,0.9889,0.9884,0.9878,0.9872,0.9866,
+     &    0.9859,0.9853,0.9846,0.9838,0.9831,0.9823,0.9815,0.9806,
+     &    0.9798,0.9789,0.9779,0.9770,0.9759,0.9749,0.9738,0.9727,
+     &    0.9716,
+     &    0.9704,0.9691,0.9679,0.9666,0.9652,0.9638,0.9624,0.9609,
+     &    0.9594,0.9578,0.9562,0.9546,0.9529,0.9511,0.9493,0.9475,
+     &    0.9456,0.9436,0.9417,0.9396,0.9375,0.9354,0.9332,0.9310,
+     &    0.9287,
+     &    0.9264,0.9240,0.9216,0.9191,0.9166,0.9140,0.9114,0.9087,
+     &    0.9060,0.9032,0.9004,0.8976,0.8947,0.8917,0.8887,0.8857,
+     &    0.8827,0.8796,0.8764,0.8732,0.8700,0.8668,0.8635,0.8602,
+     &    0.8568,
+     &    0.8534,0.8500,0.8466,0.8432,0.8397,0.8362,0.8327,0.8292,
+     &    0.8257,0.8221,0.8186,0.8151,0.8115,0.8080,0.8044,0.8009,
+     &    0.7973,0.7938,0.7903,0.7868,0.7833,0.7799,0.7764,0.7730,
+     &    0.7697,
+     &    0.7663,0.7630,0.7597,0.7565,0.7533,0.7502,0.7471,0.7441,
+     &    0.7411,0.7382,0.7354,0.7326,0.7298,0.7272,0.7246,0.7221,
+     &    0.7197,0.7173,0.7150,0.7129,0.7108,0.7088,0.7068,0.7050,
+     &    0.7033,
+     &    0.7016,0.7001,0.6986,0.6973,0.6961,0.6949,0.6939,0.6930,
+     &    0.6921,0.6914,0.6908,0.6903,0.6899,0.6897,0.6895,0.6895,
+     &    0.6895,0.6895,0.6895,0.6895,0.6908,0.7014,0.7121,0.7227,
+     &    0.7552,
+     &    0.8071,0.8400,0.9012,0.9542,1.0044,1.0330,1.0554,1.0766,
+     &    1.0967,1.1160,1.1346,1.1525,1.1700,1.1869,1.2035,1.2196,
+     &    1.2354,1.2509,1.2662,1.2811,1.2958,1.3103,1.3245,1.3386,
+     &    1.3525,
+     &    1.3661,1.3796,1.3930,1.4062,1.4193,1.4322,1.4449,1.4576,
+     &    1.4701,1.4825,1.4949,1.5070,1.5191,1.5311,1.5430,1.5548,
+     &    1.5550,1.5550,1.5550,1.5550,1.5550,1.5550,1.5550,1.5550,
+     &    1.5550,
+     &    1.5550,1.5550,1.5550,1.5550,1.5550,1.5550,1.5550,1.5550,
+     &    1.5550,1.5550,1.5550,1.5549,1.5547,1.5543,1.5539,1.5532,
+     &    1.5525,1.5516,1.5506,1.5494,1.5481,1.5467,1.5452,1.5435,
+     &    1.5417,
+     &    1.5397,1.5377,1.5355,1.5332,1.5308,1.5282,1.5255,1.5228,
+     &    1.5199,1.5169,1.5137,1.5105,1.5072,1.5037,1.5002,1.4966,
+     &    1.4929,1.4890,1.4851,1.4811,1.4771,1.4729,1.4686,1.4643,
+     &    1.4599,
+     &    1.4555,1.4509,1.4463,1.4417,1.4370,1.4322,1.4274,1.4225,
+     &    1.4176,1.4126,1.4076,1.4025,1.3974,1.3923,1.3872,1.3820,
+     &    1.3768,1.3716,1.3663,1.3611,1.3558,1.3505,1.3452,1.3400,
+     &    1.3347,
+     &    1.3294,1.3241,1.3188,1.3135,1.3083,1.3030,1.2978,1.2926,
+     &    1.2874,1.2822,1.2771,1.2720,1.2669,1.2618,1.2568,1.2518,
+     &    1.2468,1.2419,1.2370,1.2322,1.2274,1.2227,1.2180,1.2133,
+     &    1.2087,
+     &    1.2041,1.1996,1.1952,1.1907,1.1864,1.1821,1.1778,1.1737,
+     &    1.1695,1.1654,1.1614,1.1575,1.1536,1.1497,1.1460,1.1422,
+     &    1.1386,1.1350,1.1314,1.1280,1.1246,1.1212,1.1179,1.1147,
+     &    1.1115,
+     &    1.1084,1.1053,1.1024,1.0994,1.0966,1.0938,1.0910,1.0883,
+     &    1.0857,1.0831,1.0806,1.0781,1.0757,1.0734,1.0711,1.0688,
+     &    1.0667,1.0645,1.0624,1.0604,1.0584,1.0565,1.0546,1.0528,
+     &    1.0510,
+     &    1.0493,1.0476,1.0460,1.0444,1.0429,1.0414,1.0399,1.0385,
+     &    1.0371,1.0358,1.0345,1.0332,1.0320,1.0308,1.0296,1.0285,
+     &    1.0275,1.0264,1.0254,1.0244,1.0235,1.0226,1.0217,1.0208,
+     &    1.0200,
+     &    1.0192,1.0184,1.0177,1.0170,1.0163,1.0156,1.0150,1.0143,
+     &    1.0137,1.0132,1.0126,1.0121,1.0116,1.0111,1.0106,1.0101,
+     &    1.0097,1.0092,1.0088,1.0084,1.0081,1.0077,1.0074,1.0070,
+     &    1.0067,
+     &    1.0064,1.0061,1.0058,1.0055,1.0053,1.0050,1.0048,1.0046,
+     &    1.0043,1.0041,1.0039,1.0037,1.0036,1.0034,1.0032,1.0030,
+     &    1.0029,1.0027,1.0026,1.0025,1.0023,1.0022,1.0021,1.0020,
+     &    1.0019,
+     &    1.0018,1.0017,1.0016,1.0015,1.0014,1.0014,1.0013,1.0012,
+     &    1.0011,1.0011,1.0010,1.0010,1.0009,1.0009,1.0008,1.0007,
+     &    1.0006,1.0005,1.0004,1.0003,1.0002,1.0001,1.0000,1.0000,
+     &    1.0000/
 
+      DIMENSION XFACREV(0:14),XFACREV1(1:120)
+
+C     Self correction factors for 820-960 cm-1.
       DATA (XFACREV(I),I=0,14)/
      1     1.003,1.009,1.015,1.023,1.029,1.033,
      2     1.037,1.039,1.040,1.046,1.036,1.027,
      3     1.01,1.002,1.00/
 C
+C     Self correction factors for 2000-3190 cm-1 (mt_ckd_2.5).
+      DATA (XFACREV1(I),I=1,120)/
+     1     1.000,1.040,1.080,1.120,1.160,
+     1     1.200,1.240,1.280,1.318,1.357,
+     1     1.404,1.453,1.499,1.553,1.608,
+     1     1.674,1.746,1.818,1.899,1.984,
+     1     2.078,2.174,2.276,2.385,2.502,
+     1     2.624,2.747,2.883,3.018,3.170,
+     1     3.321,3.473,3.635,3.803,3.974,
+     1     4.144,4.327,4.500,4.703,4.887,
+     1     5.102,5.286,5.498,5.701,5.935,
+     1     6.155,6.405,6.633,6.892,7.115,
+     1     7.397,7.650,7.917,8.177,8.437,
+     1     8.704,8.953,9.192,9.428,9.644,
+     1     9.821,9.954,10.11,10.17,10.21,
+     1     10.26,10.29,10.28,10.26,10.20,
+     1     10.15,10.16,10.25,10.02,9.965,
+     1     10.01,9.934,9.847,9.744,9.566,
+     1     9.436,9.181,8.872,8.547,8.155,
+     1     7.730,7.261,6.777,6.271,5.807,
+     1     5.313,4.845,4.444,4.074,3.677,
+     1     3.362,3.087,2.826,2.615,2.385,
+     1     2.238,2.148,1.979,1.939,1.773,
+     1     1.696,1.642,1.569,1.510,1.474,
+     1     1.425,1.375,1.322,1.272,1.230,
+     1     1.180,1.130,1.080,1.040,1.000/
 C                                                                         F00290
 C     ASSIGN SCCS VERSION NUMBER TO MODULE 
 C
@@ -234,7 +354,14 @@ c
                      JFAC = (VJ - 820.)/10. + 0.00001
                      SFAC = XFACREV(JFAC)
                   ENDIF
-C                                                                         F00630
+C   ***                                                                      F00630
+C     Correction to the self continuum     mt_ckd_2.5   Jan 2010
+C   ***
+                  IF (VJ .GE. 2000. .AND. VJ .LE. 3190.) THEN
+                     JFAC = (VJ - 1990.)/10. + 0.00001
+                     SFAC = XFACREV1(JFAC)
+                  ENDIF
+
                   sfac = sfac * ( 1 + ( f1/(1+(VJ/beta)**n_s) ) )
 
                   SH2O = SFAC * SH2O
@@ -354,7 +481,7 @@ c
 c
             WCO2 = WK(2) * RHOAVE * 1.0E-20 * xco2c
 C                                                                         F00830
-            CALL FRNCO2 (V1C,V2C,DVC,NPTC,FCO2)                           F00840
+            CALL FRNCO2 (V1C,V2C,DVC,NPTC,FCO2,tave)                      F00840
 c
             DO 30 J = 1, NPTC                                             F00850
                VJ = V1C+DVC* REAL(J-1)                                    F00860
@@ -370,9 +497,15 @@ c             Based on recent validation studies, a scaling of the
 c             continuum for v3 is required to achieve an acceptable result
 c             at 2385 cm-1, the 'bandhead' of v3.
 c             Clough et al., presentation at EGU 2007
-c
-               v3_fac = 1. - (1.-0.75)*Exp(-(((vj-2340.)/300)**2))
-               fco2(j) = v3_fac*fco2(j)
+c   *** mt_ckd_2.5  Adjustment to the original scaling made.
+c                   (temperature dependence of continuum also added)
+
+               CFAC = 1.
+               IF (VJ .GE. 2000. .AND. VJ .LE. 2998.) THEN
+                   JFAC = (VJ - 1998.)/2. + 0.00001
+                   CFAC = XFACCO2(JFAC)
+               ENDIF
+               fco2(j) = cfac*fco2(j)
 c**********
 c
                C(J) = FCO2(J)*WCO2
@@ -391,7 +524,7 @@ C     Smoothing coefficients from 8920.0-9165.0 cm-1 and from
 C     24570.0-24665.0 cm-1.  Data covers 9170.0-24565.0 cm-1
 C     region.
 C
-         IF (V2.GT.8920.0.AND.V1.LE.24665.0 .and.xo3cn.gt.0.) THEN                         F01200
+         IF (V2.GT.8920.0.AND.V1.LE.24665.0.and.xo3cn.gt.0.) THEN         F01200
             WO3 = WK(3) * 1.0E-20 * xo3cn
             CALL XO3CHP (V1C,V2C,DVC,NPTO3,CCH0,CCH1,CCH2)                F01220
 C                                                                         F01230
@@ -405,7 +538,7 @@ c
             CALL XINT (V1C,V2C,DVC,CCH0,1.0,V1ABS,DVABS,ABSRB,1,NPTABS)   F01290
          ENDIF
 C                                                                         F01300
-         IF (V2.GT.27370..AND.V1.LT.40800.) THEN                          F01310
+         IF (V2.GT.27370..AND.V1.LT.40800. .and.xo3cn.gt.0.) THEN         F01310
             WO3 = WK(3) * 1.E-20 * xo3cn
             TC = TAVE-273.15                                              F01330
             CALL O3HHT0 (V1C,V2C,DVC,NPTO3,C0)                            F01340
@@ -424,7 +557,7 @@ C           Save non-Hartley Huggins optical depth contribution to
 C           prevent double counting for wavenumber region beyond 
 C           40800 cm-1.
 C
-            IF ((VJ.GT.40815.).AND.(V2.GT.40800)) THEN
+            IF ((VJ.GT.40815.).AND.(V2.GT.40800) .and.xo3cn.gt.0.) THEN
                I_FIX = (40800.-V1ABS)/DVABS+1.001
                DO 62 I=I_FIX,NPTABS
                   ABSBSV(I) = ABSRB(I)
@@ -438,7 +571,7 @@ C
 C           If V2 > 40800 cm-1, replace points with previously
 C           saved values (non-Hartley Huggins contribution)
 C
-            IF ((VJ.GT.40815.).AND.(V2.GT.40800)) THEN
+            IF ((VJ.GT.40815.).AND.(V2.GT.40800).and.xo3cn.gt.0.)THEN
                DO 64 I=I_FIX,NPTABS
                   ABSRB(I) = ABSBSV(I)
  64            CONTINUE
@@ -447,7 +580,7 @@ C
 C
 C        If V2 > 40800 cm-1, add UV Hartley Huggins contribution
 C
-         IF (V2.GT.40800..AND.V1.LT.54000. .and. xo3cn.gt.0.) THEN
+         IF (V2.GT.40800..AND.V1.LT.54000. .and.xo3cn.gt.0.) THEN
             WO3 = WK(3) * xo3cn                                                   F01470
             CALL O3HHUV (V1C,V2C,DVC,NPTO3,C0)                            F01480
 c                                                                         F01490
@@ -496,7 +629,7 @@ c        Appl. Optics, 35, 5911-5917, (1996).
 c
 C        Only calculate if V2 > 1340. cm-1 and V1 <  1850. cm-1
 
-         if (((V2.gt.1340.0).and.(V1.lt.1850.).and. xo2cn.gt.0.)) then
+         if ((V2.gt.1340.0).and.(V1.lt.1850.).and. xo2cn.gt.0.) then
 c     
             tau_fac = xo2cn *  Wk(7) * 1.e-20 * amagat 
 c
@@ -544,7 +677,7 @@ C        Journal of Geophysical Research (1997).
 C
 C        Only calculate if V2 > 7536. cm-1 and V1 <  8500. cm-1
 c
-         if (((V2.gt.7536.0).and.(V1.lt.8500.).and. xo2cn.gt.0.)) then
+         if ((V2.gt.7536.0).and.(V1.lt.8500.).and. xo2cn.gt.0.) then
 c
             a_o2  = 1./0.446
             a_n2  = 0.3/0.446
@@ -608,7 +741,7 @@ c        subroutine o2_vis
 C
 C        Only calculate if V2 > 15000. cm-1 and V1 <  29870. cm-1
 c
-         if (((V2.gt.15000.0).and.(V1.lt.29870.).and. xo2cn.gt.0.)) then
+         if ((V2.gt.15000.0).and.(V1.lt.29870.).and. xo2cn.gt.0.) then
 c
             WO2 = WK(7) * 1.e-20 * ((pave/1013.)*(273./tave)) * xo2cn
             CHIO2 =  WK(7)/WTOT 
@@ -679,7 +812,7 @@ c
 C           The following puts WXN2 units in 1./(CM AMAGAT)
 C
 c           c1(j) represents the relative broadening efficiency of o2
-c           a_h2o represents the relative broadening efficiency of h2o
+c     a_h2o represents the relative broadening efficiency of h2o
 
             a_h2o = 1.
 
@@ -689,7 +822,7 @@ c
 C                                                                         F00480
             CALL xn2_r (V1C,V2C,DVC,NPTC,c0,c1,Tave)
 c
-c           fo2 is  ~ the ration of alpha(n2-o2)/alpha(n2-n2)
+c           c1 is  ~ the ratio of alpha(n2-o2)/alpha(n2-n2)
 c           Eq's 7 and 8 in the Boissoles paper.
 C
             DO 40 J = 1, NPTC                                             F01080
@@ -806,7 +939,8 @@ c
 c     Rayleigh scattering in the direct beam is only calculated for
 c     model runs > 3100 cm-1.
 c
-         If (iaersl .eq.0 .and. v2.ge.3100.) then
+         If ((iaersl.eq.0 .or. iaersl.eq.5).and. v2.ge.3100. 
+     &       .and. xrayl.gt.0.) then
 c
 c        Thus the current formulation is
 
@@ -849,20 +983,23 @@ C                                                                         A10300
      *              NLNGTH,KFILE,KPANEL,LINFIL,NDFLE,IAFIL,IEXFIL,        A10320
      *              NLTEFL,LNFIL4,LNGTH4                                  A10330
 C
-      COMMON /CNTPR/ CINFO1,CINFO2,cnam3,CINFO3,cnam4,CINFO4
+      COMMON /CNTPR/ CINFO1,CINFO2,cnam3,CINFO3,cnam4,CINFO4,CHEADING
 C
-      CHARACTER*18 cnam3(9),cnam4(24)
-      CHARACTER*51 CINFO1(2,14),CINFO2(2,11),CINFO3(2,9),CINFO4(2,25)
+      CHARACTER*18 cnam3(9),cnam4(29)
+      CHARACTER*51 CINFO1(2,11),CINFO2(2,11),CINFO3(2,9),CINFO4(2,29)
+      CHARACTER*40 CHEADING(3,2)
 C                                                                         A10340
-      WRITE (IPR,910) ((CINFO1(I,J),I=1,2),J=1,13)
+      WRITE (IPR,910) ((CINFO1(I,J),I=1,2),J=1,11)
       WRITE (IPR,910) ((CINFO2(I,J),I=1,2),J=1,11)
+      WRITE (IPR,918) ((CHEADING(I,J),I=1,3),J=1,2)
       WRITE (IPR,915) (cnam3(j),(CINFO3(I,J),I=1,2),J=1,9)
-      WRITE (IPR,915) (cnam4(j),(CINFO4(I,J),I=1,2),J=1,25)
+      WRITE (IPR,915) (cnam4(j),(CINFO4(I,J),I=1,2),J=1,29)
 C                                                                         A10360
       RETURN                                                              A10370
 C                                                                         A10380
  910  FORMAT (18x,2A51)
  915  FORMAT (a18,2A51)
+ 918  FORMAT (3A40)
 C                                                                         A10580
 
       END                                                                 A10590
@@ -872,9 +1009,10 @@ C     --------------------------------------------------------------
 C
 C     Continuum information for output to TAPE6 in SUBROUTINE PRCNTM
 C
-      CHARACTER*18 cnam3(9),cnam4(24)
-      CHARACTER*51 CINFO1(2,14),CINFO2(2,11),CINFO3(2,9),CINFO4(2,25)
-      COMMON /CNTPR/ CINFO1,CINFO2,CNAM3,CINFO3,CNAM4,CINFO4
+      CHARACTER*18 cnam3(9),cnam4(29)
+      CHARACTER*51 CINFO1(2,11),CINFO2(2,11),CINFO3(2,9),CINFO4(2,29)
+      CHARACTER*40 CHEADING(3,2)
+      COMMON /CNTPR/ CINFO1,CINFO2,CNAM3,CINFO3,CNAM4,CINFO4,CHEADING
 C
       DATA cnam3/
 c           123456789-123456789-123456789-123456789-123456789-1
@@ -913,7 +1051,12 @@ c           123456789-123456789-123456789-123456789-123456789-1
      1     ' mt_ckd_2.2  11.4 ',
      2     ' mt_ckd_2.3  11.5 ',
      3     ' mt_ckd_2.4  11.6 ',
-     4     '                  '/
+     4     ' mt_ckd_2.5  11.7 ',
+     5     '     "            ',
+     6     '     "            ',
+     7     ' mt_ckd_2.5.1 11.8',
+     8     ' mt_ckd_2.5.2 12.0',
+     9     '                  '/
 c
       DATA CINFO1/
 c           123456789-123456789-123456789-123456789-123456789-1
@@ -921,61 +1064,62 @@ c           123456789-123456789-123456789-123456789-123456789-1
      1     '                                                   ',
      2     '                                                   ',
      2     '                                                   ',
-     3     '   *****  CONTINUA mt_ckd_2.4                      ',
+     3     '*** CONTINUA mt_ckd_2.5.2                          ',
      3     '                                                   ',
      4     '                                                   ',
-     4     '                                                   ',
-     5     '                     H2O   SELF  (T)      0 - 20000',
-     5     ' CM-1    mt_ckd_1.0                 (December 2002)',
-     6     '                           AIR   (T)      0 - 20000',
-     6     ' CM-1    mt_ckd_1.1                   (August 2004)',
-     7     '                           AIR   (T)      0 - 20000',
-     7     ' CM-1    mt_ckd_2.01               (September 2007)',
-     8     '                     CO2   AIR            0 - 20000',
-     8     ' CM-1    co2 nu2 increased * 7          (July 2002)',
-     9     '                           AIR            0 - 20000',
-     9     ' CM-1    co2 nu2 decreased: now * 4.5    (May 2006)',
-     *     '                           AIR            0 -  2600',
-     *     ' CM-1    line mixing                    (July 2007)',
-     1     '                           AIR            0 - 20000',
-     1     ' CM-1    full line mixing           (November 2007)',
-     2     '                                                   ',
-     2     '                                                   ',
-     3     '                     N2    SELF           0 -   350',
-     3     ' CM-1    BORYSOW FROMMHOLD                         ',
-     4     '                           AIR         2085 -  2670',
-     4     ' CM-1                                  (March 1998)' /
+     4     '            Most recent significant change         ',
+     5     '       H2O  SELF  (T)     0 - 20000 CM-1           ',
+     5     '   mt_ckd_2.5 - increase 2000-3200 cm-1  (Jan 2010)',
+     6     '            AIR           0 - 20000 CM-1           ',
+     6     '   mt_ckd_2.4 - modify far-ir and MW     (Nov 2008)',
+     7     '       CO2  AIR           0 - 10000 CM-1           ',
+     7     '   mt_ckd_2.5 - modify 2000-3000 cm-1    (Jan 2010)',
+     8     '            AIR   (T)  2386 -  2434 CM-1           ',
+     8     '   mt_ckd_2.5 - temperature dep. added   (Jan 2010)',
+     9     '       N2   SELF  (T)     0 -   350 CM-1           ',
+     9     '   ckd_2.2    - Borysow Fromhold         (Feb 1996)',
+     *     '            AIR   (T)     0 -   350 CM-1           ',
+     *     '   mt_ckd_2.1 - incl. O2 rel. efficiency (Sep 2004)',
+     1     '            AIR   (T)  2085 -  2670 CM-1           ',
+     1     '   ckd_2.4.1  - Lafferty et al.          (Mar 1998)' /
 C
       DATA CINFO2/
-     1     '                     O2    AIR   (T)   1340 -  1850',
-     1     ' CM-1                                  (March 1998)',
-     2     '                           O2/N2       7550 -  8486',
-     2     ' CM-1                               (February 2000)',
-     3     '                           AIR         9100 - 11000',
-     3     ' CM-1                                 (August 1999)',
-     4     '                           O2         15000 - 29870',
-     4     ' CM-1                                   (May  2000)',
-     5     '                           O2/N2      36000 -  >>>>',
-     5     ' CM-1    HERZBERG                                  ',
-     6     '                     O3    AIR         9170 - 24565',
-     6     ' CM-1    CHAPPUIS / WULF                           ',
-     7     '                                 (T)  27370 - 40800',
-     7     ' CM-1    HARTLEY HUGGINS                           ',
-     8     '                                      40800 - 54000',
-     8     ' CM-1    HARTLEY HUGGINS                           ',
+     1     '       O2   AIR   (T)  1340 -  1850 CM-1 ',
+     1     '   ckd_2.4.1  - Thibault et al.          (Mar 1998)',
+     2     '            O2/N2      7550 -  8486 CM-1',
+     2     '   ckd_2.4.1  - Mate et al.              (Feb 2000)',
+     3     '            AIR        9100 - 11000 CM-1',
+     3     '   ckd_2.4.1  - Mlawer et al.            (Aug 1999)',
+     4     '            O2        15000 - 29870 CM-1',
+     4     '   ckd_2.4.2  - Greenblatt et al.        (May 2000)',
+     5     '            O2/N2     36000 -  >>>> CM-1 HERZBERG  ',
+     5     '   ckd_0                                           ',
+     6     '       O3   AIR   (T)  9170 - 24565 CM-1 CHAPP/WULF',
+     6     '   ckd_2.2                               (Feb 1996)',
+     7     '                  (T) 27370 - 40800 CM-1 HARTL/HUGG',
+     7     '   ckd_0                     ',
+     8     '                      40800 - 54000 CM-1 HARTL/HUGG',
+     8     '   ckd_0                        ',
      9     6*'                                                 '/
 C
+      DATA CHEADING/
+     1     'Continuum    LBL_n                      ',
+     1     'Description of Modification             ',
+     1     '                               Date     ',
+     2     '---------    -----                    --',
+     2     '-----------------------------           ',
+     2     '                               ----     '/
       DATA CINFO3/
      1     '  H2O SELF HAS BEEN REDUCED IN THE 800-1200 CM-1 RE',
-     1     'GION                                 (01 SEPT 1985)',
+     1     'GION                                  (01 SEP 1985)',
      2     '  03       TEMPERATURE DEPENDENCE HAS BEEN CORRECTE',
      2     'D                                     (01 MAY 1987)',
      3     '  02       (1390-1760) HAS BEEN REDUCED (FACTOR = 0',
-     3     '.78)                                (07 MARCH 1990)',
+     3     '.78)                                  (07 MAR 1990)',
      4     '  H2O SELF HAS BEEN REDUCED IN THE 1100-1500 CM-1 R',
-     4     'EGION                               (01 APRIL 1993)',
+     4     'EGION                                 (01 APR 1993)',
      5     '  H2O FOREIGN HAS BEEN REDUCED AT ~1300 CM-1 AND IN',
-     5     ' ALL THE WINDOW REGIONS             (01 APRIL 1993)',
+     5     ' ALL THE WINDOW REGIONS               (01 APR 1993)',
      6     '  H2O SELF HAS BEEN MODIFIED IN THE 700-1500 CM-1 R',
      6     'EGION                                 (01 MAY 1994)',
      7     '  H2O FOREIGN HAS BEEN MODIFIED IN THE ENTIRE 1200-',
@@ -989,11 +1133,11 @@ C
      1     '  O3 CHAPPUIS CHANGED TO VALUES FROM MODTRAN3      ',
      1     '                                      (09 FEB 1996)',
      2     '  INTERPOLATION EFFECTS BETWEEN HARTLEY HUGGINS DAT',
-     2     'A AROUND 40800 CM-1                  (18 SEPT 1996)',
+     2     'A AROUND 40800 CM-1                   (18 SEP 1996)',
      3     '  O2 COLLISION INDUCED FUNDAMENTAL BAND (1340-1850 ',
-     3     'CM-1) CHANGED TO THIBAULT ET AL., 1996 (MARCH 1998)',
+     3     'CM-1) CHANGED TO THIBAULT ET AL., 1996   (MAR 1998)',
      4     '  N2 COLLISION INDUCED FUNDAMENTAL BAND (2085-2670 ',
-     4     'CM-1) CHANGED TO LAFFERTY ET AL., 1996 (MARCH 1998)',
+     4     'CM-1) CHANGED TO LAFFERTY ET AL., 1996   (MAR 1998)',
      5     '  H2O FOREIGN HAS BEEN MODIFIED IN THE 0-800 CM-1 A',
      5     'ND 1200-2200 CM-1 RANGE BASED ON      (04 JUN 1999)',
      6     '           AERI-ER FROM SHEBA, TOBIN ET AL., 1998  ',
@@ -1007,35 +1151,43 @@ C
      *     '  O2 COLLISION INDUCED BANDS HAVE BEEN ADDED (15000',
      *     ' - 29870 CM-1); GREENBLATT ET AL. 1990 (8 MAY 2000)',
      1     '  The nu2 CO2 increased by a factor of 7: based on ',
-     1     'U  Wisc. AFWEX and AERI_xr at ARM NSA   (July 2002)',
+     1     'U  Wisc. AFWEX and AERI_xr at ARM NSA    (Jul 2002)',
      2     '  *********   The entire water vapor continuum has ',
-     2     'been revised   *********            (December 2002)',
+     2     'been revised   *********                 (Dec 2002)',
      3     '  *********   This continuum is based on a new line',
-     3     ' shape/collision induced formulation, mt_ckd  *** )',
+     3     ' shape/collision induced formulation, mt_ckd ******',
      4     '  H2O foreign modified in the 250-550 cm-1 region; ',
-     4     'results now consistent with ckd_2.4.1 (August 2004)',
+     4     'results now consistent with ckd_2.4.1    (Aug 2004)',
      5     '  Collision induced nitrogen 0-350 cm-1 increased (',
-     5     '~1.35):  Boissoles at al., 2003    (September 2004)',
+     5     '~1.35):  Boissoles at al., 2003          (Sep 2004)',
      6     '  Nu2 CO2: with P-R line mixing included; factor of',
      6     ' 7 increase has been reduceed to 4.5     (May 2006)',
      7     '  CO2: Based on Hartmann P-Q-R line mixing.  Modifi',
-     7     'cation to v3 band based on AIRS data.   (July 2007)',
+     7     'cation to v3 band based on AIRS data.    (Jul 2007)',
      8     '  H2O foreign modified in 250-550 cm-1 region based',
-     8     ' on analyses of nsa aeri_xr data.  (September 2007)',
+     8     ' on analyses of nsa aeri_er data.        (Sep 2007)',
      9     '  CO2: Fundamental change in the lblrtm fourth func',
      9     'tion with consequent changes in continuum(Nov 2007)',
      *     '  Bug fix impacting the nitrogen continuum in the 0',
-     *     '-350 cm-1 region.                   (November 2007)',
+     *     '-350 cm-1 region.                        (Nov 2007)',
      1     '  Analytic Derivative (species retrievals): n2 cont',
-     1     'inuum removed from Jacobian calculation(March 2008)',
+     1     'inuum removed from Jacobian calculation  (Mar 2008)',
      2     '  Bug fix: corrects error in which Analytic Derivat',
      2     'ive result depends on starting wavenumber(Aug 2008)',
      3     '  H2O: modification to self and foreign continuum (',
      3     'microwave and IR ARM data 0-600 cm-1)    (Nov 2008)',
-     4     '                                                   ',
-     4     '                                                   ',
-     5     '  -------------------------------------------------',
-     5     '---------------------------------------------------'/
+     4     '  CO2: modification from 2000-3200 cm-1 (AERI(ARM), ',
+     4     'IASI AIRS measurements); Temp. dep. added(Jan 2010)',
+     5     '  H2O: modification to self cont. 2000-3000 cm-1   ',
+     5     '(IASI data, fit to near-IR results of              ',
+     6     '  Bicknell et al., 2006 and Fulghum and Tilleman,  ', 
+     6     '1991                                               ',
+     7     '  Updated common block for constants               ',
+     7     '                                         (May 2010)',
+     8     '  Minor bug fixes, updated continuum summary info,',
+     8     '  made consistent with monortm contnm.f (Jan 2011)',
+     9     '  -------------------------------------------------',
+     9     '---------------------------------------------------'/
 C
       END
 C
@@ -1063,7 +1215,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       DO 10 J = 1, NPTC                                                   F02410
@@ -1572,7 +1724,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       DO 10 J = 1, NPTC                                                   F07360
@@ -2080,7 +2232,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       DO 10 J = 1, NPTC   
@@ -2566,39 +2718,58 @@ C
 C
 C     --------------------------------------------------------------
 C
-      SUBROUTINE FRNCO2 (V1C,V2C,DVC,NPTC,C)                              F17090
+      SUBROUTINE FRNCO2 (V1C,V2C,DVC,NPTC,C,tave)                         F17090
 C                                                                         F17100
       IMPLICIT REAL*8           (V)                                     ! F17110
 
       parameter (n_absrb=5050)
 C                                                                         F17120
+      dimension tdep_bandhead(1196:1220)
+
+C     Temparature dependence coefficients for wavenumbers between 2386
+C     and 2434. Computed based on (line-coupled) continuum coefficients
+C     at 250K and 296K, set to unity at T_eff (determined by invariance
+C     of calculations in this region for IASI low PWV cases).
+      data (tdep_bandhead(i),i=1196,1220)/
+     &    1.44E-01,3.61E-01,5.71E-01,7.63E-01,8.95E-01,
+     &    9.33E-01,8.75E-01,7.30E-01,5.47E-01,3.79E-01,
+     &    2.55E-01,1.78E-01,1.34E-01,1.07E-01,9.06E-02,
+     &    7.83E-02,6.83E-02,6.00E-02,5.30E-02,4.72E-02,
+     &    4.24E-02,3.83E-02,3.50E-02,3.23E-02,3.01E-02/
+      data t_eff/246./
+
       COMMON /ABSORB/ V1ABS,V2ABS,DVABS,NPTABS,ABSRB(n_absrb)                F17130
       COMMON /FCO2/ V1S,V2S,DVS,NPTS,S(5003)                              F17140
       DIMENSION C(*)                                                      F17150
 C                                                                         F17160
+      trat = tave/t_eff
+
       DVC = DVS                                                           F17170
       V1C = V1ABS-DVC                                                     F17180
       V2C = V2ABS+DVC                                                     F17190
 C                                                                         F17200
       IF (V1C.LT.V1S) then
-         I1 = -1 
+          I1 = -1 
       else
-         I1 = (V1C-V1S)/DVS + 0.01
+          I1 = (V1C-V1S)/DVS + 0.01
       end if
 C                                    
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
-c
+c     
       DO 10 J = 1, NPTC                                                   F17280
-         I = I1+(J-1)                                                         F17290
-         C(J) = 0.                                                        F17300
-         IF ((I.GE.1).AND.(I.LE.NPTS)) THEN                               F17310
-            C(J) = S(I)                                                   F17320
-         ENDIF                                                            F17330
-   10 CONTINUE                                                            F17340
+          I = I1+(J-1)                                                    F17290
+          C(J) = 0.                                                       F17300
+          IF ((I.GE.1).AND.(I.LE.NPTS)) THEN                              F17310
+              tcor = 1.
+              if (i .ge. 1196 .and. i .le. 1220) 
+     &            tcor = (trat)**tdep_bandhead(i)
+              C(J) = tcor * S(I)                                          F17320
+          ENDIF                                                           F17330
+  10  CONTINUE                                                            F17340
 C                                                                         F17350
       RETURN                                                              F17360
 C                                                                         F17370
@@ -3794,7 +3965,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
 c*******  ABSORPTION COEFFICIENT IN UNITS OF CM-1 AMAGAT-2 
@@ -3811,7 +3982,7 @@ c        fo2 is now ~ the ratio of alpha(n2-o2)/alpha(n2-n2)
 c        Eq's 7 and 8 in the Boissoles paper.
 
 c        fo2(i) = (sf_T - 1.)*(xn2**2)/(xn2*xo2)
-         fo2(i) = (sf_T - 1.)*(xn2)/(xo2)
+         fo2(j) = (sf_T - 1.)*(xn2)/(xo2)
 
    10 CONTINUE
 C
@@ -3958,7 +4129,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       do 10 j=1,nptc
@@ -4102,7 +4273,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       DO 10 J = 1, NPTC                                                   F20710
@@ -6265,7 +6436,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)          
 c
       DO 10 J = 1, NPTC                                                   F21310
@@ -6952,7 +7123,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       DO 10 J = 1, NPTC                                                   F28020
@@ -7597,7 +7768,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       DO 10 J = 1, NPTC                                                   F34310
@@ -8242,7 +8413,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       DO 10 J = 1, NPTC                                                   F40600
@@ -8354,11 +8525,11 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       do 10 j=1,nptc
-         i = i1+j
+         i = i1+(j-1)
          C(J) = 0.                                                        F41620
          IF ((I.LT.1).OR.(I.GT.NPTS)) GO TO 10                            F41630
          VJ = V1C+DVC* REAL(J-1)                                          F41640
@@ -8476,7 +8647,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       DO 10 J = 1, NPTC                                                   F34310
@@ -8636,6 +8807,10 @@ C
       V1C = V1ABS-DVC                                                    
       V2C = V2ABS+DVC                                                    
 C                                                                        
+C The following lines prevent a possible problem that can only occur if 
+C v2abs-v1abs >> 2000 cm-1 (i.e. in the standalone continuum code).
+      if (v1c .lt. v1s) v1c = v1s - 2. * dvs
+      if (v2c .gt. v2s) v2c = v2s + 2. * dvs
       NPTC = (v2c-v1c)/dvc + 3.01
       V2C = V1C+DVc* REAL(NPTC-1)                                        
 c
@@ -8681,7 +8856,7 @@ C
 C
 C        O2 continuum formulated by Greenblatt et al. over the spectral region
 C        8797-29870 cm-1:  "Absorption Coefficients of Oxygen Between 
-c        330 and 1140 nm, G.D. Green blatt, J.J. Orlando, J.B. Burkholder,
+c        330 and 1140 nm, G.D. Greenblatt, J.J. Orlando, J.B. Burkholder,
 c        and A.R. Ravishabkara,  J. Geophys. Res., 95, 18577-18582, 1990. 
 c
 c        The units conversion  is to (cm^2/molec)/atm(o2)
@@ -8707,7 +8882,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       DO 10 J = 1, NPTC                                                   F34310
@@ -9100,7 +9275,7 @@ C
       V1C = V1S + DVS*REAL(I1-1)        
       I2 = (V2C-V1S)/DVS + 0.01            
       NPTC = I2-I1+3                 
-      IF (NPTC.GT.NPTS) NPTC=NPTS+1
+      IF (NPTC.GT.NPTS) NPTC=NPTS+4
       V2C = V1C + DVS*REAL(NPTC-1)       
 c
       DO 10 J = 1, NPTC                                                   F42480

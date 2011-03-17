@@ -507,7 +507,7 @@ C
 	!---Block data to be consistent with LBLRTM/LBLATM
 	Block Data phys_consts
 	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2 
+     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
         DATA PI / 3.1415926535897932 /   ! from http://www.cecm.sfu.ca/pi9
 
 c---------------------------------------------                
@@ -517,7 +517,10 @@ c---------------------------------------------
      1       CLIGHT / 2.99792458E+10 /, 
      2       AVOGAD / 6.02214199E+23 /, ALOSMT / 2.6867775E+19 /,
      3       GASCON / 8.314472  E+07 /,
-     4       RADCN1 / 1.191042722E-12 /, RADCN2 / 1.4387752    /
+     4       RADCN1 / 1.191042722E-12 /, RADCN2 / 1.4387752    /, 
+     5       GRAV   / 9.80665E+02/, CPDAIR /1.00464/,
+     6       AIRMWT / 28.964/, SECDY /8.64E+04/
+c
 c---------------------------------------------                
 c       units are generally cgs
 c       The first and second radiation constants are taken from NIST.
