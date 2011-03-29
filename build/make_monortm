@@ -12,8 +12,9 @@ include makefile.common
 #Set version name.  Used in the default OUTPUT and CDOTO variables.  If you
 # change those two variables from what is provided here, no need to set this variable.
 
+include make.vers_no
 PRODUCT = monortm
-VERSION = v4.3
+VERSION = v$(vers)
 
 # Set name of MONORTM executable.  
 OUTPUT = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE)
