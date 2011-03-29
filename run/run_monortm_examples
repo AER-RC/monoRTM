@@ -21,7 +21,7 @@ echo " case1 :downwelling; U.S. Standard atmosphere; input: in/MONORTM.IN_MDL_AT
 ln -s in/MONORTM.IN_MDL_ATM_dn        MONORTM.IN
 ln -s in/spectral_lines.dat.0_80      spectral_lines.dat
 
-time ../monortm_v4.3_linux_pgi_dbl
+time ../monortm_v4.4_linux_pgi_dbl
 
 \rm   MONORTM.IN
 \rm   spectral_lines.dat
@@ -42,7 +42,7 @@ echo " case2 :upwelling; U.S. Standard atmosphere; input: in/MONORTM.IN_MDL_ATM_
 ln -s in/MONORTM.IN_MDL_ATM_up        MONORTM.IN
 ln -s in/spectral_lines.dat.0_80      spectral_lines.dat
 
-time ../monortm_v4.3_linux_pgi_dbl
+time ../monortm_v4.4_linux_pgi_dbl
 
 \rm   MONORTM.IN
 \rm spectral_lines.dat
@@ -63,7 +63,7 @@ echo " case3 :downwelling; user-defined atmosphere; input: in/MONORTM.IN_NOSCALE
 ln -s in/MONORTM.IN_NOSCALE_IATM1_dn        MONORTM.IN
 ln -s in/spectral_lines.dat.0_80            spectral_lines.dat
 
-time ../monortm_v4.3_linux_pgi_dbl
+time ../monortm_v4.4_linux_pgi_dbl
 
 \rm   MONORTM.IN
 \rm spectral_lines.dat
@@ -84,7 +84,7 @@ ln -s in/MONORTM.IN_IATM0_dn               MONORTM.IN
 ln -s in/MONORTM_PROF.IN_sav               MONORTM_PROF.IN
 ln -s in/spectral_lines.dat.0_80           spectral_lines.dat
 
-time ../monortm_v4.3_linux_pgi_dbl
+time ../monortm_v4.4_linux_pgi_dbl
 
 \rm   MONORTM.IN
 \rm   MONORTM_PROF.IN
@@ -105,7 +105,7 @@ ln -s in/MONORTM.IN_IATM0_dn                    MONORTM.IN
 ln -s in/MONORTM_PROF.IN_liquid_cloud           MONORTM_PROF.IN
 ln -s in/spectral_lines.dat.0_80               spectral_lines.dat
 
-time ../monortm_v4.3_linux_pgi_dbl
+time ../monortm_v4.4_linux_pgi_dbl
 
 \rm   MONORTM.IN
 \rm   MONORTM_PROF.IN
@@ -125,7 +125,7 @@ echo " case6 :downwelling; user-defined atmosphere with scaled H2O; input: in/MO
 ln -s in/MONORTM.IN_SCALE_IATM1_MODEL0_HMOL1_dn        MONORTM.IN
 ln -s in/spectral_lines.dat.0_80                       spectral_lines.dat
 
-time ../monortm_v4.3_linux_pgi_dbl
+time ../monortm_v4.4_linux_pgi_dbl
 
 \rm   MONORTM.IN
 \rm spectral_lines.dat
@@ -143,7 +143,7 @@ echo " case7 :upwelling; user-defined atmosphere, lidar-type "on-line/off-line" 
 ln -s in/MONORTM.IN_IATM1_lidar_up                   MONORTM.IN
 ln -s in/spectral_lines.dat.6300_6700               spectral_lines.dat
 
-time ../monortm_v4.3_linux_pgi_dbl
+time ../monortm_v4.4_linux_pgi_dbl
 
 \rm   MONORTM.IN
 \rm spectral_lines.dat
