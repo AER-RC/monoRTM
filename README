@@ -72,7 +72,7 @@ Assuming you are in the main directory.
 
 . Compilation:
   > cd build
-  > make -f (with your chosen makefile from the makefiles subdirectory)
+  see file README.build_instructions in build
   > cd ..
 
 . Running (to generate example output):
