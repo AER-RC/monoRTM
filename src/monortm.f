@@ -166,9 +166,11 @@ C**********************************************************************
 	!
 	!
 	!***************************************************************
+        USE ModmMod, ONLY: MODM
+        USE CntnmFactors, ONLY: CntnmFactors_t
 	IMPLICIT REAL*8           (V) ! for consistency with LBLRTM routines
 	include "declar.incl"
-	INTEGER NWN,I,ICPL,IS,IOUT,IOD,IRT,J,ICNTNM,IATM
+	INTEGER NWN,I,ICPL,IS,IOUT,IOD,IRT,J,IATM
 	REAL*8 V1,V2,SECANT,XALTZ 
 	REAL TMPSFC,TPROF(mxlay),qprof(mxlay),press(mxlay)
         REAL zvec(mxlay),dzvec(mxlay),zbnd(mxfsc),zbnd2(mxfsc)
@@ -218,6 +220,7 @@ C**********************************************************************
      2    NLTEFL,LNFIL4,LNGTH4                                 
 
 	DIMENSION WMT(64)
+        TYPE(CntnmFactors_t) :: cntnmScaleFac
 
 c------------------------------------
 c Variables for analytic derivative calculation
@@ -235,9 +238,9 @@ c       ipts2 = same dimension as C
 	iuf = 0
 	v1absc = 0
 	v2absc = 0
-	dvaabsc = 0
+	dvabsc = 0
 	nptabsc = 0
-	deltT_pert = 0
+	delT_pert = 0
 c------------------------------------
 
 	!---INPUTS & GENERAL CONTROL PARAMETERS
@@ -289,7 +292,7 @@ c------------------------------------
 
 	!---Get info about IBMAX/ZBND/H1/H2...
 	CALL RDLBLINP(IATM,IOUT,IOD,IRT,NWN,WN,FILEIN,
-     1    ICNTNM,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
+     1    cntnmScaleFac,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
 
 
 	!---PRINT OUT MONORTM VERSION AND PROFILES NUMBER
@@ -314,7 +317,7 @@ c------------------------------------
 		 IPASS=0
 	      ENDIF
 	      CALL RDLBLINP(IATM,IOUT,IOD,IRT,NWN,WN,FILEIN,
-     1	         ICNTNM,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
+     1	         cntnmScaleFac,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
 	   ENDIF
 
 
@@ -421,10 +424,10 @@ C
 	   !* Third Step: OPTICAL DEPTHS COMPUTATION
 	   !***********************************************	
 
-           CALL MODM(ICPL,NWN,WN,dvset,NLAYRS,P,T,
+           CALL MODM(IPR,ICPL,NWN,WN,dvset,NLAYRS,P,T,
      1                 O,O_BY_MOL, OC, O_CLW, ODXSEC,
      4	               NMOL,WKL,WBRODL,
-     5	        SCLCPL,SCLHW,Y0RES,HFILE,ICNTNM,ixsect,ISPD)
+     5	        SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect,ISPD)
 	   
 	   !***********************************************
 	   !* Fifth Step: RADIATIVE TRANSFER
@@ -504,31 +507,6 @@ C
 	STOP
 	END
 
-	!---Block data to be consistent with LBLRTM/LBLATM
-	Block Data phys_consts
-	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
-        DATA PI / 3.1415926535897932 /   ! from http://www.cecm.sfu.ca/pi9
-
-c---------------------------------------------                
-c       Constants from NIST 01/11/2002
-c---------------------------------------------                
-	DATA PLANCK / 6.62606876E-27 /, BOLTZ  / 1.3806503E-16 /,
-     1       CLIGHT / 2.99792458E+10 /, 
-     2       AVOGAD / 6.02214199E+23 /, ALOSMT / 2.6867775E+19 /,
-     3       GASCON / 8.314472  E+07 /,
-     4       RADCN1 / 1.191042722E-12 /, RADCN2 / 1.4387752    /, 
-     5       GRAV   / 9.80665E+02/, CPDAIR /1.00464/,
-     6       AIRMWT / 28.964/, SECDY /8.64E+04/
-c
-c---------------------------------------------                
-c       units are generally cgs
-c       The first and second radiation constants are taken from NIST.
-c       They were previously obtained from the relations:
-c       RADCN1 = 2.*PLANCK*CLIGHT*CLIGHT*1.E-07      
-c       RADCN2 = PLANCK*CLIGHT/BOLTZ 
-c---------------------------------------------                
-	end
 c___________________________________________________________________
 c___________________________________________________________________
 c___________________________________________________________________
