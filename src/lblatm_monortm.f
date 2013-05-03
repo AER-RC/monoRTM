@@ -365,6 +365,8 @@ C                                                       AFGL-TR-80-0067  FA03290
 C                                                                        FA03300
 C**********************************************************************  FA03310
 C                                                                        FA03320
+      USE RtmConstants, ONLY: getRtmConst
+C
       PARAMETER (MXFSC=200, MXLAY=MXFSC+3,MXZMD=6000,                    FA03330
      *           MXPDIM=MXLAY+MXZMD,IM2=MXPDIM-2,MXMOL=39,MXTRAC=22)     FA03340
       PARAMETER (NXPBAR=MXLAY*(14+MXMOL)+2,NXZOUT=MXLAY*3+MXMOL*3)       FA03350
@@ -389,9 +391,9 @@ c
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,        FA03480
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA03490
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL    
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
+c
+      REAL PI,CLIGHT,AVOGAD,ALOSMT,GASCON
 C                                                                        FA03530
 C     BLANK COMMON FOR ZMDL                                              FA03540
 C                                                                        FA03550
@@ -476,6 +478,9 @@ C                                                                        FA04220
       DATA AIRMS1 / 2.153E25 /                                           FA04230
       SECNT0 = 1.0                                                       FA04240
 c
+      CALL getRtmConst(PI=PI,CLIGHT=CLIGHT,AVOGAD=AVOGAD,ALOSMT=ALOSMT,
+     *   GASCON=GASCON)
+C
       DEG = 180.0/PI                                                     FA04260
 C                                                                        FA04270
 C     GCAIR IS THE GAS CONSTANT FOR RHO IN MOL CM(-3), P IN MB, AND      FA04280
@@ -1676,8 +1681,6 @@ C                                                                        FA11820
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,     
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA11840
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA11850
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
 C                                                                        FA11880
       CHARACTER*8      HMOLS                                            &FA11890
@@ -1740,7 +1743,7 @@ C                                                                        FA12370
      *              66.01  , 146.05  , 34.08  , 46.03 ,                  FA12460
 c     approx;
      *              33.00  ,  15.99  , 98.    , 30.00 ,
-     *              97.    ,  28.05   , 32.04  /
+     *              97.    ,  44.5   , 32.04  /
       END                                                                FA12480
 C
 C     ----------------------------------------------------------------
@@ -3013,8 +3016,6 @@ c
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,  
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA24760
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA24770
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA24800
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA24810
@@ -3243,8 +3244,6 @@ c
 c
       character*1 jchar_st
 c      
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
 C                                                                        FA26740
 C     ***********************************************************        FA26750
@@ -3828,21 +3827,24 @@ C        J       19    REQUEST DEFAULT TO SPECIFIED MODEL ATMOSPHERE     FA30220
 C                                                                        FA30230
 C***************************************************************         FA30240
 C                                                                        FA30250
+      USE RtmConstants, ONLY: getRtmConst
+C
       PARAMETER (MXFSC=200, MXLAY=MXFSC+3,MXZMD=6000,                    FA30260
      *           MXPDIM=MXLAY+MXZMD,IM2=MXPDIM-2,MXMOL=39,MXTRAC=22)     FA30270
 C                                                                        FA30280
       COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,        FA30290
      *              NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       FA30300
      *              NLTEFL,LNFIL4,LNGTH4                                 FA30310
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON /DEAMT/ DENM(MXMOL,MXZMD),DENP(MXMOL,MXPDIM),DRYAIR(MXZMD)
 C                                                                        FA30340
+      REAL AVOGAD,ALOSMT,AIRMWT
 C
       INTEGER JUNIT(MXMOL)
       DIMENSION WMOL(MXMOL)
       DATA C1 / 18.9766 /,C2 / -14.9595 /,C3 / -2.4388 /                 FA30350
+C
+      CALL getRtmConst(AVOGAD=AVOGAD,ALOSMT=ALOSMT,WVMOLMASS=AIRMWT)
 C                                                                        FA30360
       RHOAIR = ALOSMT*(P/PZERO)*(TZERO/T)                                FA30370
       A = TZERO/T                                                        FA30380
@@ -3948,19 +3950,23 @@ C       'JUNIT' GOVERNS CHOICE OF UNITS -                                FA31200
 C                                                                        FA31210
 C**********************************************************************  FA31220
 C                                                                        FA31230
+      USE RtmConstants, ONLY: getRtmConst
+C
       PARAMETER (MXFSC=200, MXLAY=MXFSC+3,MXZMD=6000,                    FA31240
      *           MXPDIM=MXLAY+MXZMD,IM2=MXPDIM-2,MXMOL=39,MXTRAC=22)     FA31250
 C                                                                        FA31260
       COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,        FA31270
      *              NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       FA31280
      *              NLTEFL,LNFIL4,LNGTH4                                 FA31290
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
+C
+      REAL AVOGAD,ALOSMT,AIRMWT
 C                                                                        FA31320
       DATA C1 / 18.9766 /,C2 / -14.9595 /,C3 / -2.4388 /                 FA31330
 C                                                                        FA31340
       DENSAT(ATEMP) = ATEMP*B*EXP(C1+C2*ATEMP+C3*ATEMP**2)*1.0E-6        FA31350
+C                                                                        FA31340
+      CALL getRtmConst(AVOGAD=AVOGAD,ALOSMT=ALOSMT,WVMOLMASS=AIRMWT)
 C                                                                        FA31360
       RHOAIR = ALOSMT*(P/PZERO)*(TZERO/T)                                FA31370
       A = TZERO/T                                                        FA31380
@@ -4083,8 +4089,6 @@ C                                                                        FA32330
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,  
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA32380
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA32390
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
 C                                                                        FA32400
       ITER = 0                                                           FA32410
 C
@@ -5033,8 +5037,6 @@ C                                                                        FA40590
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,  
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA40640
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA40650
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA40680
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA40690
@@ -5460,8 +5462,6 @@ C                                                                        FA44630
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,  
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA44680
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA44690
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA44720
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA44730
@@ -5648,8 +5648,6 @@ C                                                                        FA46470
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,  
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA46520
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA46530
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA46560
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA46570
@@ -5703,8 +5701,6 @@ C                                                                        FA46470
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,  
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA46520
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA46530
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA46560
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA46570
@@ -5767,8 +5763,6 @@ C                                                                        FA47020
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,   
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA47070
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FA47080
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON RELHUM(MXZMD),HSTOR(MXZMD),ICH(4),AVH(16),TX(16),W(16)      FA47110
       COMMON WPATH(IM2,16),TBBY(IM2)                                     FA47120
@@ -5933,8 +5927,6 @@ C
      *              EXTID(10)
       CHARACTER*8  EXTID
 
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
 C
       DATA I_2/2/
@@ -6025,6 +6017,8 @@ C                                                                        FX00110
 C                             A.E.R. INC.     (AUGUST 1990)              FX00120
 C    *****************************************************************   FX00130
 C                                                                        FX00140
+      USE RtmConstants, ONLY: getRtmConst
+C
       PARAMETER (MXFSC=200,MXLAY=MXFSC+3,MXZMD=6000,             
      *     MXPDIM=MXLAY+MXZMD,IM2=MXPDIM-2,MXMOL=39,mx_xs=38,MXTRAC=22)
 C                                                                        FX00170
@@ -6049,8 +6043,6 @@ C                                                                        FX00340
 C     LAMCHN CARRIES HARDWARE SPECIFIC PARAMETERS                        FX00350
 C                                                                        FX00360
       COMMON /LAMCHN/ ONEPL,ONEMI,EXPMIN,ARGMIN                          FX00370
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
       COMMON /ADRIVE/ LOWFLG,IREAD,MODEL,ITYPE,NOZERO,NOP,H1F,H2F,       FX00400
      *                ANGLEF,RANGEF,BETAF,LENF,AV1,AV2,RO,IPUNCH,XVBAR,  FX00410
@@ -6108,12 +6100,16 @@ C                                                                        FX00870
       CHARACTER*7 PAFORM(2)                                              FX00900
       CHARACTER*4 PZFORM(5),ht1,ht2                                      FX00910
       CHARACTER*3 CTYPE
+C
+      REAL ALOSMT
 C                                                                        FX00920
       DATA HOTHER / ' OTHER    '/                                        FX00930
       DATA PZFORM / 'F8.6','F8.5','F8.4','F8.3','F8.2'/                  FX00940
       DATA PAFORM / '1PE15.7','  G15.7'/                                 FX00950
       DATA CFORM1 / '(1PE15.7,0PF10.2,10X,A3,I2,1X,2(F7.3,F8.3,F7.2))'/  FX00960
       DATA CFORM2 / '(  G15.7,0PF10.2,10X,A3,I2,23X,(F7.3,F8.3,F7.2))'/  FX00970
+C
+      CALL getRtmConst(ALOSMT=ALOSMT)
 C                                                                        FX00980
       WRITE (IPR,900)                                                    FX00990
 C                                                                        FX01000
@@ -6852,6 +6848,8 @@ C     GRID ZX INTO DENM ON THE GRID ZMDL.  EXPONENTIAL INTERPOLATION     FX05650
 C     IS USED.                                                           FX05660
 C     *****************************************************************  FX05670
 C                                                                        FX05680
+      USE RtmConstants, ONLY: getRtmConst
+C
       PARAMETER (MXFSC=200,MXLAY=MXFSC+3,MXZMD=6000,             
      *     MXPDIM=MXLAY+MXZMD,IM2=MXPDIM-2,MXMOL=39,mx_xs=38,MXTRAC=22)
 C                                                                        FX05710
@@ -6860,8 +6858,6 @@ C                                                                        FX05730
       COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,        FX05740
      *              NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       FX05750
      *              NLTEFL,LNFIL4,LNGTH4                                 FX05760
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL)
 C                                                                        FX05790
 C     LAMCHN CARRIES HARDWARE SPECIFIC PARAMETERS                        FX05800
@@ -6886,6 +6882,10 @@ C                                                                        FX05880
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                      FX05990
 C                                                                        FX06000
       DIMENSION ZX(MXZMD),DENX(MX_XS,MXZMD)                              FX06010
+C
+      REAL ALOSMT
+C
+      CALL getRtmConst(ALOSMT=ALOSMT)
 C                                                                        FX06020
       LX = 2                                                             FX06030
       DO 30 L = 1, IMMAX                                                 FX06040
@@ -7765,8 +7765,6 @@ C**************************************************************
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,
      *                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,             FA00920
      *                IPHMID,IPDIM,KDIM,KMXNOM,NMOL  
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     *                RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
 C
       REAL PM(MXZMD),TM(MXZMD),DENW(MXZMD),ZMDL(MXZMD)
       REAL H2O_MIXRAT(MXZMD),COMP_FACTOR(MXZMD),ZTEMP(MXZMD)
