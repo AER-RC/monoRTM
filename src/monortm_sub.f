@@ -79,6 +79,7 @@ C       RTM takes into account the cosmic background contribution.
 C       The cosmic radiation is hard coded (2.75 Kelvin). 
 C
 C-------------------------------------------------------------------------------
+        USE RtmConstants, ONLY: getRtmConst
 	include "declar.incl"
 	INTEGER NWN,NLAY,IRT,I,IOUT,IDU
 	REAL RADCN1,RADCN2
@@ -86,12 +87,12 @@ C-------------------------------------------------------------------------------
 	CHARACTER HVRSUB*15
 	REAL TMPSFC,ESFC,RSFC,SURFRAD,ALPH,COSMOS,TSKY
 	REAL O(NWNMX,MXLAY)
-	REAL fbeta,beta,bb_fn,X
-	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+	REAL fbeta,beta,X
 	COMMON /CVRSUB/ HVRSUB
-	BB_fn(V,fbeta)  = RADCN1*(V**3)/(EXP(V*fbeta)-1.)   
+
 	HVRSUB = '$Revision$' 
+
+        call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
 
 	!---Up and Down radiances
 
@@ -114,8 +115,8 @@ C-------------------------------------------------------------------------------
 	endif
 
 	DO I=1,NWN
-	   SURFRAD  = bb_fn(WN(I),beta)
-	   COSMOS   = bb_fn(WN(I),alph)
+	   SURFRAD  = bb_fn(REAL(WN(I)),beta)
+	   COSMOS   = bb_fn(REAL(WN(I)),alph)
 	   ESFC=EMISS(I)
 	   RSFC=REFLC(I)
 c
@@ -141,16 +142,16 @@ c
 
 	SUBROUTINE RAD_UP_DN(T,nlayer,TZ,WN,rup,trtot,O,rdn,NWN,
      1       IDU,IRT)
+        USE RtmConstants, ONLY: getRtmConst
 	IMPLICIT REAL*8 (V)      
 	include "declar.incl"
-	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+        REAL RADCN1,RADCN2
 	INTEGER  layer,nlayer,NWN,IDU,lmin,lmax,nl
 	REAL          beta,beta_a,bb,bba
 	!---local variables
 	REAL          bbVEC(MXLAY),bbaVEC(0:MXLAY),ODTOT(NWNMX)
 	REAL  O(NWNMX,MXLAY)
-	BB_fn(V,fbeta)  = RADCN1*(V**3)/(EXP(V*fbeta)-1.)
+        call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
 	IF (IDU.NE.1) STOP 'ERROR IN IDU. OPTION NOT SUPPORTED YET'
 	lmin=nlayer
 	lmax=1
@@ -237,7 +238,7 @@ c
 
 
 	SUBROUTINE RDLBLINP(IATM,IPLOT,IOD,IRT,NWN,WN,
-     1       FILEIN,ICNTNM,IXSECT,IBMAXOUT,ZBNDOUT,
+     1       FILEIN,cntnmScaleFac,IXSECT,IBMAXOUT,ZBNDOUT,
      2       H1fout,H2fout,ISPD,IPASSATM)
 C-------------------------------------------------------------------------------
 C
@@ -279,6 +280,7 @@ C
 C	 Sid Ahmed Boukabara, April 2001
 C	
 C-------------------------------------------------------------------------------
+        USE CntnmFactors, ONLY: CntnmFactors_t,applyCntnmCombo
 	include "declar.incl"
 	REAL*8           V1,V2,SECANT,XALTZ 
 	character*4 ht1,ht2
@@ -300,6 +302,7 @@ C-------------------------------------------------------------------------------
      1       NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,       
      2       NLTEFL,LNFIL4,LNGTH4,IPTHRK,IPATHL,M
 	character*8 XID,HMOLID,YID      
+        TYPE(CntnmFactors_t) :: cntnmScaleFac
 	COMMON /ADRIVE/ LOWFLG,IREAD,MODEL,ITYPE,NOZERO,NOP,H1F,H2F, 
      1       ANGLEF,RANGEF,BETAF,LENF,AV1,AV2,RO,IPUNCH,        
      2       XVBAR, HMINF,PHIF,IERRF,HSPACE                     
@@ -432,62 +435,17 @@ C-------------------------------------------------------------------------------
 	!------END CHECKING RECORD 1.2
 
 
-      IF (ICNTNM.EQ.0) THEN
-         XSELF = 0.0
-         XFRGN = 0.0
-         XCO2C = 0.0
-         XO3CN = 0.0
-         XO2CN = 0.0
-         XN2CN = 0.0
-         XRAYL = 0.0
-      ELSEIF (ICNTNM.EQ.1) THEN
-         XSELF = 1.0
-         XFRGN = 1.0
-         XCO2C = 1.0
-         XO3CN = 1.0
-         XO2CN = 1.0
-         XN2CN = 1.0
-         XRAYL = 1.0
-      ELSEIF (ICNTNM.EQ.2) THEN
-         XSELF = 0.0
-         XFRGN = 1.0
-         XCO2C = 1.0
-         XO3CN = 1.0
-         XO2CN = 1.0
-         XN2CN = 1.0
-         XRAYL = 1.0
-         ICNTNM = 1
-      ELSEIF (ICNTNM.EQ.3) THEN
-         XSELF = 1.0
-         XFRGN = 0.0
-         XCO2C = 1.0
-         XO3CN = 1.0
-         XO2CN = 1.0
-         XN2CN = 1.0
-         XRAYL = 1.0
-         ICNTNM = 1
-      ELSEIF (ICNTNM.EQ.4) THEN
-         XSELF = 0.0
-         XFRGN = 0.0
-         XCO2C = 1.0
-         XO3CN = 1.0
-         XO2CN = 1.0
-         XN2CN = 1.0
-         XRAYL = 1.0
-         ICNTNM = 1
-      ELSEIF (ICNTNM.EQ.5) THEN
-         XSELF = 1.0
-         XFRGN = 1.0
-         XCO2C = 1.0
-         XO3CN = 1.0
-         XO2CN = 1.0
-         XN2CN = 1.0
-         XRAYL = 0.0
-         ICNTNM = 1
-      ELSEIF (ICNTNM.EQ.6) THEN
-         READ(IRD,*) XSELF, XFRGN, XCO2C, XO3CN, XO2CN, XN2CN, XRAYL   !---record 1.2a
-         ICNTNM = 1
-      ENDIF   
+        IF (ICNTNM.EQ.6) THEN
+           READ(IRD,*) cntnmScaleFac%XSELF,   ! each is type REAL   |---record 1.2a
+     &                 cntnmScaleFac%XFRGN, 
+     &                 cntnmScaleFac%XCO2C, 
+     &                 cntnmScaleFac%XO3CN, 
+     &                 cntnmScaleFac%XO2CN, 
+     &                 cntnmScaleFac%XN2CN, 
+     &                 cntnmScaleFac%XRAYL
+        ELSE
+           CALL applyCntnmCombo(ICNTNM,cntnmScaleFac)
+        ENDIF   
 
 			
 	IF (IEMIT.EQ.2) THEN
@@ -819,6 +777,7 @@ c
      1       O,O_BY_MOL, OC, O_CLW, ODXSEC, 
      2       WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS,
      4       NLAY,NMOL,ANGLE,IOT,IOD,FILEOUT)
+        USE RtmConstants, ONLY: getRtmConst
 	include "declar.incl"
 
 	INTEGER I,J,NWN,NLAY,NMOL,NPR,IOD,IOL
@@ -836,8 +795,7 @@ c
      &     O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY),
      &	   odxsec(nwnmx,mxlay)
 
-	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+        REAL CLIGHT
 
         save cmol, id_mol, kount
 
@@ -851,6 +809,8 @@ c
      *             ' COF2   ' , '  SF6   ' , '  H2S   ' , ' HCOOH  ' ,   FA12330
      *             '  HO2   ' , '   O+   ' , ' ClONO2 ' , '   NO+  ' ,
      *             '  HOBr  ' , ' C2H4   ' , ' CH3OH  '/
+
+        call getRtmConst(CLIGHT=CLIGHT)
 
     ! set up headers: assumes same molecules used in all profiles!!!
 	
@@ -947,12 +907,12 @@ c
 
 
 	SUBROUTINE CORR_OPTDEPTH(INP,NLAY,SECNTA,NWN,ANGLE,O,IRT)
+        USE RtmConstants, ONLY: getRtmConst
 	include "declar.incl"
 	INTEGER INP,J,NLAY,NWN,I,IRT
 	REAL PI,SECNT,ALPHA,ANGLE
 	REAL O(NWNMX,MXLAY)
-	COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+        CALL getRtmConst(PI=PI)
 	!----SANITY CHECK
 	IF (IRT.EQ.3) alpha=(angle*PI)/180.
 	IF ((IRT.EQ.1).and.(ANGLE.GT.90.)) alpha=((180.-angle)*PI)/180.
@@ -1214,7 +1174,7 @@ C
 	      WRITE (IPR,985)                                            
 	      L = NLAYRS                                                 
 	      WRITE (IPR,980) L,PWTD,TWTD,
-     *                 (WMT(M),M=1,7),SUMN2    
+     *                 (WMT(M),M=1,7),wsum_brod
 	   ENDIF                                                       
 	ELSE
 	   WRITE (IPR,975) (HMOLID(I),I=1,7),HOLN2
@@ -1226,7 +1186,7 @@ C
 	      WRITE (IPR,985)
 	      L = NLAYRS
 	      WRITE (IPR,991) L,PWTD,TWTD,
-     *                  (WMT(M),M=1,7),SUMN2
+     *                  (WMT(M),M=1,7),wsum_brod
 	   ENDIF
 	ENDIF
 C
@@ -1730,6 +1690,8 @@ C               (stored through declar.incl)
 C    
 C----------------------------------------------------------------
 
+      USE RtmConstants, ONLY: getRtmConst
+
       IMPLICIT REAL*8           (V) ! for consistency with LBLRTM routines
 
       Include "declar.incl"
@@ -1766,10 +1728,7 @@ C
 C     NSPECR(NXS) IS THE NUMBER OF SPECTRAL REGIONS FOR THE MOLECULE NX   
 C**********************************************************************   
 C                        
-
       CHARACTER*10 XSFILE,XSNAME,ALIAS,XNAME,XFILS(6),BLANK,xxfile,ctorr               
-      COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     $     RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
       COMMON /PATHX/ IXMAX,IXMOLS,IXINDX(mx_xs),XAMNT(mx_xs,MXLAY)        
       COMMON /XSECTF/ XSFILE(6,5,mx_xs),XSNAME(mx_xs),ALIAS(4,mx_xs)
       COMMON /XSECTR/ V1FX(5,MX_XS),V2FX(5,MX_XS),DVFX(5,MX_XS),     
@@ -1777,6 +1736,8 @@ C
      *                IXFORM(5,MX_XS),XSMASS(MX_XS),XDOPLR(5,MX_XS), 
      *                NUMXS,IXSBIN    
       REAL ODXSEC(NWNMX,MXLAY)
+C
+      REAL RADCN2
 C                                                                         
       DIMENSION IXFLG(mx_xs),tx(6,5,mx_xs),pdx(6,5,mx_xs)
       dimension xsdat(150000,6),xspd(150000)
@@ -1787,6 +1748,8 @@ C
 
       data dvbuf /1.0/         ! used to check if a particular xs file needs to be processed
       DATA CTORR / '      TORR'/
+C
+      call getRtmConst(RADCN2=RADCN2)
 
 C     DEFINE PRESSURE CONVERSIONS                                         E07160
 C                                                                         E07170
@@ -2025,6 +1988,7 @@ C    Tmr:	The mean radiating temperature spectrum, in K (NWN)
 C
 C  Vivienne Payne, AER Inc, 2008
 C------------------------------------------------------------------------------
+        USE RtmConstants, ONLY: getRtmConst
 	include "declar.incl"
 	integer nlayrs, nwn
         integer ifr, ilay
@@ -2033,11 +1997,10 @@ C------------------------------------------------------------------------------
         real    odt, odvi, vv, beta, beta_a
 	real    O(nwnmx,mxlay)
         real    radtmr, x
-	bb_fn(v,fbeta)  = radcn1*(v**3)/(exp(v*fbeta)-1.)
         real    tmr(*)
-        COMMON /CONSTS/ PI,PLANCK,BOLTZ,CLIGHT,AVOGAD,ALOSMT,GASCON,
-     1       RADCN1,RADCN2,GRAV,CPDAIR,AIRMWT,SECDY 
+        REAL RADCN1,RADCN2
 
+        call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
 
 	do ifr=1,nwn
             sumtau = 0.
@@ -2080,5 +2043,22 @@ C this bit is based on Han & Westwater (2000) eq 14
         return
        end
 
+
+        function bb_fn(v,fbeta)
+
+          USE RtmConstants, ONLY: getRtmConst
+
+          ! Arguments
+          real, intent(in)  :: v
+          real, intent(in)  :: fbeta
+          real              :: bb_fn
+
+          ! Variable
+          real RADCN1
+
+          call getRtmConst(RADCN1=RADCN1)
+	  bb_fn = radcn1*(v**3)/(exp(v*fbeta)-1.)
+
+        end function bb_fn
 
 
