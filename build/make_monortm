@@ -1,0 +1,69 @@
+# $Revision: 11217 $
+# Makefile for monortm
+# From monortm/build directory, type: gmake -f make_monortm <TARGET>
+
+# Include file containing user input. Directory is referenced to 
+# parent directory and common build rules
+include makefile.common
+
+###############################
+# Set variables/
+###############################
+#Set version name.  Used in the default OUTPUT and CDOTO variables.  If you
+# change those two variables from what is provided here, no need to set this variable.
+
+include make.vers_no
+PRODUCT = monortm
+VERSION = v$(vers)
+
+# Set name of MONORTM executable.  
+OUTPUT = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE)
+
+# Set directory for object files.  
+CDOTO = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE).obj
+# Set directory for module files.  
+FDOTM = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE).mods
+
+# Set directory containing source files, relative to main directory from which
+# you are executing the makefile
+CPATH = ../src
+
+# Files contained in src directory.  If additional .f files are added,
+# add to this list. 
+SRCS = RtmConstants.f90 CntnmFactors.f90 monortm_sub.f modm.f90 monortm.f contnm.f \
+tips_2003.f lblatm_monortm.f lblrtm_sub.f 
+
+# Module dependencies
+lblrtm_sub.o monortm.o modm.o: CntnmFactors.o
+lblrtm_sub.o modm.o lblatm_monortm.o : RtmConstants.o
+monortm.o: modm.o
+
+INCLUDES:= -I. -I$(FDOTM) 
+
+# Define makefile name
+MAKEFILE=make_$(PRODUCT)
+
+# Rule for compiling .o files
+
+%.o:%.f
+	$(FC) -c $(FCFLAG) $(INCLUDES) $< -o ${CDOTO}/$@
+##	$(FC) -c $(FCFLAG) $(INCLUDES) -v  $< -o ${CDOTO}/$@
+
+%.o:%.f90
+	$(FC) -c $(FCFLAG) $(INCLUDES) $< -o ${CDOTO}/$@
+##	$(FC) -c $(FCFLAG) $(INCLUDES) -v  $< -o ${CDOTO}/$@
+
+# Object file names
+OBSS:= $(patsubst %.f90,%.o,$(patsubst %.f,%.o,$(SRCS)))
+# Prepend the object file path to each file name
+OBPATH := $(foreach objt,$(OBSS),$(CDOTO)/$(objt))
+
+build : buildmain sweep
+
+buildmain : $(OBSS)
+	$(FC) $(FCFLAG) -o ../$(OUTPUT) $(OBPATH)
+
+.PHONY: sweep
+sweep:
+	@#sweep the .mod files so another platform does not confuse them
+	find . -name '*.mod' -maxdepth 1 -exec mv {} $(FDOTM)/. \;
