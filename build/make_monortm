@@ -15,7 +15,6 @@ include makefile.common
 include make.vers_no
 PRODUCT = monortm
 VERSION = v$(vers)
-
 # Set name of MONORTM executable.  
 OUTPUT = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE)
 
@@ -30,12 +29,13 @@ CPATH = ../src
 
 # Files contained in src directory.  If additional .f files are added,
 # add to this list. 
-SRCS = RtmConstants.f90 CntnmFactors.f90 monortm_sub.f modm.f90 monortm.f contnm.f \
-tips_2003.f lblatm_monortm.f lblrtm_sub.f 
+SRCS = CntnmFactors.f90 lblparams.f90 phys_consts.f90 planet_earth.f90 contnm.f90 monortm_sub.f90 modm.f90 \
+monortm.f tips_2003.f lblatm.f90 lblrtm_sub.f90
 
 # Module dependencies
-lblrtm_sub.o monortm.o modm.o: CntnmFactors.o
-lblrtm_sub.o modm.o lblatm_monortm.o : RtmConstants.o
+monortm.o modm.o: CntnmFactors.o
+monortm_sub.o modm.o lblatm.o: phys_consts.o
+lblatm.o modm.o: planet_earth.o
 monortm.o: modm.o
 
 INCLUDES:= -I. -I$(FDOTM) 
@@ -64,6 +64,7 @@ buildmain : $(OBSS)
 	$(FC) $(FCFLAG) -o ../$(OUTPUT) $(OBPATH)
 
 .PHONY: sweep
+
 sweep:
 	@#sweep the .mod files so another platform does not confuse them
 	find . -name '*.mod' -maxdepth 1 -exec mv {} $(FDOTM)/. \;
