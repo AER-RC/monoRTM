@@ -4,8 +4,9 @@
 !     created:	        $Date: 2011-03-29 13:43:38 -0400 (Tue, 29 Mar 2011) $
 MODULE ModmMod
 
-  USE RtmConstants, ONLY: getRtmConst
-
+  !USE RtmConstants, ONLY: getRtmConst
+  USE phys_consts
+  USE planet_consts, ONLY: AIRMWT, WVMWT
   PRIVATE
 
   !---------------------------------------------------------------
@@ -176,7 +177,7 @@ CONTAINS
       ENDIF
 
 ! Set up useful constants
-      CALL getRtmConst(RADCN2=RADCN2)
+      !CALL getRtmConst(RADCN2=RADCN2)
       ONEPL = 1.001                                                       
       ONEMI = 0.999                                                      
       ARGMIN = 34.                                                      
@@ -234,6 +235,7 @@ CONTAINS
 
 ! calculate TIPS using Gamache routine rather that QOFT
          call tips_2003(nmol,t(k),scor)
+ 
 
 	 DO M=1,NWN                !loop over the wavenumbers
 
@@ -364,7 +366,7 @@ CONTAINS
       COMMON /ISVECT/ ISO_MAX(NMOL),SMASS(nmol,9)
       common /iso_id/ iso_82(98)
       
-      call getRtmConst(BOLTZ=BOLTZ,CLIGHT=CLIGHT,AVOGAD=AVOGAD)
+      !call getRtmConst(BOLTZ=BOLTZ,CLIGHT=CLIGHT,AVOGAD=AVOGAD)
       M=SMASS(mol,iso)
       HALFWHM_D=(XNU/CLIGHT)*SQRT(2.*LOG(2.)*((BOLTZ*T)/(M/AVOGAD)))
       END FUNCTION HALFWHM_D
@@ -608,8 +610,8 @@ CONTAINS
                        Xn,Xn_WV)
       REAL PLANCK,BOLTZ,CLIGHT,WVMOLMASS,DRYMOLMASS
       REAL wk(39),wbrod
-      CALL getRtmConst(PLANCK=PLANCK,BOLTZ=BOLTZ,CLIGHT=CLIGHT, &
-        WVMOLMASS=WVMOLMASS,DRYMOLMASS=DRYMOLMASS)
+      !CALL getRtmConst(PLANCK=PLANCK,BOLTZ=BOLTZ,CLIGHT=CLIGHT, &
+      !  WVMOLMASS=WVMOLMASS,DRYMOLMASS=DRYMOLMASS)
       RADCT=PLANCK*CLIGHT/BOLTZ !in K/cm-1
       T0=296.                   !in K
       P0=1013.25                !in HPa
@@ -775,7 +777,7 @@ CONTAINS
       COMPLEX EPS,RE
       REAL*8 WN
       REAL PI,CLIGHT
-      CALL getRtmConst(PI=PI,CLIGHT=CLIGHT) 
+      !CALL getRtmConst(PI=PI,CLIGHT=CLIGHT) 
       FREQ=WN*CLIGHT/1.E9
       IF ((FREQ.GT.3000.).AND.(CLW.GT.0.)) THEN
          WRITE(*,*) 'STOP: CLOUD IS PRESENT FOR SIMULATIONS'
@@ -801,7 +803,7 @@ CONTAINS
       REAL*8 Z
       REAL XLORENTZ
       REAL PI
-      CALL getRtmConst(PI=PI)
+      !CALL getRtmConst(PI=PI)
       XLORENTZ=1./(PI*(1.+(Z**2))) 
       RETURN
       END FUNCTION XLORENTZ
@@ -838,7 +840,7 @@ CONTAINS
         .91176E+00,.91945E+00,.92741E+00,.93562E+00,.94409E+00,    &
         .95282E+00,.96179E+00,.97100E+00,.98044E+00,.99011E+00,    &
         .10000E+01,.10000E+01/                             
-      call getRtmConst(PI=PI)
+      !call getRtmConst(PI=PI)
       !---computes zeta
       zeta=alphal/(alphal+alphad)
       !---interpolation of the AVC

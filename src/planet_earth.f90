@@ -27,6 +27,7 @@ MODULE planet_consts   ! Physical constants for Earth
 
   real, parameter :: AIRMWT = 28.964  ! air molecular weight (grams/mole)
   real, parameter :: XMASS_DRY = AIRMWT*1.E-3   ! previously was 0.0289654
+  real, parameter :: WVMWT  = 18.016
 
 CONTAINS
 

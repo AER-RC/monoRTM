@@ -79,10 +79,11 @@
 !       The cosmic radiation is hard coded (2.75 Kelvin). 
 !
 !-------------------------------------------------------------------------------
-  USE RtmConstants, ONLY: getRtmConst
+  !USE RtmConstants, ONLY: getRtmConst
+  USE phys_consts, ONLY: RADCN1, RADCN2
   include "declar.incl"
   INTEGER NWN,NLAY,IRT,I,IOUT,IDU
-  REAL RADCN1,RADCN2
+  !REAL RADCN1,RADCN2
   REAL*8 V
   CHARACTER HVRSUB*15
   REAL TMPSFC,ESFC,RSFC,SURFRAD,ALPH,COSMOS,TSKY
@@ -92,7 +93,7 @@
 
   HVRSUB = '$Revision: 19812 $' 
 
-  call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
+  !call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
 
 !---Up and Down radiances
 
@@ -141,16 +142,17 @@
 
 
   SUBROUTINE RAD_UP_DN(T,nlayer,TZ,WN,rup,trtot,O,rdn,NWN,IDU,IRT)
-  USE RtmConstants, ONLY: getRtmConst
+  !USE RtmConstants, ONLY: getRtmConst
+  USE phys_consts, ONLY: RADCN1, RADCN2
   IMPLICIT REAL*8 (V)      
   include "declar.incl"
-  REAL RADCN1,RADCN2
+  !REAL RADCN1,RADCN2
   INTEGER  layer,nlayer,NWN,IDU,lmin,lmax,nl
   REAL          beta,beta_a,bb,bba
 !---local variables
   REAL          bbVEC(MXLAY),bbaVEC(0:MXLAY),ODTOT(NWNMX)
   REAL  O(NWNMX,MXLAY)
-  call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
+  !call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
   IF (IDU.NE.1) STOP 'ERROR IN IDU. OPTION NOT SUPPORTED YET'
   lmin=nlayer
   lmax=1
@@ -769,7 +771,8 @@
             O,O_BY_MOL, OC, O_CLW, ODXSEC, &
             WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS, &
             NLAY,NMOL,ANGLE,IOT,IOD,FILEOUT) 
-       USE RtmConstants, ONLY: getRtmConst
+       !USE RtmConstants, ONLY: getRtmConst
+       USE phys_consts, ONLY: CLIGHT
        include "declar.incl"
 
        INTEGER I,J,NWN,NLAY,NMOL,NPR,IOD,IOL
@@ -787,7 +790,7 @@
            O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY), &
            odxsec(nwnmx,mxlay)
 
-       REAL CLIGHT
+       !REAL CLIGHT
 
        save cmol, id_mol, kount
 
@@ -803,7 +806,7 @@
              '  HO2   ' , '   O+   ' , ' ClONO2 ' , '   NO+  ' ,&
              '  HOBr  ' , ' C2H4   ' , ' CH3OH  '/
 
-       call getRtmConst(CLIGHT=CLIGHT)
+       !call getRtmConst(CLIGHT=CLIGHT)
 
     ! set up headers: assumes same molecules used in all profiles!!!
 
@@ -898,12 +901,14 @@
 
 
   SUBROUTINE CORR_OPTDEPTH(INP,NLAY,SECNTA,NWN,ANGLE,O,IRT)
-  USE RtmConstants, ONLY: getRtmConst
+  !USE RtmConstants, ONLY: getRtmConst
+  USE phys_consts, ONLY: PI
   include "declar.incl"
   INTEGER INP,J,NLAY,NWN,I,IRT
-  REAL PI,SECNT,ALPHA,ANGLE
+  REAL SECNT,ALPHA,ANGLE
+  !REAL PI
   REAL O(NWNMX,MXLAY)
-  CALL getRtmConst(PI=PI)
+  !CALL getRtmConst(PI=PI)
 !----SANITY CHECK
   IF (IRT.EQ.3) alpha=(angle*PI)/180.
   IF ((IRT.EQ.1).and.(ANGLE.GT.90.)) alpha=((180.-angle)*PI)/180.
@@ -1657,8 +1662,8 @@ include "declar.incl"
 !    
 !----------------------------------------------------------------
 
-      USE RtmConstants, ONLY: getRtmConst
-
+      !USE RtmConstants, ONLY: getRtmConst
+      USE phys_consts, ONLY: RADCN2
       IMPLICIT REAL*8           (V) ! for consistency with LBLRTM routines
 
       Include "declar.incl"
@@ -1704,7 +1709,7 @@ include "declar.incl"
                 NUMXS,IXSBIN    
       REAL ODXSEC(NWNMX,MXLAY)
 !
-      REAL RADCN2
+      !REAL RADCN2
 !                                                                         
       DIMENSION IXFLG(mx_xs),tx(6,5,mx_xs),pdx(6,5,mx_xs)
       dimension xsdat(150000,6),xspd(150000)
@@ -1716,7 +1721,7 @@ include "declar.incl"
       data dvbuf /1.0/         ! used to check if a particular xs file needs to be processed
       DATA CTORR / '      TORR'/
 !
-      call getRtmConst(RADCN2=RADCN2)
+      !call getRtmConst(RADCN2=RADCN2)
 
 !     DEFINE PRESSURE CONVERSIONS
 !
@@ -1955,7 +1960,8 @@ include "declar.incl"
 !
 !  Vivienne Payne, AER Inc, 2008
 !------------------------------------------------------------------------------
-        USE RtmConstants, ONLY: getRtmConst
+        !USE RtmConstants, ONLY: getRtmConst
+        USE phys_consts, ONLY: RADCN1,RADCN2
 	include "declar.incl"
 	integer nlayrs, nwn
         integer ifr, ilay
@@ -1965,9 +1971,9 @@ include "declar.incl"
 	real    O(nwnmx,mxlay)
         real    radtmr, x
         real    tmr(*)
-        REAL RADCN1,RADCN2
+        !REAL RADCN1,RADCN2
 
-        call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
+        !call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
 
 	do ifr=1,nwn
             sumtau = 0.
@@ -2013,17 +2019,17 @@ include "declar.incl"
 
         function bb_fn(v,fbeta)
 
-          USE RtmConstants, ONLY: getRtmConst
-
+          !USE RtmConstants, ONLY: getRtmConst
+          USE phys_consts, ONLY: RADCN1
           ! Arguments
           real, intent(in)  :: v
           real, intent(in)  :: fbeta
           real              :: bb_fn
 
           ! Variable
-          real RADCN1
+          !real RADCN1
 
-          call getRtmConst(RADCN1=RADCN1)
+          !call getRtmConst(RADCN1=RADCN1)
 	  bb_fn = radcn1*(v**3)/(exp(v*fbeta)-1.)
 
         end function bb_fn
