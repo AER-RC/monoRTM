@@ -79,12 +79,10 @@
 !       The cosmic radiation is hard coded (2.75 Kelvin). 
 !
 !-------------------------------------------------------------------------------
-  !USE RtmConstants, ONLY: getRtmConst
   USE phys_consts, ONLY: RADCN1, RADCN2
   include "declar.incl"
   INTEGER NWN,NLAY,IRT,I,IOUT,IDU
-  !REAL RADCN1,RADCN2
-  REAL*8 V
+  REAL*8 VV
   CHARACTER HVRSUB*15
   REAL TMPSFC,ESFC,RSFC,SURFRAD,ALPH,COSMOS,TSKY
   REAL O(NWNMX,MXLAY)
@@ -93,7 +91,6 @@
 
   HVRSUB = '$Revision: 19812 $' 
 
-  !call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
 
 !---Up and Down radiances
 
@@ -116,14 +113,16 @@
   endif
 
   DO I=1,NWN
-     SURFRAD  = bb_fn(REAL(WN(I)),beta)
-     COSMOS   = bb_fn(REAL(WN(I)),alph)
+     vv = wn(i)
+     SURFRAD  = bb_fn(vv,beta)
+     COSMOS   = bb_fn(vv,alph)
      ESFC=EMISS(I)
      RSFC=REFLC(I)
 !
 !    Upwelling Case
      IF (IRT.EQ.1) RAD(I) = RUP(I) + &
          trtot(i) * (esfc*SURFRAD + rsfc*(rdn(i)+trtot(i)*COSMOS)) ! kcp 09/21/07
+     
 !
 !    Limb Case      trtot is taken as the transmittance from the tangent point to h1 (SAC)
      IF (IRT.EQ.2) RAD(I) = RUP(I) + &
@@ -142,17 +141,14 @@
 
 
   SUBROUTINE RAD_UP_DN(T,nlayer,TZ,WN,rup,trtot,O,rdn,NWN,IDU,IRT)
-  !USE RtmConstants, ONLY: getRtmConst
   USE phys_consts, ONLY: RADCN1, RADCN2
   IMPLICIT REAL*8 (V)      
   include "declar.incl"
-  !REAL RADCN1,RADCN2
   INTEGER  layer,nlayer,NWN,IDU,lmin,lmax,nl
   REAL          beta,beta_a,bb,bba
 !---local variables
   REAL          bbVEC(MXLAY),bbaVEC(0:MXLAY),ODTOT(NWNMX)
   REAL  O(NWNMX,MXLAY)
-  !call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
   IF (IDU.NE.1) STOP 'ERROR IN IDU. OPTION NOT SUPPORTED YET'
   lmin=nlayer
   lmax=1
@@ -1971,9 +1967,7 @@ include "declar.incl"
 	real    O(nwnmx,mxlay)
         real    radtmr, x
         real    tmr(*)
-        !REAL RADCN1,RADCN2
 
-        !call getRtmConst(RADCN1=RADCN1,RADCN2=RADCN2)
 
 	do ifr=1,nwn
             sumtau = 0.
@@ -2019,17 +2013,12 @@ include "declar.incl"
 
         function bb_fn(v,fbeta)
 
-          !USE RtmConstants, ONLY: getRtmConst
           USE phys_consts, ONLY: RADCN1
           ! Arguments
-          real, intent(in)  :: v
+          real*8, intent(in)  :: v
           real, intent(in)  :: fbeta
           real              :: bb_fn
 
-          ! Variable
-          !real RADCN1
-
-          !call getRtmConst(RADCN1=RADCN1)
 	  bb_fn = radcn1*(v**3)/(exp(v*fbeta)-1.)
 
         end function bb_fn
