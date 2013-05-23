@@ -30,14 +30,14 @@ MODULE phys_consts   ! Physical constants
 !     units are generally cgs                                           
 !                                                                       
       real, parameter  :: PI = 3.1415926535898
-      real, parameter  :: PLANCK = 6.62606876E-27 
-      real, parameter  :: BOLTZ = 1.3806503E-16 
-      real, parameter  :: CLIGHT = 2.99792458E+10
-      real, parameter  :: AVOGAD = 6.02214199E+23 
+      real, parameter  :: PLANCK = 6.62606876E-27    !Planck constant          | [g.cm^2/s]
+      real, parameter  :: BOLTZ = 1.3806503E-16      !Boltzman Constant        | [g.cm^2/(s^2.K)]
+      real, parameter  :: CLIGHT = 2.99792458E+10    !Speed of Light           | [cm/s]
+      real, parameter  :: AVOGAD = 6.02214199E+23    !Avogadro's Number        | [molec./mole]
       real, parameter  :: ALOSMT = 2.6867775E+19 
-      real, parameter  :: GASCON = 8.314472E+07 
-      real, parameter  :: RADCN1 = 1.191042722E-12 
-      real, parameter  :: RADCN2 = 1.4387752 
+      real, parameter  :: GASCON = 8.314472E+07      !Gas constant             | [g.cm^2/(s^2.K.mole)]
+      real, parameter  :: RADCN1 = 1.191042722E-12   !1st radiation constant   |
+      real, parameter  :: RADCN2 = 1.4387752         !2nd radiation constant   |
 !                                                                       
 !     The first and second radiation constants are taken from NIST.     
 !     They were previously obtained from the relations:                 
