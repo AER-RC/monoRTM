@@ -126,6 +126,8 @@ CONTAINS
 !
 !-------------------------------------------------------------------------------
       USE CntnmFactors, ONLY: CntnmFactors_t,oneMolecCntnm,pushCntnmFactors
+      USE lnfl_mod, ONLY : GET_LNFL
+
       include "declar.incl"
 
       parameter (n_absrb=5050,ncont=5)
@@ -160,19 +162,6 @@ CONTAINS
       data index_cont/1,2,3,7,22/
       HVRMODM = '$Revision: 11207 $' 
 
-      IF(INIT)THEN
-         CALL READ_HITR(IPR,ICP,HFILE,ISPD,MINWN,MAXWN) !reads the HITRAN data
-         if(wn(1).lt.MINWN.OR.wn(nwn).gt.MAXWN) then
-            print *,' '
-            print *,'!!! WARNING !!!'
-            print *, &
-               '   Spectral range of lines file does not cover requested'//  &
-               ' spectral range.'
-            print *,' '
-            stop
-         endif
-         INIT=.FALSE.
-      ENDIF
 
 ! Set up useful constants
       ONEPL = 1.001                                                       
@@ -190,6 +179,10 @@ CONTAINS
          V2ABS = INT(V2+3.*DVABS+0.5)
          NPTABS = (V2ABS-V1ABS)/DVABS+1.5
 
+      IF(INIT)THEN
+         CALL GET_LNFL(IPR,ICP,HFILE,ISPD,v1,v2) !reads the HITRAN data
+         INIT=.FALSE.
+      ENDIF
 !  Initialize
         oc(1:nwn,1:mxmol,1:nlay) = 0.
         odxsec(1:nwn,1:nlay) = 0.
@@ -261,18 +254,20 @@ CONTAINS
       SUBROUTINE LINES(Xn,WN,T,NMOL,WK, &
            wbrod,RADCT, T0,o_by_mol, &
            XN0,RFT,P,P0,SCLCPL,SCLHW,Y0RES,scor)
-      PARAMETER (NNM=  39,IIM= 75000)
+
+
+      USE lnfl_mod, ONLY : NBLM,ISO,XNU0,DELTNU,E,ALPS,ALPF,X,XG,S0,Rmol, &
+             brd_mol_flg,brd_mol_tmp,brd_mol_hw,brd_mol_shft,sdep
+
+      PARAMETER (NNM=  39,IIM= 75000,MXBRDMOL=7)
       REAL WK(NMOL),o_by_mol(nmol)
-      REAL*8 WN,XNU,XNU0(NNM,IIM)
-      REAL DELTNU(NNM,IIM),E(NNM,IIM),ALPS(NNM,IIM),XG(NNM,IIM)
-      REAL ALPF(NNM,IIM),X(NNM,IIM),A(4),S0(NNM,IIM),B(4),TEMPLC(4)
-      INTEGER NBLM(NNM),ISO(NNM,IIM)
+      REAL*8 WN,XNU,S0_adj
+      REAL A(4),B(4),TEMPLC(4)
       real scor(42,9)
 
-      COMMON/HITR/NBLM,ISO,XNU0,DELTNU,S0,E,ALPS,ALPF,X,XG,NMOLEC
+      real, dimension(mxbrdmol) ::  rhoslf,tmpcor_arr,alfa_tmp
+
       DATA TEMPLC /200.0,250.0,296.0,340.0 /
-      DATA MOL_WV/1/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,MOL_N2O/4/
-      DATA MOL_CO/5/,MOL_SO2/9/,MOL_NO2/10/,MOL_OH/13/
 
       deltnuC=25.          !cm-1
       WTOT=sum(wk)+wbrod
@@ -285,7 +280,8 @@ CONTAINS
  20   RECTLC=1.0/(TEMPLC(ILC+1)-TEMPLC(ILC))
       TMPDIF=T-TEMPLC(ILC)                                             
       RT=T/T0                   !ratio of temperature
-      RN=(Xn/XN0)               !ratio of number density
+      RHORAT=(Xn/XN0)               !ratio of number density
+      rhoslf(:) = rhorat*wk(1:mxbrdmol)/wtot
       o_by_mol(:)  = 0.         !initialization
 
       DO I=1,NMOL
@@ -300,19 +296,33 @@ CONTAINS
          DO WHILE (J.LT.NBLM(I))
             J=J+1
             JJ=J
-            IF ((XG(I,J).EQ.-1).OR.(XG(I,J).EQ.-3)) THEN
+            IF ((XG(I,J).EQ.-1).OR.(XG(I,J).EQ.-3).OR.(XG(I,J).EQ.-5))THEN
                JJ=J+1 !the LCC are stored in XNU0(J+1),DELTNU(J+1),etc..
                A(1)=XNU0(I,JJ)
-               B(1)=DELTNU(I,JJ)
-               A(2)=S0(I,JJ)
+               B(1)=S0(I,JJ)
+               A(2)=alpf(I,JJ)
                B(2)=E(I,JJ)
-               A(3)=ALPS(I,JJ)
-               B(3)=ALPF(I,JJ)
+               A(3)=RMOL(I,JJ)   
+               B(3)=ALPS(I,JJ)
                A(4)=X(I,JJ)
-               B(4)=XG(I,JJ)
+               B(4)=deltnu(I,JJ)
                AIP=A(ILC)+((A(ILC+1)-A(ILC))*RECTLC)*TMPDIF
                BIP=B(ILC)+((B(ILC+1)-B(ILC))*RECTLC)*TMPDIF
             ENDIF
+            IF ((XG(I,J).EQ.-5).AND.(XG(I,J-1).EQ.-5)) THEN   !Self LC!!
+               rho_for = (rhorat-rhoslf(i))/rhorat
+               rho_sel = rhoslf(i)/rhorat
+               A(1) = rho_for*A(1)+rho_sel*XNU0(I,JJ)
+               B(1) = rho_for*B(1)+rho_sel*S0(I,JJ)
+               A(2) = rho_for*A(2)+rho_sel*alpf(I,JJ)
+               B(2) = rho_for*B(2)+rho_sel*E(I,JJ)
+               A(3) = rho_for*A(3)+rho_sel*RMOL(I,JJ)
+               B(3) = rho_for*B(3)+rho_sel*ALPS(I,JJ)
+               A(4) = rho_for*A(4)+rho_sel*X(I,JJ)
+               B(4) = rho_for*B(4)+rho_sel*deltnu(I,JJ)
+            ENDIF
+
+          
             !---application of the scaling factors
             IF ((XG(I,J).EQ.-1)) THEN !Scaling of the Line coupling parameters
                AIP=AIP*SCLCPL+Y0RES
@@ -322,18 +332,38 @@ CONTAINS
                AIP=AIP*SCLHW
                BIP=BIP*SCLHW
             ENDIF
-            Xnu=Xnu0(I,J)+(deltnu(I,J)*(Xn/xn0))
+            ! convert S0 back to HITRAN form
+	    S0_adj = S0(I,J)*(xnu0(i,j)*(1.0-exp(-(RADCT*Xnu0(i,j)/T0))))
+
+            ! get shift
+             Xnu=Xnu0(I,J)+(deltnu(I,J)*(Xn/xn0))
+             !print *,'xnu0,xnu ',xnu0(i,j),xnu
+            
+
+            ! modify shift due to specific broadening by other molecules if information is available
+            xnu = xnu+sum(rhoslf(:)*brd_mol_flg(i,:,j)*(brd_mol_shft(i,:,j)-deltnu(i,j)))
+               
             !check line within 25cm-1 from WN, (except for O2, cause line coupling)
             IF ((ABS(WN-Xnu).GT.deltnuC).and.(I.NE.7))  &
                  GOTO 30   
 
             XIPSF = scor(i,iso(i,j))
 
-            CALL INTENS(T,S0(I,J),E(I,J),RADCT,T0,Xnu,STILD,XIPSF)
-            XTILD=1-X(I,J)
-            HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RN,I, &
-                 RAT)
+            !CALL INTENS(T,S0(I,J),E(I,J),RADCT,T0,Xnu,STILD,XIPSF)
+            CALL INTENS(T,S0_adj,E(I,J),RADCT,T0,Xnu,STILD,XIPSF)
+
+            ! since parameters are now coming from binary file tdep (here called X) comes in correctly
+            XTILD=X(I,J)
+
+            ! calculate  Lorentz halfwidth
+            ! if specific broadening by other molecules available, recalculate halfwidth
+            HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RHORAT,I, rhoslf,  &
+                 brd_mol_flg(i,:,j),brd_mol_hw(i,:,j),brd_mol_tmp(i,:,j))
+
+            !stop
+            ! calculate Doppler width
             HWHM_D=HALFWHM_D(I,ISO(I,J),Xnu,T)
+         
             IF(XG(I,J).EQ.-3.) THEN
                HWHM_C=HWHM_C*(1-(AIP*(RP))-(BIP*(RP2)))
             ENDIF
@@ -370,8 +400,9 @@ CONTAINS
       SUBROUTINE LSF_VOIGT(XF,RP,RP2,AIP,BIP,HWHM,WN,Xnu,SLS, &
            AD,MOL)
       REAL*8 WN,Xnu,deltXNU,deltnuC,CHI
-      DATA MOL_WV/1/,MOL_CO2/2/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/, &
+      DATA MOL_WV/1/,MOL_CO2/2/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,&
            MOL_N2O/4/
+
       deltnuC=25.          !cm-1
       DIFF=(WN+Xnu)-deltnuC
       SLS = 0.
@@ -399,7 +430,7 @@ CONTAINS
           ENDIF
       ELSE ! O2 or CO2 (check for line within 25 cm-1 has to be performed here for O2)
           IF ((ABS(WN-Xnu).LE.deltnuC).and.(XF.NE.-1).and. &
-                 (XF.NE.-3)) THEN    !no line coupling 
+                 (XF.NE.-3).AND.(XF.NE.-5)) THEN    !no line coupling 
               deltXNU=(WN-Xnu)
               XL1=VOIGT(deltXNU,HWHM,AD) !VOIGT for (+) osc.
               IF (MOL.EQ.MOL_O2) THEN ! O2, no line coupling
@@ -436,7 +467,7 @@ CONTAINS
                       ENDIF
                   ENDIF
               ELSE ! co2
-                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN ! CO2 line coupling
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3).OR.(XF.EQ.-5)) THEN ! CO2 line coupling
                                 ! For CO2 (unlike O2) contributions beyond 25 cm-1 are in the cntnm
                                 ! The "within 25cm-1" check for CO2 has already been performed in modm.f
                                 ! calculate pedestal contribution without line coupling (impact)
@@ -452,7 +483,7 @@ CONTAINS
                       deltXNU=(WN+Xnu)
 !                     no negative oscillation, since no CO2 lines within 25cm-1 of zero cm-1
                       XL3 = VOIGT(deltnuC,HWHM,AD) !VOIGT for 25cm-1 wn
-                      IF (XF.EQ.-1) THEN
+                      IF ((XF.EQ.-1).OR.(XF.EQ.-5)) THEN
                           Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
                           XP4=XL3* &
                               (1./((deltnuC)**2+HWHM**2)) * &
@@ -484,6 +515,7 @@ CONTAINS
       REAL*8 WN,Xnu,deltnuC,deltXNU,CHI
       DATA MOL_WV/1/,MOL_CO2/2/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/, &
            MOL_N2O/4/
+
       deltnuC=25.          !cm-1
       DIFF=(WN+Xnu)-deltnuC
        SLS = 0.
@@ -511,7 +543,7 @@ CONTAINS
           ENDIF
       ELSE                      ! O2 or CO2 (check for line within 25 cm-1 has to be performed for O2)
           IF ((ABS(WN-Xnu).LE.deltnuC).and.(XF.NE.-1).and. &
-                 (XF.NE.-3)) THEN    !no line coupling 
+                 (XF.NE.-3).AND.(XF.NE.-5)) THEN    !no line coupling 
               deltXNU=(WN-Xnu)
               XL1=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (+) osc.
               IF (MOL.EQ.MOL_O2) THEN ! O2, no line coupling
@@ -548,7 +580,7 @@ CONTAINS
                       ENDIF
                   ENDIF
               ELSE
-                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN ! CO2 line coupling
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3).OR.(XF.EQ.-5)) THEN ! CO2 line coupling
                                 ! For CO2 (unlike O2) contributions beyond 25 cm-1 are in the cntnm
                                 ! The "within 25cm-1" check for CO2 has already been performed in modm.f
                                 ! calculate pedestal contribution without line coupling (impact)
@@ -562,7 +594,7 @@ CONTAINS
                       deltXNU=(WN+Xnu)
 !                     no negative oscillation, since no co2 lines within 25cm-1 of zero
                       XL3 = XLORENTZ((deltnuC)/HWHM) !LORENTZ for 25cm-1 wn
-                      IF (XF.EQ.-1) THEN
+                      IF ((XF.EQ.-1).OR.(XF.EQ.-5)) THEN
                           Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
                           XP4=XL3* &
                               (1./((deltnuC)**2+HWHM**2)) * &
@@ -588,9 +620,30 @@ CONTAINS
 
 
       
-      FUNCTION HALFWHM_C(AF,AS,RT,XTILD,RN,MOL,RAT)
+      FUNCTION HALFWHM_C(AF,AS,RT,XTILD,RHORAT,MOL,rhoslf,brd_flg,brd_hw,brd_tmp)
+      parameter (mxbrdmol=7)
+      integer*4, dimension(mxbrdmol) :: brd_flg
+      real, dimension(mxbrdmol)      :: brd_hw,brd_tmp,rhoslf
+
+      real, dimension(mxbrdmol)  :: tmpcor,alfa_tmp
+
       IF ((MOL.EQ.1).AND.(AS.EQ.0.)) AS=5*AF
-      HALFWHM_C=AF*(RT**XTILD)*(RN-RAT)+AS*(RT**XTILD)*RAT
+      alfa0i = AF*(RT**XTILD)
+      hwhmsi = AS*(RT**XTILD)
+      !HALFWHM_C=AF*(RT**XTILD)*(RHORAT-RAT)+AS*(RT**XTILD)*RAT
+      HALFWHM_C= alfa0i*(RHORAT-rhoslf(mol)) + hwhmsi*rhoslf(mol)
+
+      !recalculate halfwith if information on broadening by specific molecules is available
+	 if(sum(brd_flg(:)).gt.0) then
+	    tmpcor = RT**brd_tmp(:)
+	    alfa_tmp = brd_hw(:)*tmpcor
+	    alfsum = sum(rhoslf(:)*brd_flg(:)*alfa_tmp)
+	    HALFWHM_C = (rhorat-sum(rhoslf(:)*brd_flg(:)))    &
+	      *alfa0i + alfsum
+  ! if no new self info, need to add standard self to total half width
+	    if(brd_flg(mol).eq.0)                                   &
+		 HALFWHM_C = HALFWHM_C + rhoslf(mol)*(hwhmsi-alfa0i)
+	 end if
       END FUNCTION HALFWHM_C
 
       
@@ -616,148 +669,6 @@ CONTAINS
       END SUBROUTINE INITI
       
         
-      SUBROUTINE READ_HITR(IPR,ICP,HFILE,ISPD,MINWN,MAXWN)
-      PARAMETER (NNM=  39,IIM=  75000)
-      INTEGER, INTENT(IN) :: IPR
-      REAL*8 XNU0(NNM,IIM),nu0
-      REAL DELTNU(NNM,IIM),E(NNM,IIM),ALPS(NNM,IIM),ALPF(NNM,IIM)
-      REAL X(NNM,IIM),XG(NNM,IIM),S0(NNM,IIM)
-      INTEGER NBLM(NNM),ISO(NNM,IIM)
-      Character Q1*9,Q2*9,HFILE*80,CXID*1,HVRSPEC*15
-      character(len=100) cxidline
-      character*25 cdate
-      COMMON /CVRSPEC/ HVRSPEC
-      COMMON/HITR/NBLM,ISO,XNU0,DELTNU,S0,E,ALPS,ALPF,X,XG,NMOLEC
-      DATA MOL_WV/1/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/,MOL_N2O/4/
-      DATA MOL_CO/5/,MOL_SO2/9/,MOL_NO2/10/,MOL_OH/13/
-      EQUIVALENCE (CXID,CXIDLINE)                    
-
-      NMOLEC=NNM
-
-      OPEN(9,FILE=HFILE,form='formatted',status='old',ERR=20)
-      !---We read comments /put them in LOG file
-      IKOUNT = 0
-      WRITE(IPR,'(a80)') ' '
-      WRITE(IPR,'(a80)') ' '
-      WRITE(IPR,'(a80)') '********************************'
-      WRITE(IPR,'(a80)') ' SPECTROSCOPIC FILE INFORMATION '
-      WRITE(IPR,'(a80)') '********************************'
-      WRITE(*,'(a33)') '  '
-      WRITE(*,'(a33)') '********************************'
-      WRITE(*,'(a33)') ' SPECTROSCOPIC FILE INFORMATION '
-      WRITE(*,'(a33)') '********************************'
- 23   READ (9,'(A100)',END=30,ERR=30) CXIDLINE
- 
-      WRITE(IPR,'(a100)') CXIDLINE
-      if (ikount.eq.2) then
-         read (CXIDLINE,'(12X,A15)') HVRSPEC
-         write(*,*) HVRSPEC
-      end if
-      if (ikount.eq.3) then
-         read (CXIDLINE,'(12X,A25)') CDATE
-         write(*,*) CDATE
-         write(*,*) ' '
-      endif
-!      if (ikount.ge.12 .AND. ikount.le.14) then
-!         write(*,'(a100)') cxidline(2:100)
-!      endif
-
-      ikount = ikount + 1
-
-      IF (CXID.EQ.'$'.OR.CXID.EQ.'>'.OR.CXID.EQ.'%'.OR.CXID.EQ.'C'.OR. &
-          CXID.EQ.'c') then
-         GO TO 23                            
-      else
-         backspace (unit=9)
-      end if
-
-      ILINE=0
-      ILINE_O2=0
-
- 22   READ(9,100,END=3,ERR=30) mo,iso_scal,nu0,S0_scal,R, &
-           alpf_scal,alps_scal,E_scal,X_scal,deltnu_scal, &
-           iv1,iv2,Q1,Q2,ier1,ier2,ier3,iref1,iref2,iref3,iflg
-      !---test to limit the number of lines used-----
-      !if ((nu0.ge.60.)) goto 3
-      !---test to limit the strength of the WV lines used
-      !if(((S0_scal.lt.1.E-25)).and.(mo.eq.1)) goto 22
-      !---test to limit the isotopes of WV 
-      !if((iso_scal.ne.1).and.(mo.eq.1)) goto 22
-      !---test to remove the wavenumber shift effect
-      !deltnu_scal=0.
-      !---test to use only those lines that are flagged
-      IF (ISPD .eq. 1) then
-         IF (iflg.ne.mo) then 
-            IF ((iref3.EQ.-1).OR.(iref3.EQ.-3)) THEN 
-               READ(9,2,END=3,ERR=30)JF,XF,DF,SF,EF,AS,AF,XS,XF
-            ENDIF
-            goto 22
-         ENDIF
-      ENDIF
-      !-----------------------------------------------
-      IF (mo.EQ.mol_o2) ILINE_O2=ILINE_O2+1
-      ILINE=ILINE+1
-      IF (ILINE.EQ.1) MINWN=nu0
-      jj = mo
-      nblm(jj) = nblm(jj)+1
-      ii = nblm(jj)
-
-      ISO(JJ,II)=iso_scal
-      XNU0(JJ,II)=nu0
-      DELTNU(JJ,II)=deltnu_scal
-      S0(JJ,II)=S0_scal!provoques underflow message
-      E(JJ,II)=E_scal
-      ALPS(JJ,II)=alps_scal
-      ALPF(JJ,II)=alpf_scal
-      X(JJ,II)=X_scal
-      XG(JJ,II)=iref3
-      IF (((iref3.EQ.-1).OR.(iref3.EQ.-3)).AND.(ICP.EQ.1)) THEN !Lines Coupling
-         nblm(jj) = nblm(jj)+1
-         ii = nblm(jj)
-         READ(9,2,END=3,ERR=30)J,XNU0(JJ,II),DELTNU(JJ,II), &
-              S0(JJ,II),E(JJ,II),ALPS(JJ,II),ALPF(JJ,II), &
-              X(JJ,II),XG(JJ,II)
-      ENDIF
-      IF (((iref3.EQ.-1).OR.(iref3.EQ.-3)).AND.(ICP.EQ.0)) THEN !Lines Cplng ignored
-         READ(9,2,END=3,ERR=30)JF,XF,DF,SF,EF,AS,AF,XS,XF
-         XG(JJ,II)=0.
-      ENDIF
-      GOTO 22
- 3    CONTINUE
-      MAXWN=NU0
-      WRITE(*,'(a33)') '***********************************'
-      WRITE(*,*) ' '
-      IF (ISPD.EQ.1) THEN
-         WRITE(*,*) '****************************************'
-         WRITE(*,*) '*            W A R N I N G             *'
-         WRITE(*,*) '****************************************'
-         WRITE(*,*) 'FAST VERSION IS RUNNING.'
-         WRITE(*,*) 'CURRENTLY VALID IN THE MICROWAVE ONLY.'
-      ENDIF
-      WRITE(*,*) ' '
-      WRITE(*,*) '****************************************'
-      WRITE(*,*) '* SPECTRAL LINES INFORMATION AVAILABLE *'
-      WRITE(*,*) '****************************************'
-      WRITE(*,*) 'Minimum Wavenumber:',MINWN,' cm-1'
-      WRITE(*,*) 'Maximum Wavenumber:',MAXWN,' cm-1'
-      WRITE(*,*)
-      WRITE(*,'(2x,a8,8x,a8,3x,a8)') 'Molecule','# lines' 
-      DO J=1,NMOLEC
-          WRITE(IPR,'(2x,i8,5x,i8,5x,i8)') J, NBLM(J)
-      ENDDO
-      WRITE(*,*)
-      WRITE(*,*) '****************************************'
-      CLOSE(9)
- 100  FORMAT (I2,I1,F12.6,1P,2E10.3,0P,2F5.4,F10.4,F4.2,F8.6, &
-           2I3,2A9,3I1,3I2,I2)
-1000  FORMAT (I2,I1,F12.6,1P,2E10.3)
- 2    FORMAT (I2,1P,4(E13.6,E11.4),0P,I2)                           
-      RETURN
- 20   PRINT *, 'ERROR OPENING HITRAN FILE:',HFILE
-      STOP
- 30   PRINT *, 'ERROR READING HITRAN FILE:',HFILE
-      STOP
-      END SUBROUTINE READ_HITR
 
       FUNCTION ODCLW(WN,TEMP,CLW)
       !INPUTS: WN (WaveNUmber in cm-1)
