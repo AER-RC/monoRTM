@@ -220,6 +220,8 @@ C**********************************************************************
      2    NLTEFL,LNFIL4,LNGTH4                                 
 
 	DIMENSION WMT(64)
+	DIMENSION Wdrair(mxlay)
+        
         TYPE(CntnmFactors_t) :: cntnmScaleFac
 
 c------------------------------------
@@ -254,7 +256,8 @@ c------------------------------------
 	FILEIN      ='MONORTM.IN'
 	fileARMlist ='ARM.IN'
 	fileprof    ='MONORTM_PROF.IN'
-	HFILE       ='spectral_lines.dat'
+	!HFILE       ='spectral_lines.dat'
+	HFILE       ='TAPE3'
 	FILEOUT     ='MONORTM.OUT'
 	FILELOG     ='MONORTM.LOG'
 
@@ -269,7 +272,7 @@ c------------------------------------
 	HVRMON = '$Revision$' 
 
 	!---Release number of MonoRTM
-	HVRREL = 'Release  4.4'
+	HVRREL = 'Release  4.6'
 
 	!---GET THE PROFILES NUMBER
 
@@ -356,7 +359,88 @@ c	      READ (IPF,'(1x,i5,10a8)') ipass, xid
 		 READ(IPF,978,END=110,ERR=50) (WKL(K,IL),K=1,7),
      1	              WBRODL(IL)          
 		 IF (NMOL.GT.7) READ(IPF,978) (WKL(K,IL),K=8,NMOL)
-	      ENDDO 
+C     --------------------------------------------------------------
+C
+C                     MIXING RATIO INPUT
+C
+C
+C     First calculate the column amount of dry air ("WDRAIR")
+C     Initialize WDNSTY to WBRODL(L) (always in column density)
+C     Determine if each molecule is in column density.
+C        - if so, just add to WDNSTY
+C        - if not, add to WMXRAT
+C
+C     NOTE that if WKL is greater than one, then column density 
+C               if WKL is less than one, then mixing ratio
+C
+         WDNSTY = WBRODL(IL)
+         WMXRAT = 0.0
+         WDRAIR(IL) = 0.0
+
+         DO 22 M = 2,NMOL
+            IF (WKL(M,IL).GT.1) THEN
+               WDNSTY = WDNSTY + WKL(M,IL)
+            ELSE
+               WMXRAT = WMXRAT + WKL(M,IL)
+            ENDIF
+ 22      CONTINUE
+
+C
+C        EXECUTE TESTS TO ENSURE ALL COMBINATION OF COLUMN DENSITIES
+C        AND MIXING RATIOS FOR EACH LAYER HAVE BEEN PROPERLY SPECIFIED.
+
+C        IF THE LAYER SUM OF MIXING RATIOS IS LESS THAN ONE (WHICH
+C        IT SHOULD BE, GIVEN THAT WBROAD CONTRIBUTES TO THE DRY AIR 
+C        MIXING RATIO), THEN COMPUTE DRY AIR BY DIVIDING THE TOTAL
+C        MOLECULAR AMOUNTS GIVEN IN DENSITY BY THE FRACTION OF DRY
+C        AIR (MIXING RATIO) THOSE MOLECULES COMPRISE.
+C
+C        IF THE LAYER SUM OF MIXING RATIOS IS GREATER THAN OR EQUAL
+C        TO ONE, THAN AN ERROR HAS OCCURRED, SO STOP THE PROGRAM.
+C        WBROAD IS ALWAYS LISTED IN COLUMN DENSITY, SO THE SUM OF
+C        THE GIVEN MIXING RATIOS MUST ALWAYS BE LESS THAN ONE.
+C
+
+         IF (WBRODL(IL).LT.1.0 .AND. WBRODL(IL).NE.0.0) THEN
+c            WRITE(IPR,918) IL
+c            WRITE(*,918) IL
+            STOP
+         ENDIF
+
+         IF (WDNSTY.EQ.0.0 .AND. WMXRAT.NE.0.0) THEN
+c            WRITE(IPR,921) IL,WDNSTY,WMXRAT
+c            WRITE(*,921) IL,WDNSTY,WMXRAT
+            STOP 'WMXRAT AND/OR WDNSTY NOT PROPERLY SPECIFIED IN PATH'
+         ENDIF
+         IF (WMXRAT.LT.1.0) THEN
+            WDRAIR(IL) = WDNSTY/(1.0-WMXRAT)
+         ELSE
+c           WRITE(IPR,921) IL,WMXRAT, WDNSTY
+c           WRITE(*,921) IL,WMXRAT, WDNSTY
+            STOP 'WMXRAT EXCEEDS 1.0'
+         ENDIF
+
+         IF (WKL(1,IL).LE.1.0 .AND. WKL(1,IL) .NE. 0.0
+     *        .AND. WDRAIR(IL).EQ.0.0) THEN
+c           WRITE(IPR,921) IL,WKL(1,IL),WDRAIR(IL)
+c           WRITE(*,921) IL,WKL(1,IL),WDRAIR(IL)
+            STOP 'WMXRAT NOT PROPERLY SPECIFIED IN PATH'
+         ENDIF
+
+C
+C     NOW CONVERT ALL OTHER MOLECULES WHICH MAY BE IN MIXING RATIO
+C     TO MOLECULAR DENSITY USING WDRAIR(L)
+C
+         DO 25 M = 1,NMOL
+            IF (WKL(M,IL).LT.1.) WKL(M,IL) = WKL(M,IL)*WDRAIR(IL)
+ 25      CONTINUE
+C
+C     --------------------------------------------------------------
+C
+
+      END DO
+
+
 	      
 	      IF (IXSECT.GE.1) THEN
 	         READ(IPF,930) IXMOLS,IXSBIN
