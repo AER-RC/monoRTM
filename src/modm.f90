@@ -130,13 +130,14 @@ CONTAINS
 
       include "declar.incl"
 
-      parameter (n_absrb=5050,ncont=5)
+      parameter (n_absrb=5050,ncont=6)
       INTEGER, INTENT(IN) :: IPR
       real *8  v1abs,v2abs
       real*8 v1, v2
       real   O(NWNMX,MXLAY),OC(NWNMX,MXMOL,MXLAY), &
              O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY), &
       	     odxsec(nwnmx,mxlay)
+      real oc_rayl(nwnmx,mxlay)
       real scor(42,9)
       integer index_cont(ncont), imol
       COMMON /ABSORB/ V1ABS,V2ABS,DVABS,NPTABS,ABSRB(n_absrb)                
@@ -159,7 +160,7 @@ CONTAINS
       DATA INIT/.TRUE./
       SAVE INIT
 
-      data index_cont/1,2,3,7,22/
+      data index_cont/1,2,3,7,22,99/
       HVRMODM = '$Revision: 11207 $' 
 
 
@@ -170,7 +171,7 @@ CONTAINS
       EXPMIN = EXP(-ARGMIN) 
 
 ! Set up constants for call to contnm
-         jrad = 0
+         jrad = 1
          nmolc = nmol
          v1 = wn(1)
          v2 = wn(nwn)
@@ -186,6 +187,7 @@ CONTAINS
 !  Initialize
         oc(1:nwn,1:mxmol,1:nlay) = 0.
         odxsec(1:nwn,1:nlay) = 0.
+        oc_rayl(1:nwn,1:nlay) = 0.
         o(1:nwn,1:nlay) = 0.
 
          if (ixsect .eq. 1)  &
@@ -198,7 +200,7 @@ CONTAINS
          wbroad = wbrodl(k)
          xkt = tave/radcn2
 
-! Call CONTNM for each molecule
+! Call CONTNM for each molecule and for Rayleigh
         wkc(1:nmol) = wkl(1:nmol,k)
         if (nmol.lt.22) wkc(index_cont(ncont)) = wbroad    ! set n2 to wbroad if nmol < 22
         do icount=1,ncont
@@ -206,21 +208,37 @@ CONTAINS
 	      absrb(:) = 0.
 	      call oneMolecCntnm(im,cntnmScaleFac)
 	      call contnm(jrad)
+              !print *, ' '
 	      call pushCntnmFactors(cntnmScaleFac)   ! Restore factors
 ! Interpolate for gridded spectral resolution in one step
-	      if (dvset.ne.0) call xint(v1abs,v2abs,dvabs,absrb,1.0,v1, &
-                           dvset,oc(1:nwn,im,k),1,nwn) 
-! Interpolate for specific wavenumbers one at a time
-	      if (dvset.eq.0) then 
-		 do iw=1,nwn
-		    call xint(v1abs,v2abs,dvabs,absrb,1.0,wn(iw),1.0, &
-                         oc(iw,im,k),1,1)
-		 end do
-	      end if
+              if (icount.LT.ncount) then 
+		 if (dvset.ne.0) call xint(v1abs,v2abs,dvabs,absrb,1.0,v1, &
+			      dvset,oc(1:nwn,im,k),1,nwn) 
+   ! Interpolate for specific wavenumbers one at a time
+		 if (dvset.eq.0) then 
+		    do iw=1,nwn
+		       call xint(v1abs,v2abs,dvabs,absrb,1.0,wn(iw),1.0, &
+			    oc(iw,im,k),1,1)
+		    end do
+		 end if
+              else
+		 if (dvset.ne.0) call xint(v1abs,v2abs,dvabs,absrb,1.0,v1, &
+			      dvset,oc_rayl(1:nwn,k),1,nwn) 
+   ! Interpolate for specific wavenumbers one at a time
+		 if (dvset.eq.0) then 
+		    do iw=1,nwn
+		       call xint(v1abs,v2abs,dvabs,absrb,1.0,wn(iw),1.0, &
+			    oc_rayl(iw,k),1,1)
+		    end do
+		 end if
+              endif
 ! Multiply by radiation term
-	       do iw=1,nwn
-		  oc(iw,im,k) = oc(iw,im,k)*radfn(wn(iw),xkt)
-	       end do
+!       do iw=1,nwn
+!                 print *,'oc ',oc(iw,im,k),radfn(wn(iw),xkt)
+!	  oc(iw,im,k) = oc(iw,im,k)*radfn(wn(iw),xkt)
+!                 print *,'oc ',oc(iw,im,k)
+!       end do
+
          end do                    ! end molecule loop
 
 ! calculate TIPS using Gamache routine rather that QOFT
@@ -240,8 +258,10 @@ CONTAINS
             O_CLW(M,K)=ODCLW(WN(M),T(K),CLW(K))                       !OPTDEPTH CLW
             do imol = 1,nmol
                 O(M,K) = o(m,k) + O_BY_MOL(M,imol,K) 
+                !print *, imol,k,o_by_mol(m,imol,k)
+                !print *, oc(m,1:index_cont(5),k)
             enddo
-            o(m,k) = o(m,k) + odxsec(m,k) +  &
+            o(m,k) = o(m,k) + odxsec(m,k) +  oc_rayl(m,k) +  &
                     sum(oc(m,1:index_cont(5),k))+O_CLW(M,K)
 
          ENDDO

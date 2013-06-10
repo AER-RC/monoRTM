@@ -88,7 +88,7 @@ CONTAINS
 
             sdep(mo,ii) = bufr%speed_dep(ik)
 
-            print *,mo,xnu0(mo,ii),sdep(mo,ii)
+            !print *,mo,xnu0(mo,ii),sdep(mo,ii)
          end do
          if (bufr%vnu(ihi).GT.(v2+25.)) ieof=1
       end do

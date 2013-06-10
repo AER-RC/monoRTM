@@ -950,6 +950,9 @@
                                                                         
 !           Radiation field                                             
                                                                         
+            !print *,'vrayleigh ',vrayleigh,xvrayleigh
+            !print *,'wtot ',wtot
+            !print *,'ray ',ray_ext
                IF (JRAD.EQ.1) ray_ext = ray_ext*xvrayleigh              
                                                                         
             absrb(i) = absrb(i)+ray_ext                                 

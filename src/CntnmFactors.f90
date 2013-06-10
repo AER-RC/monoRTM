@@ -105,13 +105,16 @@ CONTAINS
     TYPE(CntnmFactors_t), INTENT(IN) :: cFactors
 
     !  Local constants:
-    INTEGER, PARAMETER :: idH2O=1, idCO2=2, idO3=3, idO2=7, idN2=22  ! HITRAN indices
+    INTEGER, PARAMETER :: idH2O=1, idCO2=2, idO3=3, idO2=7, idN2=22, idRAYL=99  ! HITRAN indices
 
     !  Local variables:
     TYPE(CntnmFactors_t) :: myFactors
 
     myFactors = allZeroCntnm
-    myFactors%xrayl = cFactors%xrayl  ! Leave Rayleigh unchanged
+
+    !! leave Rayleigh off to avoid double counting
+    !myFactors%xrayl = cFactors%xrayl  ! Leave Rayleigh unchanged
+    
 
     select case (molec)
        case (idH2O)
@@ -125,6 +128,8 @@ CONTAINS
           myFactors%xo2cn = cFactors%xo2cn
        case (idN2)
           myFactors%xn2cn = cFactors%xn2cn
+       case (idRayl)
+          myFactors%xrayl = cFactors%xrayl
         case default
           ! leave as all zero for molecules that have no modeled continuum
     end select
