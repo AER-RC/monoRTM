@@ -369,11 +369,20 @@ CONTAINS
             ENDIF
             zeta=HWHM_C/(HWHM_C+HWHM_D)
             ilshp=1                            !=0->Lorentz, =1->Voigt
+
+            !MJA 20130517 Assuming that even for speed dependence 
+            !we should go to lorentz at high zeta and in wings
+            !Seems consistent with Figure 1 of Boone et al., JQSRT, 105, 525-532, 2007.
             if ((ABS(WN-Xnu).GT.(10.*HWHM_D)).or.(zeta.GT.0.99)) ilshp=0
             IF (ilshp.eq.0) CALL LSF_LORTZ(XG(I,J),RP,RP2,AIP,BIP, &
                  HWHM_C,WN,Xnu,SLS,I)
-            IF (ilshp.eq.1) CALL LSF_VOIGT(XG(I,J),RP,RP2,AIP,BIP, &
-                 HWHM_C,WN,Xnu,SLS,HWHM_D,I)
+            !MJA 20130517 New speed dependent voigt line shape
+            !IF (ilshp.eq.1) CALL LSF_VOIGT(XG(I,J),RP,RP2,AIP,BIP, &
+            !     HWHM_C,WN,Xnu,SLS,HWHM_D,I)
+            !if (sdep(I,J) .ne. 0.0) print *, sdep(I,J)
+            IF (ilshp.eq.1) CALL LSF_SDVOIGT(XG(I,J),RP,RP2,AIP,BIP, &
+                 HWHM_C,WN,Xnu,SLS,HWHM_D,I, sdep(I,J))
+
             SF=SF+(STILD*SLS)
  30         CONTINUE
             J=JJ
@@ -508,6 +517,138 @@ CONTAINS
       ENDIF ! end test for any possibility of line coupling
 
       END SUBROUTINE LSF_VOIGT
+
+      SUBROUTINE LSF_SDVOIGT(XF,RP,RP2,AIP,BIP,HWHM,WN,Xnu,SLS, &
+           AD,MOL, SDEP)
+      REAL*8 WN,Xnu,deltXNU,deltnuC,CHI
+      DATA MOL_WV/1/,MOL_CO2/2/,MOL_O3/3/,MOL_O2/7/,MOL_N2/22/, &
+           MOL_N2O/4/
+      deltnuC=25.          !cm-1
+      DIFF=(WN+Xnu)-deltnuC
+      SLS = 0.
+      chi = 1.
+
+! JULY 2008 VHP: 
+!                Note that there is currently no pedestal subtraction here for O2.
+!                This choice was made in order to avoid discontinuities due to O2 line coupling.
+!                We could get around this by generating an O2 continuum in the same way
+!                that we generate the CO2 continuum.
+      !print *, SDEP
+      IF ((MOL.NE.MOL_O2).AND.(MOL.NE.MOL_CO2)) THEN ! check for line within 25cm-1 has already
+                                                     ! been performed in modm.f
+          IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN !line coupling
+               deltXNU=(WN-Xnu)
+               XL1=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (+) osc.
+               XL3=SDVOIGT(deltnuC,HWHM,AD, SDEP) !VOIGT for 25cm-1 wn (pedestal) 
+               Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))! line coupling for (+) osc
+               Y1P=(1.+(AIP*(1/HWHM)*RP*(deltnuC-Xnu))+(BIP*RP2))! line coupling for (+) osc pedestal            
+               IF (DIFF .LE. 0.) THEN !Within 25 cm-1 of 0 cm-1
+                    deltXNU=(WN+Xnu)
+                    XL2=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (-) osc.                    
+                    Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2)) ! line coupling for (-) osc
+                    Y2P=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2)) ! line coupling contributions to (-)pedestal                  
+                    SLS = (Y1*(XL1)-Y1P*(XL3)+Y2*(XL2)-Y2P*(XL3))
+                    !SLS = (XL1 + XL2 - (2 * XL3)) 
+               ELSE
+                    SLS = Y1*(XL1) - Y1P*(XL3)
+                    !SLS = (XL1 - XL3) 
+               ENDIF
+          ELSE !No line coupling
+               deltXNU=(WN-Xnu)
+               XL1=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (+) osc.
+               XL3=SDVOIGT(deltnuC,HWHM,AD, SDEP) !VOIGT for 25cm-1 wn    
+               IF (DIFF .LE. 0.) THEN !Within 25 cm-1 of 0 cm-1
+                    deltXNU=(WN+Xnu)
+                    XL2=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (-) osc.
+                    SLS = (XL1 + XL2 - (2 * XL3)) 
+               ELSE
+                    SLS = (XL1 - XL3) 
+               ENDIF
+          ENDIF
+
+
+      ELSE ! O2 or CO2 (check for line within 25 cm-1 has to be performed here for O2)
+          IF ((ABS(WN-Xnu).LE.deltnuC).and.(XF.NE.-1).and. &
+                 (XF.NE.-3)) THEN    !no line coupling 
+              deltXNU=(WN-Xnu)
+              XL1=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (+) osc.
+              IF (MOL.EQ.MOL_O2) THEN ! O2, no line coupling
+                  IF (DIFF .LE. 0.) THEN
+                      deltXNU=(WN+Xnu)
+                      XL2=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (-) osc.
+                      SLS = (XL1+XL2) ! no pedestal subtraction for O2
+                  ELSE
+                      SLS = (XL1)
+                  ENDIF
+              ELSE ! CO2, no line coupling (no CO2 lines within 25cm-1 of zero: don't need (-) osc)
+                  deltXNU = (WN-Xnu)
+                  CALL CHI_FN(deltXNU,CHI)
+                  XL3 = SDVOIGT(deltnuC,HWHM,AD, SDEP) !VOIGT for 25cm-1 wn
+!           multiply the co2 pedestal contribution by the chi factor
+                  XL3 = XL3*(2.-(deltXNU**2/(deltXNU**2+HWHM**2))) ! co2 pedestal
+                  SLS = CHI*(XL1-XL3)
+              ENDIF
+
+          ELSE ! line has line coupling
+              IF (MOL.EQ.MOL_O2) THEN  
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN !O2 line coupling: don't implement 25cm-1 check
+                      deltXNU=(WN-Xnu)
+                      XL1=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (+) osc.
+                      deltXNU=(WN+Xnu)
+                      XL2=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (-) osc.
+                      IF (XF.EQ.-1) THEN
+                          Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
+                          Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2))
+                          SLS = (XL1*(Y1)+XL2*(Y2))
+                      ELSE
+                          Y1=1.
+                          Y2=1.
+                          SLS=(XL1+XL2)
+                      ENDIF
+                  ENDIF
+              ELSE ! co2
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN ! CO2 line coupling
+                                ! For CO2 (unlike O2) contributions beyond 25 cm-1 are in the cntnm
+                                ! The "within 25cm-1" check for CO2 has already been performed in modm.f
+                                ! calculate pedestal contribution without line coupling (impact)
+                                ! multiply this by the chi factor
+                                ! calculate the pedestal contribution from line coupling
+                                ! multiply this by the chi factor
+                                ! add the pedestal contributions from impact and line coupling
+                      deltXNU = (WN-Xnu)
+
+                      CALL CHI_FN(deltXNU,CHI)
+
+                      XL1=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (+) osc.
+                      deltXNU=(WN+Xnu)
+!                     no negative oscillation, since no CO2 lines within 25cm-1 of zero cm-1
+                      XL3 = SDVOIGT(deltnuC,HWHM,AD, SDEP) !VOIGT for 25cm-1 wn
+                      print *, "XL1-XL3", XL1-XL3
+                      IF (XF.EQ.-1) THEN
+                          Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
+                          XP4=XL3* &
+                              (1./((deltnuC)**2+HWHM**2)) * &
+                              (2.-((WN-Xnu)**2/((deltnuC)**2+HWHM**2))) ! co2 impact pedestal
+                          YP1=(Y1-1.)* &
+                              (2.-(WN-Xnu)**2/((deltnuC)**2+HWHM**2)) ! line coupling contributions to pedestal
+                          SLS=CHI*(XL1* &
+                              (Y1)-XP4-XL3*(YP1))
+                      ELSE
+                          deltXNU = (WN-Xnu)
+                          CALL CHI_FN(deltXNU,CHI)
+                          Y1 = 1.
+                          Y2 = 1.
+                          XP4=XL3* &
+                              (1./((deltnuC)**2+HWHM**2)) * &
+                              (2.-(WN-Xnu)**2/((deltnuC)**2+HWHM**2)) ! co2 impact pedestal
+                          SLS = CHI*(XL1-XP4)
+                      ENDIF
+                  ENDIF ! end test for CO2 line coupling
+              ENDIF ! end test to distinguish between CO2 and O2
+          ENDIF ! end test for line coupled lines within CO2 OR O2
+      ENDIF ! end test for any possibility of line coupling
+
+      END SUBROUTINE LSF_SDVOIGT
 
       
       SUBROUTINE LSF_LORTZ(XF,RP,RP2,AIP,BIP,HWHM,WN,Xnu,SLS, &
@@ -770,6 +911,114 @@ CONTAINS
       end FUNCTION VOIGT
 
 
+      FUNCTION SDVOIGT(DELTNU,ALPHAL,ALPHAD,SDEP)
+      COMPLEX v, lm_factor
+      REAL*8 DELTNU
+      REAL avc(0:101)
+      REAL ALPHAL,ALPHAD,ZETA,ALPHAV,AVCINTERP,DNU
+      REAL AL,AD,ANORM1,SDVOIGT,DZETA
+      !MJA 20130517 Speed Dependence
+      REAL SDEP, alfa, beta, delta, temp, x1, x2, y1, y2, sign, TINY
+      INTEGER LM_flag
+      INTEGER IZETA2,IZETA1
+      DATA AVC/                                                    &
+        .10000E+01,.99535E+00,.99073E+00,.98613E+00,.98155E+00,    &
+        .97700E+00,.97247E+00,.96797E+00,.96350E+00,.95905E+00,    &
+        .95464E+00,.95025E+00,.94589E+00,.94156E+00,.93727E+00,    &
+        .93301E+00,.92879E+00,.92460E+00,.92045E+00,.91634E+00,    &
+        .91227E+00,.90824E+00,.90425E+00,.90031E+00,.89641E+00,    &
+        .89256E+00,.88876E+00,.88501E+00,.88132E+00,.87768E+00,    &
+        .87410E+00,.87058E+00,.86712E+00,.86372E+00,.86039E+00,    &
+        .85713E+00,.85395E+00,.85083E+00,.84780E+00,.84484E+00,    &
+        .84197E+00,.83919E+00,.83650E+00,.83390E+00,.83141E+00,    &
+        .82901E+00,.82672E+00,.82454E+00,.82248E+00,.82053E+00,    &
+        .81871E+00,.81702E+00,.81547E+00,.81405E+00,.81278E+00,    &
+        .81166E+00,.81069E+00,.80989E+00,.80925E+00,.80879E+00,    &
+        .80851E+00,.80842E+00,.80852E+00,.80882E+00,.80932E+00,    &
+        .81004E+00,.81098E+00,.81214E+00,.81353E+00,.81516E+00,    &
+        .81704E+00,.81916E+00,.82154E+00,.82418E+00,.82708E+00,    &
+        .83025E+00,.83370E+00,.83742E+00,.84143E+00,.84572E+00,    &
+        .85029E+00,.85515E+00,.86030E+00,.86573E+00,.87146E+00,    &
+        .87747E+00,.88376E+00,.89035E+00,.89721E+00,.90435E+00,    &
+        .91176E+00,.91945E+00,.92741E+00,.93562E+00,.94409E+00,    &
+        .95282E+00,.96179E+00,.97100E+00,.98044E+00,.99011E+00,    &
+        .10000E+01,.10000E+01/                             
+      TINY = 1.0e-4
+      !---computes zeta
+      zeta=alphal/(alphal+alphad)
+      !---interpolation of the AVC
+      IZETA1=ZETA*100
+      IZETA2=IZETA1+1
+      DZETA=((ZETA*100.)-INT(ZETA*100.))
+      AVCINTERP=AVC(IZETA1)+DZETA*(AVC(IZETA2)-AVC(IZETA1))
+      !---voigt width 
+      ALPHAV = AVCINTERP*(ALPHAD + ALPHAL)
+      !-----GENERATE VOIGT PROFILE SUCH THAT THE VOIGT HALFWIDTH = 1.
+      if (zeta .lt. 1.00) then 
+         AL=ALPHAL/ALPHAD
+         AD= 1.
+         dnu=deltnu/alphad
+      end if
+      !---case of pure lorentz
+      if (zeta .eq. 1.00 .and. ABS(SDEP) .LT. TINY) then 
+         SDVOIGT=(ALPHAL/(PI*(ALPHAL**2+(DELTNU)**2)))
+         RETURN
+      end if
+      !---SETUP PARAMETERS FOR CALL TO VOIGT GENERATOR (HUMLICEK)
+      IF (ABS(SDEP) .GT. TINY) THEN !SD Voigt 
+      !---Speed Dependence follows Boone et al., 2011, An efficient analytical 
+      !---approach for calculating line mixing in atmospheric remote sensing 
+      !---applications, JQSRT, 112, 980-989.
+
+          !SDEP is Benner's speed dependence definition
+          !Therefore Boone's gamma2 = alphal*SDEP and his alfa = SDEP
+          gamma2 = alphal*SDEP
+          alfa = SDEP - 1.5 !Boone et al., 2011 Eq 13
+          beta = (deltnu/gamma2) !Boone et al., 2011 Eq 13
+          delta = (1.0/4.0/log(2.))*(alphad/gamma2)**2 !Boone et al., 2011 Eq 13
+     
+          !Boone et al., 2011, Eq. 12
+          temp = sqrt((delta+alfa)**2 + beta**2) !"temp" means temporary, used below
+          !print *, "temp", temp
+          !Real part of z1, z2, Boone et al., 2011, Eq. 12
+          x1 = sqrt((temp+delta+alfa)/2.0)-sqrt(delta)
+          x2 = x1+2.0*sqrt(delta)
+          !print *, "x1", x1, "x2", x2
+          !Imag part of z1, z2, Boone et al., 2011, Eq. 12
+          if (beta .gt. 0.0) then
+               sign = 1 
+          else if (beta .eq. 0.0) then 
+               sign = 0 
+          else 
+               sign = -1
+          endif
+          y1 = sign*sqrt((temp-delta-alfa)/2.0)
+          y2 = y1 
+          !print *, "y1", y1, "y2", y2
+
+
+          !---CALL the modified Humlicek subroutine to calc speed dependent Voigt
+          v=SD_Humlicek(x1,y1,x2,y2)
+          print *, "SD_Humlicek", REAL(v)
+
+      ELSE !Normal Voigt
+          !---SETUP PARAMETERS FOR CALL TO VOIGT GENERATOR (HUMLICEK)
+          x = sqrt(log(2.))*(dnu)
+          y = 1000.
+          if (zeta .lt. 1.000) then
+             y = sqrt(log(2.))*AL
+          end if
+          !---CALL the Humlicek subroutine
+          v=W4(x,y)
+          !print *, "Humlicek", REAL(v)
+      ENDIF
+      anorm1 = sqrt(log(2.)/PI)/alphad
+      !print *, 'anorm', anorm1, 'alphad', alphad, 'PI', PI
+      SDVOIGT=REAL(v)*ANORM1
+      RETURN
+    
+      end FUNCTION SDVOIGT
+
 
 !*************************************************************************
 !     FORTRAN function for the complex probability function w(z).
@@ -812,6 +1061,79 @@ CONTAINS
            U*(61.57037-U*(1.841439-U)))))))
       RETURN
       END FUNCTION W4
+
+!*************************************************************************
+!     FORTRAN function for the difference of two complex probability 
+!     functions w(z1)-w(z2)..
+!     COMPUTES THE COMPLEX PROBABILITY FUNCTION W(Z)=EXP(-Z**2)*ERFC(-I*Z)
+!     IN THE UPPER HALF-PLANE Z=X+I*Y (I.E. FOR Y>=0)
+!     MAXIMUM RELATIVE ERROR OF BOTH REAL AND IMAGINARY PARTS IS <1*10**(-4)
+!     Modified for speed dependece as recommended in Boone et al., 2011.
+!     References:
+!     Humlicek, J., 1982; Optimized Computation of the Voigt and Complex
+!     Probability Functions, J. Quant. Spectrosc. Radiat. Transfer, 27, 437-444.
+!     Boone et al., 2011, An efficient analytical 
+!     approach for calculating line mixing in atmospheric remote sensing 
+!     applications, JQSRT, 112, 980-989.
+!     Original Humlicek Implementation: 
+!     S-A Boukabara AER Inc, 2000
+!     Modifications for speed dependence:
+!     M. J. Alvarado, AER, 2013
+!*************************************************************************
+      FUNCTION SD_Humlicek(x1,y1,x2,y2)
+      COMPLEX SD_Humlicek,T1,T2,U1,U2, W1, W2
+      
+      T1=CMPLX(Y1,-X1)
+      T2=CMPLX(Y2,-X2)
+      S1=ABS(X)+Y
+      S2=ABS(X)+Y
+      IF(S1.LT.15. .OR. S2.LT.15.)GOTO 1
+!     ***   REGION I
+      W1=T1*.5641896/(.5+T1*T1)
+      W2=T2*.5641896/(.5+T2*T2)
+      SD_Humlicek = W1-W2
+      RETURN
+ 1    IF(S1.LT.6.0 .OR. S2.LT.6.0)GOTO 2 
+!     Change in Region 2 and 3 boundary recommended on page 985 of Boone et al. 2011
+!     (see 4th paragraph of second column)
+! 1    IF(S.LT.5.5)GOTO 2
+!     ***   REGION II
+      U1=T1*T1
+      U2=T2*T2 
+      W1=T1*(1.410474+U1*.5641896)/(.75+U1*(3.+U1))
+      W2=T2*(1.410474+U2*.5641896)/(.75+U2*(3.+U2))
+      SD_Humlicek = W1-W2
+      RETURN
+ 2    IF(Y1.LT. 0.195*ABS(X1)-0.176 .OR. Y2.LT. 0.195*ABS(X2)-0.176)GOTO 3
+!     ***   REGION III
+      W1=(16.4955+T1*(20.20933+T1*(11.96482+ &
+           T1*(3.778987+T1*.5642236))))/ &
+           (16.4955+T1*(38.82363+T1*(39.27121+ &
+           T1*(21.69274+T1*(6.699398+T1)))))
+      W2=(16.4955+T2*(20.20933+T2*(11.96482+ &
+           T2*(3.778987+T2*.5642236))))/ &
+           (16.4955+T2*(38.82363+T2*(39.27121+ &
+           T2*(21.69274+T2*(6.699398+T2)))))
+      SD_Humlicek = W1-W2
+      RETURN
+!     ***   REGION IV
+ 3    U1=T1*T1
+      U2=T2*T2
+      W1=CEXP(U1)-T1*(36183.31-U1*(3321.9905- &
+           U1*(1540.787-U1*(219.0313-U1* &
+           (35.76683-U1*(1.320522-U1*.56419))))))/ &
+           (32066.6-U1*(24322.84-U1* &
+           (9022.228-U1*(2186.181-U1*(364.2191- &
+           U1*(61.57037-U1*(1.841439-U1)))))))
+      W2=CEXP(U2)-T2*(36183.31-U2*(3321.9905- &
+           U2*(1540.787-U2*(219.0313-U2* &
+           (35.76683-U2*(1.320522-U2*.56419))))))/ &
+           (32066.6-U2*(24322.84-U2* &
+           (9022.228-U2*(2186.181-U2*(364.2191- &
+           U2*(61.57037-U2*(1.841439-U2)))))))
+      SD_Humlicek = W1-W2
+      RETURN
+      END FUNCTION SD_Humlicek
       
       subroutine chi_fn (deltXNU,chi)
 
