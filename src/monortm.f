@@ -272,7 +272,7 @@ c------------------------------------
 	HVRMON = '$Revision$' 
 
 	!---Release number of MonoRTM
-	HVRREL = 'Release  4.6'
+	HVRREL = 'Release  4.7'
 
 	!---GET THE PROFILES NUMBER
 
@@ -297,6 +297,15 @@ c------------------------------------
 	CALL RDLBLINP(IATM,IOUT,IOD,IRT,NWN,WN,FILEIN,
      1    cntnmScaleFac,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
 
+        if (ISPD .eq. 1) then
+           print *, '****************************************'
+           print *, '*            W A R N I N G             *'
+           print *, '****************************************'
+           print *, ' The ISPD=1 option is no longer valid.'
+           print *, '     Users desiring a fast option should build '
+           print *, '              the appropriate TAPE3.'
+           stop
+        endif
 
 	!---PRINT OUT MONORTM VERSION AND PROFILES NUMBER
 	CALL start(NPROF,IATM)
@@ -511,7 +520,7 @@ C
            CALL MODM(IPR,ICPL,NWN,WN,dvset,NLAYRS,P,T,
      1                 O,O_BY_MOL, OC, O_CLW, ODXSEC,
      4	               NMOL,WKL,WBRODL,
-     5	        SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect,ISPD)
+     5	        SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect)
 	   
 	   !***********************************************
 	   !* Fifth Step: RADIATIVE TRANSFER

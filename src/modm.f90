@@ -20,7 +20,7 @@ CONTAINS
       SUBROUTINE MODM(IPR,ICP,NWN,WN,dvset,NLAY,P,T, &
                   O,O_BY_MOL, OC, O_CLW, ODXSEC, &
                        NMOL,WKL,WBRODL, &
-                 SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect,ISPD)
+                 SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect)
 !
 !  --------------------------------------------------------------------------
 ! |                                                                          |
@@ -73,9 +73,6 @@ CONTAINS
 !     - Y0RES    : Y0 resonnance (usually Y0RES=0) to be added to the Yi
 !     - HFILE    : Name of the spectral lines information file (HITRAN)
 !     - cntnmScaleFac   : Structure containing scale factors to be applied to the continua
-!     - ISPD     : Flag to use the slow version (if 0) (all the lines present) 
-!                  which is most accurate, or use the fast version (if 1)
-!                  (only flagged lines used). valid only for the microwave.
 !
 !
 !     OUTPUTS:
@@ -181,7 +178,7 @@ CONTAINS
          NPTABS = (V2ABS-V1ABS)/DVABS+1.5
 
       IF(INIT)THEN
-         CALL GET_LNFL(IPR,ICP,HFILE,ISPD,v1,v2) !reads the HITRAN data
+         CALL GET_LNFL(IPR,ICP,HFILE,v1,v2) !reads the HITRAN data
          INIT=.FALSE.
       ENDIF
 !  Initialize
@@ -211,7 +208,7 @@ CONTAINS
               !print *, ' '
 	      call pushCntnmFactors(cntnmScaleFac)   ! Restore factors
 ! Interpolate for gridded spectral resolution in one step
-              if (icount.LT.ncount) then 
+              if (icount.LT.ncont) then 
 		 if (dvset.ne.0) call xint(v1abs,v2abs,dvabs,absrb,1.0,v1, &
 			      dvset,oc(1:nwn,im,k),1,nwn) 
    ! Interpolate for specific wavenumbers one at a time
@@ -393,7 +390,7 @@ CONTAINS
             !MJA 20130517 Assuming that even for speed dependence 
             !we should go to lorentz at high zeta and in wings
             !Seems consistent with Figure 1 of Boone et al., JQSRT, 105, 525-532, 2007.
-            if ((ABS(WN-Xnu).GT.(10.*HWHM_D)).or.(zeta.GT.0.99)) ilshp=0
+            if ((ABS(WN-Xnu).GT.(100.*HWHM_D)).or.(zeta.GT.0.99)) ilshp=0
             IF (ilshp.eq.0) CALL LSF_LORTZ(XG(I,J),RP,RP2,AIP,BIP, &
                  HWHM_C,WN,Xnu,SLS,I)
             !MJA 20130517 New speed dependent voigt line shape
@@ -556,7 +553,7 @@ CONTAINS
       !print *, SDEP
       IF ((MOL.NE.MOL_O2).AND.(MOL.NE.MOL_CO2)) THEN ! check for line within 25cm-1 has already
                                                      ! been performed in modm.f
-          IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN !line coupling
+          IF ((XF.EQ.-1).or.(XF.EQ.-3).or.(XF.EQ.-5)) THEN !line coupling
                deltXNU=(WN-Xnu)
                XL1=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (+) osc.
                XL3=SDVOIGT(deltnuC,HWHM,AD, SDEP) !VOIGT for 25cm-1 wn (pedestal) 
@@ -589,8 +586,9 @@ CONTAINS
 
       ELSE ! O2 or CO2 (check for line within 25 cm-1 has to be performed here for O2)
           IF ((ABS(WN-Xnu).LE.deltnuC).and.(XF.NE.-1).and. &
-                 (XF.NE.-3)) THEN    !no line coupling 
+                 (XF.NE.-3).and.(XF.NE.-5)) THEN    !no line coupling 
               deltXNU=(WN-Xnu)
+!              print *, "WN", WN, "SDEP", SDEP
               XL1=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (+) osc.
               IF (MOL.EQ.MOL_O2) THEN ! O2, no line coupling
                   IF (DIFF .LE. 0.) THEN
@@ -611,7 +609,7 @@ CONTAINS
 
           ELSE ! line has line coupling
               IF (MOL.EQ.MOL_O2) THEN  
-                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN !O2 line coupling: don't implement 25cm-1 check
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3).or.(XF.EQ.-5)) THEN !O2 line coupling: don't implement 25cm-1 check
                       deltXNU=(WN-Xnu)
                       XL1=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (+) osc.
                       deltXNU=(WN+Xnu)
@@ -627,7 +625,7 @@ CONTAINS
                       ENDIF
                   ENDIF
               ELSE ! co2
-                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN ! CO2 line coupling
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3).or.(XF.NE.-5)) THEN ! CO2 line coupling
                                 ! For CO2 (unlike O2) contributions beyond 25 cm-1 are in the cntnm
                                 ! The "within 25cm-1" check for CO2 has already been performed in modm.f
                                 ! calculate pedestal contribution without line coupling (impact)
@@ -643,8 +641,13 @@ CONTAINS
                       deltXNU=(WN+Xnu)
 !                     no negative oscillation, since no CO2 lines within 25cm-1 of zero cm-1
                       XL3 = SDVOIGT(deltnuC,HWHM,AD, SDEP) !VOIGT for 25cm-1 wn
-                      print *, "XL1-XL3", XL1-XL3
-                      IF (XF.EQ.-1) THEN
+
+                      IF (XL1 .LT. 0.0 .OR. XL3 .LT. 0.0  &
+                          .OR. (XL1-XL3) .LT. 0.0) THEN
+                         print *, "XL1-XL3", XL1, XL3, XL1-XL3
+                      ENDIF
+
+                      IF (XF.EQ.-1.or.XF.EQ.-5) THEN
                           Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
                           XP4=XL3* &
                               (1./((deltnuC)**2+HWHM**2)) * &
@@ -692,15 +695,34 @@ CONTAINS
                                                      ! check for line within 25cm-1 has already
                                                      ! been performed in modm.f
 
-          deltXNU=(WN-Xnu)
-          XL1=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (+) osc.
-          XL3=XLORENTZ((deltnuC)/HWHM) !LORENTZ for 25cm-1 wn    
-          IF (DIFF .LE. 0.) THEN
-              deltXNU=(WN+Xnu)
-              XL2=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (-) osc.
-              SLS = (XL1 + XL2 - (2 * XL3)) / HWHM
-          ELSE
-              SLS = (XL1 - XL3) / HWHM
+          IF ((XF.EQ.-1).or.(XF.EQ.-3).or.(XF.EQ.-5)) THEN !line coupling
+               deltXNU=(WN-Xnu)
+               XL1=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (+) osc.
+               XL3=XLORENTZ((deltnuC)/HWHM) !LORENTZ for 25cm-1 wn               
+               Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))! line coupling for (+) osc
+               Y1P=(1.+(AIP*(1/HWHM)*RP*(deltnuC-Xnu))+(BIP*RP2))! line coupling for (+) osc pedestal            
+               IF (DIFF .LE. 0.) THEN !Within 25 cm-1 of 0 cm-1
+                    deltXNU=(WN+Xnu)
+                    XL2=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (-) osc.
+                    Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2)) ! line coupling for (-) osc
+                    Y2P=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2)) ! line coupling contributions to (-)pedestal                  
+                    SLS = (Y1*(XL1)-Y1P*(XL3)+Y2*(XL2)-Y2P*(XL3))
+                    !SLS = (XL1 + XL2 - (2 * XL3)) 
+               ELSE
+                    SLS = Y1*(XL1) - Y1P*(XL3)
+                    !SLS = (XL1 - XL3) 
+               ENDIF
+          ELSE !No line coupling
+              deltXNU=(WN-Xnu)
+              XL1=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (+) osc.
+              XL3=XLORENTZ((deltnuC)/HWHM) !LORENTZ for 25cm-1 wn    
+              IF (DIFF .LE. 0.) THEN
+                  deltXNU=(WN+Xnu)
+                  XL2=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (-) osc.
+                  SLS = (XL1 + XL2 - (2 * XL3)) / HWHM
+              ELSE
+                  SLS = (XL1 - XL3) / HWHM
+              ENDIF
           ENDIF
       ELSE                      ! O2 or CO2 (check for line within 25 cm-1 has to be performed for O2)
           IF ((ABS(WN-Xnu).LE.deltnuC).and.(XF.NE.-1).and. &
@@ -725,7 +747,7 @@ CONTAINS
               ENDIF
           ELSE ! line has line coupling
               IF (MOL.EQ.MOL_O2) THEN ! for O2 line-coupled lines the 25 cm-1 check is not implemented
-                  IF ((XF.EQ.-1).or.(XF.EQ.-3)) THEN !O2 line coupling
+                  IF ((XF.EQ.-1).or.(XF.EQ.-3).or.(XF.EQ.-5)) THEN !O2 line coupling
                       deltXNU=(WN-Xnu)
                       XL1=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (+) osc.
                       deltXNU=(WN+Xnu)
@@ -939,6 +961,7 @@ CONTAINS
       REAL AL,AD,ANORM1,SDVOIGT,DZETA
       !MJA 20130517 Speed Dependence
       REAL SDEP, alfa, beta, delta, temp, x1, x2, y1, y2, sign, TINY
+      REAL alfadelta
       INTEGER LM_flag
       INTEGER IZETA2,IZETA1
       DATA AVC/                                                    &
@@ -991,19 +1014,20 @@ CONTAINS
       !---applications, JQSRT, 112, 980-989.
 
           !SDEP is Benner's speed dependence definition
-          !Therefore Boone's gamma2 = alphal*SDEP and his alfa = SDEP
+          !Therefore Boone's gamma2 = alphal*SDEP and his alfa = (1/SDEP) - 1.5
           gamma2 = alphal*SDEP
-          alfa = SDEP - 1.5 !Boone et al., 2011 Eq 13
+          alfa = (alphal/gamma2) - 1.5 !Boone et al., 2011 Eq 13
           beta = (deltnu/gamma2) !Boone et al., 2011 Eq 13
-          delta = (1.0/4.0/log(2.))*(alphad/gamma2)**2 !Boone et al., 2011 Eq 13
-     
+          delta = (1.0/4.0/log(2.))*(alphad*alphad/gamma2/gamma2) !Boone et al., 2011 Eq 13   
+          alfadelta = alfa+delta
+
           !Boone et al., 2011, Eq. 12
-          temp = sqrt((delta+alfa)**2 + beta**2) !"temp" means temporary, used below
+          temp = sqrt(alfadelta*alfadelta + beta*beta) !"temp" means temporary, used below
           !print *, "temp", temp
           !Real part of z1, z2, Boone et al., 2011, Eq. 12
-          x1 = sqrt((temp+delta+alfa)/2.0)-sqrt(delta)
+          x1 = (1.0/sqrt(2.0))*sqrt(temp+alfadelta)-sqrt(delta)
           x2 = x1+2.0*sqrt(delta)
-          !print *, "x1", x1, "x2", x2
+!          print *, "x1", x1, "x2", x2, "beta", beta, "deltnu",deltnu 
           !Imag part of z1, z2, Boone et al., 2011, Eq. 12
           if (beta .gt. 0.0) then
                sign = 1 
@@ -1012,14 +1036,24 @@ CONTAINS
           else 
                sign = -1
           endif
+!          print *, "sign", sign
           y1 = sign*sqrt((temp-delta-alfa)/2.0)
+!          y1 = (1.0/sqrt(2.0))*sqrt(temp-alfadelta)
           y2 = y1 
-          !print *, "y1", y1, "y2", y2
+!          print *, "y1", y1, "y2", y2
 
 
           !---CALL the modified Humlicek subroutine to calc speed dependent Voigt
-          v=SD_Humlicek(x1,y1,x2,y2)
-          print *, "SD_Humlicek", REAL(v)
+          v=SD_Humlicek(y1,x1,y2,x2)
+!          vtemp1 = W4(y1,x1)
+!          vtemp2 = W4(y2,x2)
+!          print *, "SD_Humlicek", REAL(v), REAL(vtemp1-vtemp2)
+          IF (REAL(v).LT.0.0) STOP
+
+          anorm1 = sqrt(log(2.)/PI)/alphad !Boone et al., 2011 Eq 10 
+!           anorm1 = 1.0/sqrt(PI)/alphad  !Boone et al., 2007 Eq 5 
+          !print *, 'anorm', anorm1, 'alphad', alphad, 'PI', PI
+           SDVOIGT=REAL(v)*ANORM1
 
       ELSE !Normal Voigt
           !---SETUP PARAMETERS FOR CALL TO VOIGT GENERATOR (HUMLICEK)
@@ -1031,6 +1065,9 @@ CONTAINS
           !---CALL the Humlicek subroutine
           v=W4(x,y)
           !print *, "Humlicek", REAL(v)
+          anorm1 = sqrt(log(2.)/PI)/alphad
+          !print *, 'anorm', anorm1, 'alphad', alphad, 'PI', PI
+          SDVOIGT=REAL(v)*ANORM1
       ENDIF
       anorm1 = sqrt(log(2.)/PI)/alphad
       !print *, 'anorm', anorm1, 'alphad', alphad, 'PI', PI
@@ -1102,30 +1139,60 @@ CONTAINS
 !*************************************************************************
       FUNCTION SD_Humlicek(x1,y1,x2,y2)
       COMPLEX SD_Humlicek,T1,T2,U1,U2, W1, W2
+      REAL S1, S2, X1, Y1, X2, Y2
+      INTEGER Region1, Region2, Region
       
       T1=CMPLX(Y1,-X1)
       T2=CMPLX(Y2,-X2)
-      S1=ABS(X)+Y
-      S2=ABS(X)+Y
-      IF(S1.LT.15. .OR. S2.LT.15.)GOTO 1
+      S1=ABS(X1)+Y1
+      S2=ABS(X2)+Y2
+
+!     Find correct Humlicek region for each line
+      Region1 = 1
+      IF(S1.GE.15.0) THEN
+          Region1 = 1
+      ELSE IF (S1.GE.6.0 .AND. S1.LT.15.0) THEN
+          Region1 = 2
+      ELSE !S1 .LT. 6.0
+          Region1 = 3
+          IF(Y1.LT. 0.195*ABS(X1)-0.176) Region1 = 4
+      ENDIF
+
+      Region2 = 1
+      IF(S2.GE.15.0) THEN
+          Region2 = 1
+      ELSE IF (S2.GE.6.0 .AND. S2.LT.15.0) THEN
+          Region2 = 2
+      ELSE !S2 .LT. 6.0
+          Region2 = 3
+          IF(Y2.LT. 0.195*ABS(X2)-0.176) Region2 = 4
+      ENDIF 
+
+      !Use Largest of two regions
+      Region = MAX(Region1, Region2)
+      print *, "Region1" , Region1, "Region2", Region2, "Region", Region
+      IF(Region .GT. 1)GOTO 1
 !     ***   REGION I
+      print *, "Region I"
       W1=T1*.5641896/(.5+T1*T1)
       W2=T2*.5641896/(.5+T2*T2)
       SD_Humlicek = W1-W2
       RETURN
- 1    IF(S1.LT.6.0 .OR. S2.LT.6.0)GOTO 2 
+ 1    IF(Region .GT. 2)GOTO 2 
 !     Change in Region 2 and 3 boundary recommended on page 985 of Boone et al. 2011
 !     (see 4th paragraph of second column)
 ! 1    IF(S.LT.5.5)GOTO 2
 !     ***   REGION II
+      print *, "Region II"
       U1=T1*T1
       U2=T2*T2 
       W1=T1*(1.410474+U1*.5641896)/(.75+U1*(3.+U1))
       W2=T2*(1.410474+U2*.5641896)/(.75+U2*(3.+U2))
       SD_Humlicek = W1-W2
       RETURN
- 2    IF(Y1.LT. 0.195*ABS(X1)-0.176 .OR. Y2.LT. 0.195*ABS(X2)-0.176)GOTO 3
+ 2    IF(Region .GT. 3)GOTO 3
 !     ***   REGION III
+      print *, "Region III"
       W1=(16.4955+T1*(20.20933+T1*(11.96482+ &
            T1*(3.778987+T1*.5642236))))/ &
            (16.4955+T1*(38.82363+T1*(39.27121+ &
@@ -1138,6 +1205,7 @@ CONTAINS
       RETURN
 !     ***   REGION IV
  3    U1=T1*T1
+      print *, "Region IV"
       U2=T2*T2
       W1=CEXP(U1)-T1*(36183.31-U1*(3321.9905- &
            U1*(1540.787-U1*(219.0313-U1* &

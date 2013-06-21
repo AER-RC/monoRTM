@@ -19,7 +19,7 @@ MODULE LNFL_MOD
 
 CONTAINS
 
-      SUBROUTINE GET_LNFL(IPR,ICP,HFILE,ISPD,v1,v2)
+      SUBROUTINE GET_LNFL(IPR,ICP,HFILE,v1,v2)
 
       use struct_types, ONLY: line_data
       real*8  ::    v1,v2
@@ -94,22 +94,6 @@ CONTAINS
       end do
 
 
-! keep this as a reminder that we need to deal with ISPD
-
-     ! IF (ISPD .eq. 1) then
-     !    IF (iflg.ne.mo) then 
-     !       IF ((iref3.EQ.-1).OR.(iref3.EQ.-3)) THEN 
-     !          READ(9,2,END=3,ERR=30)JF,XF,DF,SF,EF,AS,AF,XS,XF
-     !       ENDIF
-     !       goto 22
-     !    ENDIF
-     ! ENDIF
-
-! Keep this as a reminder that LC can be ignored in MONORTM
-!      IF (((iref3.EQ.-1).OR.(iref3.EQ.-3)).AND.(ICP.EQ.0)) THEN !Lines Cplng ignored
-!         READ(9,2,END=3,ERR=30)JF,XF,DF,SF,EF,AS,AF,XS,XF
-!         XG(JJ,II)=0.
-!      ENDIF
       !IF (ISPD.EQ.1) THEN
       !   WRITE(*,*) '****************************************'
       !   WRITE(*,*) '*            W A R N I N G             *'
