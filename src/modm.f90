@@ -278,7 +278,7 @@ CONTAINS
 
       PARAMETER (NNM=  39,IIM= 75000,MXBRDMOL=7)
       REAL WK(NMOL),o_by_mol(nmol)
-      REAL*8 WN,XNU,S0_adj
+      REAL*8 WN,XNU
       REAL A(4),B(4),TEMPLC(4)
       real scor(42,9)
 
