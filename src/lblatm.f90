@@ -396,7 +396,7 @@
 !                                                                       
 !********************************************************************** 
 !                                                                       
-      USE phys_consts, ONLY: pi, clight, avogad, alosmt, gascon
+      USE PhysConstants, ONLY: getPhysConst
       USE lblparams, ONLY: MXFSC, MXLAY, MXZMD, MXPDIM, IM2,            &
                            MXMOL, MXTRAC
 !      PARAMETER (MXFSC=600, MXLAY=MXFSC+3,MXZMD=6000,                   &
@@ -424,6 +424,8 @@
      &                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,            &
      &                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                     
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL) 
+!
+      REAL PI,CLIGHT,AVOGAD,ALOSMT,GASCON
 !                                                                       
 !     BLANK COMMON FOR ZMDL                                             
 !                                                                       
@@ -513,6 +515,8 @@
       DATA AIRMS1 / 2.153E25 / 
       SECNT0 = 1.0 
 !                                                                       
+      call getPhysConst(CLIGHT=CLIGHT,AVOGAD=AVOGAD,PI=PI,ALOSMT=ALOSMT, &
+         GASCON=GASCON)
       DEG = 180.0/PI 
 !                                                                       
 !     GCAIR IS THE GAS CONSTANT FOR RHO IN MOL CM(-3), P IN MB, AND     
@@ -3899,8 +3903,8 @@
 !                                                                       
 !***************************************************************        
 !                                                                       
-      USE phys_consts, ONLY: avogad, alosmt
-      USE planet_consts, ONLY: airmwt
+      USE PhysConstants, ONLY: getPhysConst
+      USE PlanetConstants, ONLY: getPlanetConst
       USE lblparams, ONLY: MXFSC, MXLAY, MXZMD, MXPDIM, IM2,            &
                            MXMOL, MXTRAC
 !      PARAMETER (MXFSC=600, MXLAY=MXFSC+3,MXZMD=6000,                   &
@@ -3912,10 +3916,14 @@
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL) 
       COMMON /DEAMT/ DENM(MXMOL,MXZMD),DENP(MXMOL,MXPDIM),DRYAIR(MXZMD) 
 !                                                                       
+      REAL AVOGAD,ALOSMT,AIRMWT
 !                                                                       
       INTEGER JUNIT(MXMOL) 
       DIMENSION WMOL(MXMOL) 
       DATA C1 / 18.9766 /,C2 / -14.9595 /,C3 / -2.4388 / 
+!
+      call getPhysConst(AVOGAD=AVOGAD,ALOSMT=ALOSMT)
+      CALL getPlanetConst(AIRMWT=AIRMWT)
 !                                                                       
       RHOAIR = ALOSMT*(P/PZERO)*(TZERO/T) 
       A = TZERO/T 
@@ -4021,8 +4029,8 @@
 !                                                                       
 !********************************************************************** 
 !                                                                       
-      USE phys_consts, ONLY: avogad, alosmt
-      USE planet_consts, ONLY: airmwt
+      USE PhysConstants, ONLY: getPhysConst
+      USE PlanetConstants, ONLY: getPlanetConst
       USE lblparams, ONLY: MXFSC, MXLAY, MXZMD, MXPDIM, IM2,            &
                            MXMOL, MXTRAC
 !      PARAMETER (MXFSC=600, MXLAY=MXFSC+3,MXZMD=6000,                   &
@@ -4032,10 +4040,15 @@
      &              NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,      &
      &              NLTEFL,LNFIL4,LNGTH4                                
       COMMON /CNSTATM/ PZERO,TZERO,ADCON,ALZERO,AVMWT,AMWT(MXMOL) 
+!
+      REAL AVOGAD,ALOSMT,AIRMWT
 !                                                                       
       DATA C1 / 18.9766 /,C2 / -14.9595 /,C3 / -2.4388 / 
-!                                                                       
+!
       DENSAT(ATEMP) = ATEMP*B*EXP(C1+C2*ATEMP+C3*ATEMP**2)*1.0E-6 
+!                                                                       
+      call getPhysConst(AVOGAD=AVOGAD,ALOSMT=ALOSMT)
+      CALL getPlanetConst(AIRMWT=AIRMWT)
 !                                                                       
       RHOAIR = ALOSMT*(P/PZERO)*(TZERO/T) 
       A = TZERO/T 
@@ -6105,7 +6118,7 @@
 !                             A.E.R. INC.     (AUGUST 1990)             
 !    *****************************************************************  
 !                                                                       
-      USE phys_consts, ONLY: alosmt
+      USE PhysConstants, ONLY: getPhysConst
       USE lblparams, ONLY: MXFSC, MXLAY, MXZMD, MXPDIM, IM2,            &
                            MXMOL, MXTRAC, MX_XS
 !      PARAMETER (MXFSC=600,MXLAY=MXFSC+3,MXZMD=6000,                    &
@@ -6190,6 +6203,8 @@
       CHARACTER*4 PZFORM(5),ht1,ht2 
       CHARACTER*3 CTYPE 
 !                                                                       
+      REAL ALOSMT
+!                                                                       
       DATA HOTHER / ' OTHER    '/ 
       DATA PZFORM / 'F8.6','F8.5','F8.4','F8.3','F8.2'/ 
       DATA PAFORM / '1PE15.7','  G15.7'/ 
@@ -6197,6 +6212,8 @@
       DATA CFORM2 / '(  G15.7,0PF10.2,10X,A3,I2,23X,(F7.3,F8.3,F7.2))'/ 
 !                                                                       
       WRITE (IPR,900) 
+!
+      call getPhysConst(ALOSMT=ALOSMT)
 !                                                                       
       NOZSAV = n_zero 
       n_zero = 1 
@@ -6929,7 +6946,7 @@
 !     IS USED.                                                          
 !     ***************************************************************** 
 !                                                                       
-      USE phys_consts, ONLY: alosmt
+      USE PhysConstants, ONLY: getPhysConst
       USE lblparams, ONLY: MXFSC, MXLAY, MXZMD, MXPDIM, IM2,            &
                            MXMOL, MXTRAC, MX_XS
 !      PARAMETER (MXFSC=600,MXLAY=MXFSC+3,MXZMD=6000,                    &
@@ -6964,6 +6981,10 @@
      &                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                     
 !                                                                       
       DIMENSION ZX(MXZMD),DENX(MX_XS,MXZMD) 
+!
+      REAL ALOSMT
+!
+      call getPhysConst(ALOSMT=ALOSMT)
 !                                                                       
       LX = 2 
       DO 30 L = 1, IMMAX 
@@ -7840,8 +7861,8 @@
 !      Applied Optics, 35(9), 1566-1573.
 !**************************************************************         
                                                                         
-      USE phys_consts, ONLY: boltz, gascon
-      USE planet_consts, ONLY: xmass_dry, grav_const
+      USE PhysConstants, ONLY: getPhysConst
+      USE PlanetConstants, ONLY: getPlanetConst,gravConst
       USE lblparams, ONLY: MXFSC, MXLAY, MXZMD, MXPDIM, IM2,            &
                            MXMOL, MXTRAC
 !      PARAMETER (MXFSC=600, MXLAY=MXFSC+3,MXZMD=6000,                   &
@@ -7865,17 +7886,20 @@
       REAL A, B, ALPHA 
 !      REAL BTZ                                                         
       REAL XINT_TOT 
+
+      REAL BOLTZ,GASCON,XMASS_DRY,XMASS_H2O
                                                                         
       DATA CA0/1.58123E-6/,CA1/-2.9331E-8/,CA2/1.1043E-10/ 
       DATA CB0/5.707E-6/,CB1/-2.051E-8/ 
       DATA CC0/1.9898E-4/,CC1/-2.376E-6/ 
       DATA CD/1.83E-11/,CE/-0.0765E-8/ 
                                                                         
-      DATA XMASS_H2O/0.018015/
+      CALL getPhysConst(BOLTZ=BOLTZ,GASCON=GASCON)
+      CALL getPlanetConst(XMASS_DRY=XMASS_DRY,XMASS_H2O=XMASS_H2O)
                                                                         
 ! CALCULATE GRAVITY AT REFERENCE LATITUDE AT SURFACE                    
                                                                         
-      G0 = GRAV_CONST(REF_LAT)
+      G0 = gravConst(REF_LAT)
                                                                         
 ! CALCULATE THE NUMBER DENSITY OF TOTAL AIR MOLECULES [MOLEC/CM^3]      
 ! CALCULATE THE COMPRESSIBILITY FACTOR (COMP_FAC) FOR THE               
