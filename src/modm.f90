@@ -4,8 +4,9 @@
 !     created:	        $Date: 2011-03-29 13:43:38 -0400 (Tue, 29 Mar 2011) $
 MODULE ModmMod
 
-  USE phys_consts
-  USE planet_consts, ONLY: AIRMWT, WVMWT
+  USE PhysConstants, ONLY: getPhysConst
+  USE PlanetConstants, ONLY: getPlanetConst
+
   PRIVATE
 
   !---------------------------------------------------------------
@@ -151,6 +152,7 @@ CONTAINS
       COMMON /LAMCHN/ ONEPL,ONEMI,EXPMIN,ARGMIN
 
 
+      REAL RADCN2
       CHARACTER HFILE*80,HVRMODM*15
       COMMON /CVRMODM/ HVRMODM
       LOGICAL INIT
@@ -162,6 +164,7 @@ CONTAINS
 
 
 ! Set up useful constants
+      CALL getPhysConst(RADCN2=RADCN2)
       ONEPL = 1.001                                                       
       ONEMI = 0.999                                                      
       ARGMIN = 34.                                                      
@@ -412,12 +415,14 @@ CONTAINS
 
       FUNCTION HALFWHM_D(MOL,ISO,XNU,T)
       PARAMETER (NMOL=39,Nspeci=85)
+      REAL BOLTZ,CLIGHT,AVOGAD
       REAL C,K,T,M
       REAL*8 XNU  
       INTEGER ILOC,ISO
       COMMON /ISVECT/ ISO_MAX(NMOL),SMASS(nmol,9)
       common /iso_id/ iso_82(98)
       
+      call getPhysConst(BOLTZ=BOLTZ,CLIGHT=CLIGHT,AVOGAD=AVOGAD)
       M=SMASS(mol,iso)
       HALFWHM_D=(XNU/CLIGHT)*SQRT(2.*LOG(2.)*((BOLTZ*T)/(M/AVOGAD)))
       END FUNCTION HALFWHM_D
@@ -839,7 +844,10 @@ CONTAINS
 
       SUBROUTINE INITI(P,T,RADCT,T0,P0,NMOL,WK,WBROD,XN0, &
                        Xn,Xn_WV)
+      REAL PLANCK,BOLTZ,CLIGHT,WVMOLMASS,DRYMOLMASS
       REAL wk(39),wbrod
+      CALL getPhysConst(PLANCK=PLANCK,BOLTZ=BOLTZ,CLIGHT=CLIGHT)
+      CALL getPlanetConst(WVMWT=WVMOLMASS,AIRMWT=DRYMOLMASS)
       RADCT=PLANCK*CLIGHT/BOLTZ !in K/cm-1
       T0=296.                   !in K
       P0=1013.25                !in HPa
@@ -862,6 +870,8 @@ CONTAINS
       !Ref:(INT. J. IR & MM WAVES V.12(17) JULY 1991
       COMPLEX EPS,RE
       REAL*8 WN
+      REAL PI,CLIGHT
+      CALL getPhysConst(PI=PI,CLIGHT=CLIGHT) 
       FREQ=WN*CLIGHT/1.E9
       IF ((FREQ.GT.3000.).AND.(CLW.GT.0.)) THEN
          WRITE(*,*) 'STOP: CLOUD IS PRESENT FOR SIMULATIONS'
@@ -884,6 +894,8 @@ CONTAINS
 
       FUNCTION XLORENTZ(Z)
       REAL*8 Z
+      REAL PI
+      CALL getPhysConst(PI=PI)
       XLORENTZ=1./(PI*(1.+(Z**2))) 
       RETURN
       END FUNCTION XLORENTZ
@@ -897,6 +909,7 @@ CONTAINS
       REAL ALPHAL,ALPHAD,ZETA,ALPHAV,AVCINTERP,DNU
       REAL AL,AD,X,Y,ANORM1,VOIGT,DZETA
       INTEGER IZETA2,IZETA1
+      REAL PI
       DATA AVC/                                                    &
         .10000E+01,.99535E+00,.99073E+00,.98613E+00,.98155E+00,    &
         .97700E+00,.97247E+00,.96797E+00,.96350E+00,.95905E+00,    &
@@ -919,6 +932,7 @@ CONTAINS
         .91176E+00,.91945E+00,.92741E+00,.93562E+00,.94409E+00,    &
         .95282E+00,.96179E+00,.97100E+00,.98044E+00,.99011E+00,    &
         .10000E+01,.10000E+01/                             
+      call getPhysConst(PI=PI)
       !---computes zeta
       zeta=alphal/(alphal+alphad)
       !---interpolation of the AVC
@@ -964,6 +978,7 @@ CONTAINS
       REAL alfadelta
       INTEGER LM_flag
       INTEGER IZETA2,IZETA1
+      REAL PI
       DATA AVC/                                                    &
         .10000E+01,.99535E+00,.99073E+00,.98613E+00,.98155E+00,    &
         .97700E+00,.97247E+00,.96797E+00,.96350E+00,.95905E+00,    &
@@ -986,6 +1001,7 @@ CONTAINS
         .91176E+00,.91945E+00,.92741E+00,.93562E+00,.94409E+00,    &
         .95282E+00,.96179E+00,.97100E+00,.98044E+00,.99011E+00,    &
         .10000E+01,.10000E+01/                             
+      call getPhysConst(PI=PI)
       TINY = 1.0e-4
       !---computes zeta
       zeta=alphal/(alphal+alphad)
