@@ -159,6 +159,7 @@ CONTAINS
       DATA INIT/.TRUE./
       SAVE INIT
 
+! h2o, co2, o3, o2,n2,rayleigh/
       data index_cont/1,2,3,7,22,99/
       HVRMODM = '$Revision: 11207 $' 
 
@@ -171,7 +172,7 @@ CONTAINS
       EXPMIN = EXP(-ARGMIN) 
 
 ! Set up constants for call to contnm
-         jrad = 1
+         jrad = 0
          nmolc = nmol
          v1 = wn(1)
          v2 = wn(nwn)
@@ -202,7 +203,7 @@ CONTAINS
 
 ! Call CONTNM for each molecule and for Rayleigh
         wkc(1:nmol) = wkl(1:nmol,k)
-        if (nmol.lt.22) wkc(index_cont(ncont)) = wbroad    ! set n2 to wbroad if nmol < 22
+        if (nmol.lt.22) wkc(index_cont(ncont-1)) = wbroad    ! set n2 to wbroad if nmol < 22
         do icount=1,ncont
               im = index_cont(icount) 
 	      absrb(:) = 0.
@@ -210,8 +211,8 @@ CONTAINS
 	      call contnm(jrad)
               !print *, ' '
 	      call pushCntnmFactors(cntnmScaleFac)   ! Restore factors
-! Interpolate for gridded spectral resolution in one step
               if (icount.LT.ncont) then 
+! Interpolate for gridded spectral resolution in one step
 		 if (dvset.ne.0) call xint(v1abs,v2abs,dvabs,absrb,1.0,v1, &
 			      dvset,oc(1:nwn,im,k),1,nwn) 
    ! Interpolate for specific wavenumbers one at a time
@@ -221,7 +222,12 @@ CONTAINS
 			    oc(iw,im,k),1,1)
 		    end do
 		 end if
-              else
+! Multiply by radiation term
+		 do iw=1,nwn
+		    oc(iw,im,k) = oc(iw,im,k)*radfn(wn(iw),xkt)
+		 end do
+              else   !Rayleigh !!
+! Interpolate for gridded spectral resolution in one step
 		 if (dvset.ne.0) call xint(v1abs,v2abs,dvabs,absrb,1.0,v1, &
 			      dvset,oc_rayl(1:nwn,k),1,nwn) 
    ! Interpolate for specific wavenumbers one at a time
@@ -231,14 +237,11 @@ CONTAINS
 			    oc_rayl(iw,k),1,1)
 		    end do
 		 end if
-              endif
 ! Multiply by radiation term
-!       do iw=1,nwn
-!                 print *,'oc ',oc(iw,im,k),radfn(wn(iw),xkt)
-!	  oc(iw,im,k) = oc(iw,im,k)*radfn(wn(iw),xkt)
-!                 print *,'oc ',oc(iw,im,k)
-!       end do
-
+		 do iw=1,nwn
+		    oc_rayl(iw,k) = oc_rayl(iw,k)*wn(iw)/1.0e4
+		 end do
+              endif
          end do                    ! end molecule loop
 
 ! calculate TIPS using Gamache routine rather that QOFT
