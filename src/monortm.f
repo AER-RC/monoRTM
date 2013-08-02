@@ -168,15 +168,26 @@ C**********************************************************************
 	!***************************************************************
         USE ModmMod, ONLY: MODM
         USE CntnmFactors, ONLY: CntnmFactors_t
+        USE RTMmono, ONLY: RTM, NWNMX
+        USE lblparams, ONLY: MXLAY,MXMOL,MXFSC,MX_XS
 	IMPLICIT REAL*8           (V) ! for consistency with LBLRTM routines
-	include "declar.incl"
+	!include "declar.incl"
 	INTEGER NWN,I,ICPL,IS,IOUT,IOD,IRT,J,IATM
+        INTEGER IPASSATM
 	REAL*8 V1,V2,SECANT,XALTZ 
 	REAL TMPSFC,TPROF(mxlay),qprof(mxlay),press(mxlay)
         REAL zvec(mxlay),dzvec(mxlay),zbnd(mxfsc),zbnd2(mxfsc)
 	REAL O(NWNMX,MXLAY),OC(NWNMX,MXMOL,MXLAY),
      &     O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY),
      &	   odxsec(nwnmx,mxlay)
+        REAL CLW(MXLAY)
+        REAL*8 WN(NWNMX)
+        REAL, DIMENSION(NWNMX) :: RAD,EMISS,REFLC,RUP,TRTOT,RDN,TB
+        REAL, DIMENSION(MXLAY) :: P,T,WBRODL,DVL,WTOTL,SECNTA
+        REAL, DIMENSION(MXLAY) :: ALBL,ADBL,AVBL,H2OSL
+        REAL ALTZ(0:MXLAY),PZ(0:MXLAY),TZ(0:MXLAY)
+        INTEGER , DIMENSION(MXLAY) :: IPTH,ITYL
+        REAL WKL(MXMOL,MXLAY)
         CHARACTER HVRATM*15,HVRMODM*15,HVRSUB*15,HVRMON*15
         CHARACTER HVRREL*15, HVRSPEC*15
 	CHARACTER fileARMlist*64,hmod*60,CTYPE*3
@@ -211,7 +222,7 @@ C**********************************************************************
      2    DPTMIN,DPTFAC,ALTAV,AVTRAT,TDIFF1,TDIFF2,ALTD1,      
      3    ALTD2,ANGLE,IANT,LTGNT,LH1,LH2,IPFLAG,PLAY,TLAY,     
      4    EXTID(10)    
-	COMMON /BNDPRP/ TMPSFC,BNDEMI(3),BNDRFL(3),IBPROP          
+	COMMON /BNDPRP/ BNDEMI(3),BNDRFL(3)          
 	COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4), 
      1    WK(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   
      2    EMISIV,FSCDID(17),NMOL,LAYRS ,YI1,YID(10),LSTWDF    
@@ -277,7 +288,7 @@ c------------------------------------
 	!---GET THE PROFILES NUMBER
 
 	CALL GETPROFNUMBER(IATM,FILEIN,fileARMlist,fileprof,
-     1    NPROF,filearmTAB)
+     1    NPROF)
 	!---File Unit numbers/Open files
 	IPU  =7 
 	IPR  =66
@@ -295,8 +306,7 @@ c------------------------------------
 
 	!---Get info about IBMAX/ZBND/H1/H2...
 	CALL RDLBLINP(IATM,IOUT,IOD,IRT,NWN,WN,FILEIN,
-     1    cntnmScaleFac,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
-
+     1    cntnmScaleFac,IXSECT,IBMAX,TMPSFC,ZBND,H1f,H2f,ISPD,IPASSATM)
         if (ISPD .eq. 1) then
            print *, '****************************************'
            print *, '*            W A R N I N G             *'
@@ -309,17 +319,14 @@ c------------------------------------
 
 	!---PRINT OUT MONORTM VERSION AND PROFILES NUMBER
 	CALL start(NPROF,IATM)
-
 	!---CHECK INPUTS AND THEIR CONSISTENCY WITH MONORTM
-	CALL CHECKINPUTS(NWN,NPROF,NWNMX,NPROFMX)
-
+	CALL CHECKINPUTS(NWN,NPROF,NWNMX)
 	!---Loop over the number of profiles to be processed
 	NREC=0
 	DO 111 NPR=1,NPROF
 	   !*********************************************
 	   !* First Step: Read in the inputs
 	   !*********************************************	   
-
 
 	   !---Inputs: MONORTM.IN (TAPE5-type of file)
 	   IF (IATM.EQ.1) THEN
@@ -329,7 +336,8 @@ c------------------------------------
 		 IPASS=0
 	      ENDIF
 	      CALL RDLBLINP(IATM,IOUT,IOD,IRT,NWN,WN,FILEIN,
-     1	         cntnmScaleFac,IXSECT,IBMAX,ZBND,H1f,H2f,ISPD,IPASSATM)
+     1	         cntnmScaleFac,IXSECT,IBMAX,TMPSFC,ZBND,H1f,H2f,ISPD,
+     2           IPASSATM)
 	   ENDIF
 
 
@@ -494,7 +502,6 @@ C
 	     ENDIF ! test on IXSECT=1
 
 	 ENDIF ! test on IATM=0
- 
 c_______________________________________________________________________
 c
 c     at this point scale profile if option selected
@@ -517,7 +524,7 @@ C
 	   !* Third Step: OPTICAL DEPTHS COMPUTATION
 	   !***********************************************	
 
-           CALL MODM(IPR,ICPL,NWN,WN,dvset,NLAYRS,P,T,
+           CALL MODM(IPR,ICPL,NWN,WN,dvset,NLAYRS,P,T,CLW,
      1                 O,O_BY_MOL, OC, O_CLW, ODXSEC,
      4	               NMOL,WKL,WBRODL,
      5	        SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect)
