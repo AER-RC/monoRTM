@@ -6,7 +6,6 @@ MODULE ModmMod
 
   USE PhysConstants, ONLY: getPhysConst
   USE PlanetConstants, ONLY: getPlanetConst
-
   PRIVATE
 
   !---------------------------------------------------------------
@@ -18,7 +17,7 @@ MODULE ModmMod
 
 CONTAINS
 
-      SUBROUTINE MODM(IPR,ICP,NWN,WN,dvset,NLAY,P,T, &
+      SUBROUTINE MODM(IPR,ICP,NWN,WN,dvset,NLAY,P,T,CLW, &
                   O,O_BY_MOL, OC, O_CLW, ODXSEC, &
                        NMOL,WKL,WBRODL, &
                  SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect)
@@ -125,8 +124,9 @@ CONTAINS
 !-------------------------------------------------------------------------------
       USE CntnmFactors, ONLY: CntnmFactors_t,oneMolecCntnm,pushCntnmFactors
       USE lnfl_mod, ONLY : GET_LNFL
-
-      include "declar.incl"
+      USE RTMmono,  ONLY : NWNMX
+      USE lblparams, ONLY: MXLAY
+      !include "declar.incl"
 
       parameter (n_absrb=5050,ncont=6)
       INTEGER, INTENT(IN) :: IPR
@@ -134,7 +134,9 @@ CONTAINS
       real*8 v1, v2
       real   O(NWNMX,MXLAY),OC(NWNMX,MXMOL,MXLAY), &
              O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY), &
-      	     odxsec(nwnmx,mxlay)
+      	     odxsec(nwnmx,mxlay),CLW(MXLAY),P(MXLAY),T(MXLAY)
+      REAL*8 WN(NWNMX)
+      REAL WKL(MXMOL,MXLAY),WBRODL(MXLAY)
       real oc_rayl(nwnmx,mxlay)
       real scor(42,9)
       integer index_cont(ncont), imol
@@ -146,7 +148,7 @@ CONTAINS
                                                                          
       COMMON /CVRCNT/ HNAMCNT,HVRCNT
       COMMON /FILHDR/ XID(10),SECANT,PAVE,TAVE,HMOLID(60),XALTZ(4),        &
-                      WKC(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,    &
+                      WKC(60),PZL,PZU,TZL,TZU,WBROAD,DV ,V1 ,V2 ,TBOUND,   &
                       EMISIV,FSCDID(17),NMOLC,LAYER ,YI1,YID(10),LSTWDF
 
       COMMON /LAMCHN/ ONEPL,ONEMI,EXPMIN,ARGMIN
