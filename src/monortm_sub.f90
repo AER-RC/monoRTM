@@ -571,7 +571,7 @@
 
 
        SUBROUTINE STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT, NPR, &
-            O,O_BY_MOL, OC, O_CLW, ODXSEC, &
+            O,O_BY_MOL, OC, O_CLW, ODXSEC, TMR, &
             WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS, &
             NLAY,NMOL,ANGLE,IOT,IOD,FILEOUT) 
        USE PhysConstants, ONLY: getPhysConst
@@ -583,6 +583,7 @@
        REAL FREQ,ANGLE
        REAL CLWCOLMN,TMPSFC,WVCOLMN
        REAL*8 WN(NWNMX)
+       REAL TMR(NWNMX)
        REAL WBRODL(MXLAY)
        REAL, DIMENSION(NWNMX) :: RAD,TRTOT,TB,EMISS,REFLC
        CHARACTER FILEOUT*60
@@ -633,7 +634,7 @@
 !---Write header in output file
        WRITE(IOT,'(a)') 'MONORTM RESULTS:'
        WRITE(IOT,'(a)') '----------------' 
-       WRITE(IOT,'(a5,I8,90x,a42)') 'NWN :',NWN , &
+       WRITE(IOT,'(a5,I8,101x,a42)') 'NWN :',NWN , &
            'Molecular Optical Depths -->'
 
        ! Use GHz for small wavenumbers
@@ -646,8 +647,8 @@
        end if
 
        write(iot,11)'PROF ',wnunits,'BT(K) ','  RAD(W/cm2_ster_cm-1)', &
-                    'TRANS','PWV','CLW','SFCT','EMIS','REFL','ANGLE', &
-                    'TOTAL_OD',cmol(1:kount), 'XSEC_OD' 
+                    'TRANS','PWV','CLW','SFCT','EMIS','REFL','ANGLE','TMR(K)',  &
+                    'TOTAL_OD',cmol(1:kount), 'XSEC_OD'
        ! Convert to GHz for small wavenumbers
        DO Iw=1,NWN
           if (giga) then
@@ -673,7 +674,7 @@
 
           WRITE(IOT,21) NPR,FREQ,TB(Iw),RAD(Iw),TRTOT(Iw), &
               WVCOLMN,CLWCOLMN,TMPSFC,EMISS(Iw),REFLC(Iw), &
-              ANGLE,OTOT,otot_by_mol(1:kount), odxtot
+              ANGLE,TMR(iw),OTOT,otot_by_mol(1:kount), odxtot
        ENDDO
 
        IF (IOD.EQ.1) THEN ! write out layer optical depths to ascii files
@@ -697,8 +698,8 @@
     
 
  
- 11    format (a5,a10,a11,a22,a8,2a8,3a8,a9,36a12)
- 21    format (i5,f10.3,f11.5,1p,E21.9,0p,f9.5,2f8.4,3f8.2,f9.3, &
+ 11    format (a5,a10,a11,a22,a8,2a8,3a8,a9,a11,36a12)
+ 21    format (i5,f10.3,f11.5,1p,E21.9,0p,f9.5,2f8.4,3f8.2,f9.3, f11.5,&
                                                   1p,36E12.4)
  31    format (a10,i4.4,a4,i4.4) 
        RETURN
