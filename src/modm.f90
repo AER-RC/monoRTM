@@ -404,7 +404,11 @@ CONTAINS
             !MJA 20130517 New speed dependent voigt line shape
             !IF (ilshp.eq.1) CALL LSF_VOIGT(XG(I,J),RP,RP2,AIP,BIP, &
             !     HWHM_C,WN,Xnu,SLS,HWHM_D,I)
-            !if (sdep(I,J) .ne. 0.0) print *, sdep(I,J)
+!            IF (sdep(I,J) .ne. 0.0) THEN
+!               print *, "WVN",  Xnu0(I,J)
+!               print *, "SDEP", sdep(I,J)
+!               print *, "RP", RP
+!            ENDIF
             IF (ilshp.eq.1) CALL LSF_SDVOIGT(XG(I,J),RP,RP2,AIP,BIP, &
                  HWHM_C,WN,Xnu,SLS,HWHM_D,I, sdep(I,J))
 
@@ -646,16 +650,17 @@ CONTAINS
                       deltXNU = (WN-Xnu)
 
                       CALL CHI_FN(deltXNU,CHI)
-
+!                      print *, "CO2 pos osc"
                       XL1=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (+) osc.
                       deltXNU=(WN+Xnu)
 !                     no negative oscillation, since no CO2 lines within 25cm-1 of zero cm-1
+!                      print *, "CO2 pedestal"
                       XL3 = SDVOIGT(deltnuC,HWHM,AD, SDEP) !VOIGT for 25cm-1 wn
 
-                      IF (XL1 .LT. 0.0 .OR. XL3 .LT. 0.0  &
-                          .OR. (XL1-XL3) .LT. 0.0) THEN
-                         print *, "XL1-XL3", XL1, XL3, XL1-XL3
-                      ENDIF
+!                      IF (XL1 .LT. 0.0 .OR. XL3 .LT. 0.0  &
+!                          .OR. (XL1-XL3) .LT. 0.0) THEN
+!                         print *, "XL1-XL3", XL1, XL3, XL1-XL3
+!                      ENDIF
 
                       IF (XF.EQ.-1.or.XF.EQ.-5) THEN
                           Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
@@ -1066,13 +1071,12 @@ CONTAINS
 
           !---CALL the modified Humlicek subroutine to calc speed dependent Voigt
           v=SD_Humlicek(y1,x1,y2,x2)
-!          vtemp1 = W4(y1,x1)
-!          vtemp2 = W4(y2,x2)
-!          print *, "SD_Humlicek", REAL(v), REAL(vtemp1-vtemp2)
+          vtemp1 = W4(y1,x1)
+          vtemp2 = W4(y2,x2)
+!          print *, "SD_Humlicek", REAL(v), REAL(vtemp1-vtemp2), REAL(vtemp1), REAL(vtemp2)
           IF (REAL(v).LT.0.0) STOP
 
           anorm1 = sqrt(log(2.)/PI)/alphad !Boone et al., 2011 Eq 10 
-!           anorm1 = 1.0/sqrt(PI)/alphad  !Boone et al., 2007 Eq 5 
           !print *, 'anorm', anorm1, 'alphad', alphad, 'PI', PI
            SDVOIGT=REAL(v)*ANORM1
 
@@ -1191,10 +1195,10 @@ CONTAINS
 
       !Use Largest of two regions
       Region = MAX(Region1, Region2)
-      print *, "Region1" , Region1, "Region2", Region2, "Region", Region
+!      print *, "Region1" , Region1, "Region2", Region2, "Region", Region
       IF(Region .GT. 1)GOTO 1
 !     ***   REGION I
-      print *, "Region I"
+!      print *, "Region I"
       W1=T1*.5641896/(.5+T1*T1)
       W2=T2*.5641896/(.5+T2*T2)
       SD_Humlicek = W1-W2
@@ -1204,7 +1208,7 @@ CONTAINS
 !     (see 4th paragraph of second column)
 ! 1    IF(S.LT.5.5)GOTO 2
 !     ***   REGION II
-      print *, "Region II"
+!      print *, "Region II"
       U1=T1*T1
       U2=T2*T2 
       W1=T1*(1.410474+U1*.5641896)/(.75+U1*(3.+U1))
@@ -1213,7 +1217,7 @@ CONTAINS
       RETURN
  2    IF(Region .GT. 3)GOTO 3
 !     ***   REGION III
-      print *, "Region III"
+!      print *, "Region III"
       W1=(16.4955+T1*(20.20933+T1*(11.96482+ &
            T1*(3.778987+T1*.5642236))))/ &
            (16.4955+T1*(38.82363+T1*(39.27121+ &
@@ -1226,20 +1230,37 @@ CONTAINS
       RETURN
 !     ***   REGION IV
  3    U1=T1*T1
-      print *, "Region IV"
+!      print *, "Region IV"
+!     You get errors if you use Region IV approximations for lines outside
+!     Region IV, so use Region III instead (MJA, 08062013)
       U2=T2*T2
-      W1=CEXP(U1)-T1*(36183.31-U1*(3321.9905- &
+      IF(Region1 .EQ. 4) THEN
+        W1=CEXP(U1)-T1*(36183.31-U1*(3321.9905- &
            U1*(1540.787-U1*(219.0313-U1* &
            (35.76683-U1*(1.320522-U1*.56419))))))/ &
            (32066.6-U1*(24322.84-U1* &
            (9022.228-U1*(2186.181-U1*(364.2191- &
            U1*(61.57037-U1*(1.841439-U1)))))))
-      W2=CEXP(U2)-T2*(36183.31-U2*(3321.9905- &
+      ELSE
+        W1=(16.4955+T1*(20.20933+T1*(11.96482+ &
+           T1*(3.778987+T1*.5642236))))/ &
+           (16.4955+T1*(38.82363+T1*(39.27121+ &
+           T1*(21.69274+T1*(6.699398+T1)))))
+      ENDIF
+      IF(Region2 .EQ. 4) THEN
+        W2=CEXP(U2)-T2*(36183.31-U2*(3321.9905- &
            U2*(1540.787-U2*(219.0313-U2* &
            (35.76683-U2*(1.320522-U2*.56419))))))/ &
            (32066.6-U2*(24322.84-U2* &
            (9022.228-U2*(2186.181-U2*(364.2191- &
            U2*(61.57037-U2*(1.841439-U2)))))))
+      ELSE
+        W2=(16.4955+T2*(20.20933+T2*(11.96482+ &
+           T2*(3.778987+T2*.5642236))))/ &
+           (16.4955+T2*(38.82363+T2*(39.27121+ &
+           T2*(21.69274+T2*(6.699398+T2)))))
+      ENDIF
+!      print *, W1, W2
       SD_Humlicek = W1-W2
       RETURN
       END FUNCTION SD_Humlicek
