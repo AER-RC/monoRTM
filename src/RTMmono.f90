@@ -1,11 +1,11 @@
 MODULE RTMmono
 
-  PRIVATE :: RAD_UP_DN, calctmr, bb_fn
+  PRIVATE :: RAD_UP_DN, bb_fn
   
   !---------------------------------------------------------------
   !  List of Public subroutines (accessible from outside module)
   !---------------------------------------------------------------
-  PUBLIC :: RTM 
+  PUBLIC :: RTM, calctmr 
 
   INTEGER, parameter :: NWNMX=4000
 
@@ -266,15 +266,18 @@ CONTAINS
         USE PhysConstants, ONLY: getPhysConst
         !include "declar.incl"
         USE lblparams, ONLY: MXLAY
+
+        real*8  wn(NWNMX)
+        real    t(mxlay),tz(0:mxlay),o(nwnmx,mxlay)
         integer nlayrs, nwn
+
+        real    tmr(nwnmx)
+
         integer ifr, ilay
         real    sumtau, sumexp
         real    bbvec(MXLAY),bbavec(0:MXLAY),odtot(NWNMX),trtot(NWNMX)
         real    odt, odvi, vv, beta, beta_a
-        real    O(nwnmx,mxlay)
         real    radtmr, x
-        real    tmr(*)
-        real*8  wn(NWNMX)
         REAL    RADCN1,RADCN2
 
         call getPhysConst(RADCN1=RADCN1,RADCN2=RADCN2)
