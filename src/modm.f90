@@ -125,7 +125,7 @@ CONTAINS
       USE CntnmFactors, ONLY: CntnmFactors_t,oneMolecCntnm,pushCntnmFactors
       USE lnfl_mod, ONLY : GET_LNFL
       USE RTMmono,  ONLY : NWNMX
-      USE lblparams, ONLY: MXLAY
+      USE lblparams, ONLY: MXLAY,MXMOL
       !include "declar.incl"
 
       parameter (n_absrb=5050,ncont=6)
