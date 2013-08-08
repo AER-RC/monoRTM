@@ -168,7 +168,7 @@ C**********************************************************************
 	!***************************************************************
         USE ModmMod, ONLY: MODM
         USE CntnmFactors, ONLY: CntnmFactors_t
-        USE RTMmono, ONLY: RTM, NWNMX
+        USE RTMmono, ONLY: RTM, NWNMX, CALCTMR
         USE lblparams, ONLY: MXLAY,MXMOL,MXFSC,MX_XS
 	IMPLICIT REAL*8           (V) ! for consistency with LBLRTM routines
 	!include "declar.incl"
@@ -182,6 +182,7 @@ C**********************************************************************
      &	   odxsec(nwnmx,mxlay)
         REAL CLW(MXLAY)
         REAL*8 WN(NWNMX)
+        REAL TMR(NWNMX)
         REAL, DIMENSION(NWNMX) :: RAD,EMISS,REFLC,RUP,TRTOT,RDN,TB
         REAL, DIMENSION(MXLAY) :: P,T,WBRODL,DVL,WTOTL,SECNTA
         REAL, DIMENSION(MXLAY) :: ALBL,ADBL,AVBL,H2OSL
@@ -530,6 +531,12 @@ C
      5	        SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect)
 	   
 	   !***********************************************
+	   !* Fourth  Step:  Mean Radiating Temperature
+	   !***********************************************	
+           
+           CALL CALCTMR (NLAYRS,NWN,WN,T,TZ,O,TMR)
+
+	   !***********************************************
 	   !* Fifth Step: RADIATIVE TRANSFER
 	   !***********************************************	   
 
@@ -540,7 +547,7 @@ C
 	   !* Sixth Step: WRITE OUT THE RESULTS
 	   !***********************************************	   
 	   CALL STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT,NPR,
-     1          O,O_BY_MOL, OC, O_CLW, ODXSEC,
+     1          O,O_BY_MOL, OC, O_CLW, ODXSEC,TMR,
      2          WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS,
      4	        NLAYRS,NMOL,ANGLE,IOT,IOD,FILEOUT)
 
