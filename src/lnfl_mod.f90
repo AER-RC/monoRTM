@@ -9,8 +9,8 @@ MODULE LNFL_MOD
    INTEGER :: NBLM(mxmol),ISO(mxmol,IIM)
    REAL*8 :: XNU0(mxmol,IIM)
    REAL, dimension(mxmol,iim) ::  DELTNU,E,ALPS,ALPF,X,XG,S0,RMOL,SDEP
-   integer*4, dimension(mxbrdmol,IIM) ::  brd_mol_flg(mxmol,mxbrdmol,IIM)
-   REAL, dimension(mxmol,mxbrdmol,IIM) ::  brd_mol_tmp,brd_mol_hw,brd_mol_shft
+   integer*4, dimension(mxbrdmol,mxbrdmol,IIM) ::  brd_mol_flg
+   REAL, dimension(mxbrdmol,mxbrdmol,IIM) ::  brd_mol_tmp,brd_mol_hw,brd_mol_shft
    PRIVATE
 
    PUBLIC :: GET_LNFL
@@ -55,7 +55,7 @@ CONTAINS
 		      mo = mod(bufr%mol(ik-1),i_100)
                       mo_prev = mo
                    else
-        ! Second line (foreign)
+        ! Second line (self)
 		      mo =  mo_prev
 		  endif
                case default
@@ -81,10 +81,12 @@ CONTAINS
             amol         = xmol                             ! real*4 to real*8 (if compiled as r8)
             rmol(mo,ii) = transfer(amol,rmol(mo,ii))        ! real*8 
 
-            brd_mol_flg(mo,:,ii)  = bufr%brd_mol_flg(:,ik)
-            brd_mol_hw(mo,:,ii)   = bufr%brd_mol_hw(:,ik)
-            brd_mol_tmp(mo,:,ii) =  bufr%brd_mol_tmp(:,ik)
-            brd_mol_shft(mo,:,ii) = bufr%brd_mol_shft(:,ik)
+            if (mo.le.mxbrdmol)  then 
+	       brd_mol_flg(mo,:,ii)  = bufr%brd_mol_flg(:,ik)
+	       brd_mol_hw(mo,:,ii)   = bufr%brd_mol_hw(:,ik)
+	       brd_mol_tmp(mo,:,ii) =  bufr%brd_mol_tmp(:,ik)
+	       brd_mol_shft(mo,:,ii) = bufr%brd_mol_shft(:,ik)
+            endif
 
             sdep(mo,ii) = bufr%speed_dep(ik)
 

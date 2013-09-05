@@ -579,14 +579,21 @@
        !include "declar.incl"
        USE lblparams, ONLY: MXLAY,MXMOL
 
-       INTEGER I,J,NWN,NLAY,NMOL,NPR,IOD,IOL
-       REAL FREQ,ANGLE
+       INTEGER NWN,NLAY,NMOL,NPR,IOT,IOD
+       REAL ANGLE
        REAL CLWCOLMN,TMPSFC,WVCOLMN
        REAL*8 WN(NWNMX)
-       REAL TMR(NWNMX)
+       REAL TMR(:)
        REAL WBRODL(MXLAY)
-       REAL, DIMENSION(NWNMX) :: RAD,TRTOT,TB,EMISS,REFLC
+       REAL, DIMENSION(:) :: RAD,TRTOT,TB,EMISS,REFLC
+       REAL O(:,:),OC(:,:,:), &
+           O_BY_MOL(:,:,:),O_CLW(:,:), &
+           odxsec(:,:),WKL(MXMOL,MXLAY)
        CHARACTER FILEOUT*60
+  
+
+       INTEGER I,J,IOL
+
        CHARACTER FILEOD*22
        character wnunits*12
        character*8 hmolc(mxmol),cmol(mxmol)
@@ -594,11 +601,8 @@
 
        REAL OTOT,otot_by_mol(mxmol),wk_tot(mxmol),odxtot
        integer id_mol(mxmol)
-       REAL O(NWNMX,MXLAY),OC(NWNMX,MXMOL,MXLAY), &
-           O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY), &
-           odxsec(nwnmx,mxlay),WKL(MXMOL,MXLAY)
-
        REAL CLIGHT
+       REAL FREQ
 
        save cmol, id_mol, kount
 
@@ -671,6 +675,7 @@
                    O_BY_MOL(IW,ID_MOL(IK),J) + OC(IW,ID_MOL(IK),J)
              ENDDO
           ENDDO
+       
 
           WRITE(IOT,21) NPR,FREQ,TB(Iw),RAD(Iw),TRTOT(Iw), &
               WVCOLMN,CLWCOLMN,TMPSFC,EMISS(Iw),REFLC(Iw), &
@@ -716,7 +721,7 @@
   INTEGER INP,J,NLAY,NWN,I,IRT
   REAL SECNT,ALPHA,ANGLE
   REAL PI
-  REAL O(NWNMX,MXLAY),SECNTA(MXLAY)
+  REAL O(:,:),SECNTA(MXLAY)
   CALL getPhysConst(PI=PI)
 !----SANITY CHECK
   IF (IRT.EQ.3) alpha=(angle*PI)/180.

@@ -170,20 +170,44 @@ C**********************************************************************
         USE CntnmFactors, ONLY: CntnmFactors_t
         USE RTMmono, ONLY: RTM, NWNMX, CALCTMR
         USE lblparams, ONLY: MXLAY,MXMOL,MXFSC,MX_XS
+
 	IMPLICIT REAL*8           (V) ! for consistency with LBLRTM routines
+
+        INTERFACE
+        SUBROUTINE STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT, NPR, 
+     &      O,O_BY_MOL, OC, O_CLW, ODXSEC, TMR, 
+     &      WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS, 
+     &      NLAY,NMOL,ANGLE,IOT,IOD,FILEOUT) 
+
+       INTEGER NWN,NLAY,NMOL,NPR,IOT,IOD
+       REAL ANGLE
+       REAL CLWCOLMN,TMPSFC,WVCOLMN
+       REAL*8 WN(NWNMX)
+       REAL TMR(:)
+       REAL WBRODL(MXLAY)
+       REAL, DIMENSION(:) :: RAD,TRTOT,TB,EMISS,REFLC
+       REAL O(:,:),OC(:,:,:),  
+     &      O_BY_MOL(:,:,:),O_CLW(:,:),  
+     &      odxsec(:,:),WKL(MXMOL,MXLAY)
+       CHARACTER FILEOUT*60
+ 
+       end subroutine
+       end interface
+
+
 	!include "declar.incl"
 	INTEGER NWN,I,ICPL,IS,IOUT,IOD,IRT,J,IATM
         INTEGER IPASSATM
 	REAL*8 V1,V2,SECANT,XALTZ 
 	REAL TMPSFC,TPROF(mxlay),qprof(mxlay),press(mxlay)
         REAL zvec(mxlay),dzvec(mxlay),zbnd(mxfsc),zbnd2(mxfsc)
-	REAL O(NWNMX,MXLAY),OC(NWNMX,MXMOL,MXLAY),
-     &     O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY),
-     &	   odxsec(nwnmx,mxlay)
+	REAL,dimension(:,:),allocatable ::   O,O_CLW,ODXSEC 
+	REAL,dimension(:,:,:),allocatable ::  O_BY_MOL,OC
         REAL CLW(MXLAY)
         REAL*8 WN(NWNMX)
-        REAL TMR(NWNMX)
-        REAL, DIMENSION(NWNMX) :: RAD,EMISS,REFLC,RUP,TRTOT,RDN,TB
+        REAL,dimension(:),allocatable :: TMR
+        REAL, DIMENSION(:),allocatable :: RAD,EMISS,REFLC,RUP,TRTOT,RDN,
+     &                                    TB
         REAL, DIMENSION(MXLAY) :: P,T,WBRODL,DVL,WTOTL,SECNTA
         REAL, DIMENSION(MXLAY) :: ALBL,ADBL,AVBL,H2OSL
         REAL ALTZ(0:MXLAY),PZ(0:MXLAY),TZ(0:MXLAY)
@@ -323,6 +347,12 @@ c------------------------------------
 	!---CHECK INPUTS AND THEIR CONSISTENCY WITH MONORTM
 	CALL CHECKINPUTS(NWN,NPROF,NWNMX)
 	!---Loop over the number of profiles to be processed
+
+        !Now allocate all arrays dimensioned by number of user requested frequencies (NWN)
+        allocate (o(nwn,mxlay),o_clw(nwn,mxlay),odxsec(nwn,mxlay))
+        allocate (o_by_mol(nwn,mxmol,mxlay),oc(nwn,mxmol,mxlay))
+        allocate (tmr(nwn),rad(nwn),emiss(nwn),reflc(nwn),rup(nwn),
+     &            trtot(nwn),rdn(nwn),tb(nwn))
 	NREC=0
 	DO 111 NPR=1,NPROF
 	   !*********************************************
@@ -546,6 +576,8 @@ C
 	   !***********************************************
 	   !* Sixth Step: WRITE OUT THE RESULTS
 	   !***********************************************	   
+ 
+
 	   CALL STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT,NPR,
      1          O,O_BY_MOL, OC, O_CLW, ODXSEC,TMR,
      2          WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS,

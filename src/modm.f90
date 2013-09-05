@@ -132,12 +132,12 @@ CONTAINS
       INTEGER, INTENT(IN) :: IPR
       real *8  v1abs,v2abs
       real*8 v1, v2
-      real   O(NWNMX,MXLAY),OC(NWNMX,MXMOL,MXLAY), &
-             O_BY_MOL(NWNMX,MXMOL,MXLAY),O_CLW(NWNMX,MXLAY), &
-      	     odxsec(nwnmx,mxlay),CLW(MXLAY),P(MXLAY),T(MXLAY)
+      real   O(:,:),OC(:,:,:), &
+             O_BY_MOL(:,:,:),O_CLW(:,:), &
+      	     odxsec(:,:),CLW(MXLAY),P(MXLAY),T(MXLAY)
       REAL*8 WN(NWNMX)
       REAL WKL(MXMOL,MXLAY),WBRODL(MXLAY)
-      real oc_rayl(nwnmx,mxlay)
+      real oc_rayl(nwn,mxlay)
       real scor(42,9)
       integer index_cont(ncont), imol
       COMMON /ABSORB/ V1ABS,V2ABS,DVABS,NPTABS,ABSRB(n_absrb)                
@@ -270,7 +270,7 @@ CONTAINS
                     sum(oc(m,1:index_cont(5),k))+O_CLW(M,K)
 
          ENDDO
-
+        
       ENDDO                     ! end layer loop
       RETURN
       END SUBROUTINE MODM
@@ -290,9 +290,13 @@ CONTAINS
       REAL A(4),B(4),TEMPLC(4)
       real scor(42,9)
 
-      real, dimension(mxbrdmol) ::  rhoslf,tmpcor_arr,alfa_tmp
+      real, dimension(mxbrdmol) ::  rhoslf,tmpcor_arr,alfa_tmp,dzero
+      integer*4, dimension(mxbrdmol) ::  izero
 
       DATA TEMPLC /200.0,250.0,296.0,340.0 /
+      data dzero /7*0.0/
+      data izero /7*0/
+
 
       deltnuC=25.          !cm-1
       WTOT=sum(wk)+wbrod
@@ -366,7 +370,9 @@ CONTAINS
             
 
             ! modify shift due to specific broadening by other molecules if information is available
-            xnu = xnu+sum(rhoslf(:)*brd_mol_flg(i,:,j)*(brd_mol_shft(i,:,j)-deltnu(i,j)))
+            if (i.le.mxbrdmol) then
+	       xnu = xnu+sum(rhoslf(:)*brd_mol_flg(i,:,j)*(brd_mol_shft(i,:,j)-deltnu(i,j)))
+            endif
                
             !check line within 25cm-1 from WN, (except for O2, cause line coupling)
             IF ((ABS(WN-Xnu).GT.deltnuC).and.(I.NE.7))  &
@@ -382,8 +388,13 @@ CONTAINS
 
             ! calculate  Lorentz halfwidth
             ! if specific broadening by other molecules available, recalculate halfwidth
-            HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RHORAT,I, rhoslf,  &
-                 brd_mol_flg(i,:,j),brd_mol_hw(i,:,j),brd_mol_tmp(i,:,j))
+            if (i.le.mxbrdmol) then 
+	       HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RHORAT,I, rhoslf,  &
+		    brd_mol_flg(i,:,j),brd_mol_hw(i,:,j),brd_mol_tmp(i,:,j))
+            else
+	       HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RHORAT,I, rhoslf,  &
+		    izero,dzero,dzero)
+            endif
 
             !stop
             ! calculate Doppler width

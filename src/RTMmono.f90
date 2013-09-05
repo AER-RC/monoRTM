@@ -7,7 +7,7 @@ MODULE RTMmono
   !---------------------------------------------------------------
   PUBLIC :: RTM, calctmr 
 
-  INTEGER, parameter :: NWNMX=4000
+  INTEGER, parameter :: NWNMX=10000
 
 CONTAINS
   SUBROUTINE RTM(IOUT,IRT,NWN,WN,NLAY,T,TZ,O, &
@@ -94,9 +94,9 @@ CONTAINS
   REAL*8 VV, WN(NWNMX)
   CHARACTER HVRSUB*15
   REAL TMPSFC,ESFC,RSFC,SURFRAD,ALPH,COSMOS,TSKY
-  REAL O(NWNMX,MXLAY)
+  REAL O(:,:)
   REAL P(MXLAY), T(MXLAY), TZ(0:MXLAY)
-  REAL, DIMENSION(NWNMX) :: RAD,EMISS,REFLC,RUP,TRTOT,TB,RDN
+  REAL, DIMENSION(:) :: RAD,EMISS,REFLC,RUP,TRTOT,TB,RDN
   REAL fbeta,beta,X
   COMMON /CVRSUB/ HVRSUB
 
@@ -162,10 +162,10 @@ CONTAINS
   INTEGER  layer,nlayer,NWN,IDU,lmin,lmax,nl
   REAL          beta,beta_a,bb,bba
 !---local variables
-  REAL          bbVEC(MXLAY),bbaVEC(0:MXLAY),ODTOT(NWNMX)
-  REAL  O(NWNMX,MXLAY)
+  REAL          bbVEC(MXLAY),bbaVEC(0:MXLAY),ODTOT(NWN)
+  REAL  O(:,:)
   REAL*8 WN(NWNMX)
-  REAL, DIMENSION(NWNMX) :: RUP,RDN,TRTOT
+  REAL, DIMENSION(:) :: RUP,RDN,TRTOT
 
   call getPhysConst(RADCN1=RADCN1,RADCN2=RADCN2)
   IF (IDU.NE.1) STOP 'ERROR IN IDU. OPTION NOT SUPPORTED YET'
@@ -267,16 +267,16 @@ CONTAINS
         !include "declar.incl"
         USE lblparams, ONLY: MXLAY
 
-        real*8  wn(NWNMX)
-        real    t(mxlay),tz(0:mxlay),o(nwnmx,mxlay)
+        real*8  wn(NWNMX), vv
+        real    t(mxlay),tz(0:mxlay),o(:,:)
         integer nlayrs, nwn
 
-        real    tmr(nwnmx)
+        real    tmr(:)
 
         integer ifr, ilay
         real    sumtau, sumexp
-        real    bbvec(MXLAY),bbavec(0:MXLAY),odtot(NWNMX),trtot(NWNMX)
-        real    odt, odvi, vv, beta, beta_a
+        real    bbvec(MXLAY),bbavec(0:MXLAY),odtot(NWN),trtot(NWN)
+        real    odt, odvi,  beta, beta_a
         real    radtmr, x
         REAL    RADCN1,RADCN2
 
