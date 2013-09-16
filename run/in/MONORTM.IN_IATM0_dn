@@ -15,7 +15,7 @@
 HIRAC LBLF CNTM AERS EMIT SCAN FLTR PLOT TEST IATM IMRG ILAS  IOD XSCT MPTS NPTS      ISPD
     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
 $ Rundeck
-    1         1    0    1    0    0    1    0    0         0    0    0    0    0         1
+    1         1    0    1    0    0    1    0    0         0    0    0    0    0         0
 -0.200E+00 8.800E+00 0.000E+00 0.100E-00 0.000E+00 0.000E+00 0.000E+00 0.000E+00    0      0.000E+00    0
 4
 0.789344
