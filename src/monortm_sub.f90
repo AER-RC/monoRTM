@@ -93,9 +93,8 @@
   INTEGER IPASSATM
   REAL SAMPLE,DVSET,ALFAL0,AVMASS,DPTMIN,DPTFAC,DVOUT 
   REAL TMPBND,XVMID,EMITST,REFTST
-  INTEGER IBPROP,IBND,ICOEF,IMRG,LAYTOT,IFORM,NLAYRS,NMOL
+  INTEGER IBND,ICOEF,IMRG,LAYTOT,IFORM,NLAYRS,NMOL
   REAL PATH1,PTHODT,SECNT0,ZH1,ZH2,ZANGLE,PAVE,TAVE,SECNTK
-  CHARACTER HEAD20*20,HEAD7*7,HEAD5*5,HEAD4*4,CINP*3
   CHARACTER*60 FILEOUT,FILEIN
   character*1 hmol_scal
   REAL SECL(64),WDNSTY,WMXRAT,WDRAIR(MXLAY)
@@ -140,7 +139,7 @@
   DATA IDCNTL / ' HIRAC',' LBLF4',' CNTNM',' AERSL',' EMISS', &
                 ' SCNFN',' FILTR','  PLOT','  TEST','  IATM', &    
                 'CMRG_1','CMRG_2','  ILAS','  ISPD',' XSECT'/
-  CHARACTER CEX*2,CEXST*2,CPRGID*60    
+  CHARACTER CEXST*2
   DATA CEXST/'EX'/
   EQUIVALENCE (CXID,CXIDLINE)                    
   EQUIVALENCE (FSCDID(3),IXSCNT)
@@ -445,26 +444,10 @@
       IF (ANGLE.EQ.90.) IRT = 2 !limb measurements
 !---END OF RECORD 2.1 CHECKING
 
- 10   FORMAT (i4,5f19.13)
- 901  FORMAT (1X,I1,I3,I5,F10.6,A20,F8.2,A4,F8.2,A5,F8.3,A7)
  905  FORMAT (A80)                                                   
- 910  FORMAT (E15.7,F10.4,F10.6,A3,I2,1X,2(F7.2,F8.3,F7.2),E15.7)
- 911  FORMAT (2F10.4,f10.6,A3,I2,1X,2(F7.2,F8.3,F7.2),E15.7)           
- 915  FORMAT (E15.7,F10.4,F10.6,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)
- 916  FORMAT (2F10.4,f10.6,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)         
- 920  FORMAT (I3)                                                 
  925  FORMAT (10(4X,I1),3X,2A1,3(4X,I1),1X,I4,1X,I4,6X,I4)    
- 9255 FORMAT (8E15.7)
- 927  FORMAT (8E10.3)                                          
- 930  FORMAT (I1)                                               
- 945  FORMAT (A55,1X,I4)
- 946  FORMAT (A55)
  970  FORMAT (8E10.3,4X,I1,5x,e10.3,i5)                           
- 990  FORMAT (F20.8)                                   
- 1000 FORMAT ('Layer',I2,': Changing molecule ',I2,' from ',E10.3, &
-       ' to 1.000E+20.')
  1010 FORMAT (2I5,2X,I3)
- 1015 FORMAT (I5)
       RETURN
  80   WRITE(*,*) ' EXIT; EOF ON :',FILEIN             
       STOP
@@ -573,7 +556,7 @@
        SUBROUTINE STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT, NPR, &
             O,O_BY_MOL, OC, O_CLW, ODXSEC, TMR, &
             WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS, &
-            NLAY,NMOL,ANGLE,IOT,IOD,FILEOUT) 
+            NLAY,NMOL,ANGLE,IOT,IOD) 
        USE PhysConstants, ONLY: getPhysConst
        USE RTMmono, ONLY: NWNMX
        !include "declar.incl"
@@ -582,14 +565,13 @@
        INTEGER NWN,NLAY,NMOL,NPR,IOT,IOD
        REAL ANGLE
        REAL CLWCOLMN,TMPSFC,WVCOLMN
-       REAL*8 WN(NWNMX)
+       REAL*8 WN(:)
        REAL TMR(:)
-       REAL WBRODL(MXLAY)
+       REAL WBRODL(:)
        REAL, DIMENSION(:) :: RAD,TRTOT,TB,EMISS,REFLC
        REAL O(:,:),OC(:,:,:), &
            O_BY_MOL(:,:,:),O_CLW(:,:), &
-           odxsec(:,:),WKL(MXMOL,MXLAY)
-       CHARACTER FILEOUT*60
+           odxsec(:,:),WKL(:,:)
   
 
        INTEGER I,J,IOL
@@ -708,7 +690,6 @@
                                                   1p,36E12.4)
  31    format (a10,i4.4,a4,i4.4) 
        RETURN
- 1000  WRITE(*,*) 'ERROR OPENING FILE:',FILEOUT
        STOP
        END
 
@@ -780,12 +761,11 @@
   END
 
 
-      SUBROUTINE GETPROFNUMBER(IATM,FILEIN,fileARMlist,fileprof, &
+      SUBROUTINE GETPROFNUMBER(IATM,FILEIN,fileprof, &
            NPROF)
       !include "declar.incl"
-      CHARACTER FILEIN*60,filearm*90,CXID*1
+      CHARACTER FILEIN*60,CXID*1
       CHARACTER CDOL*1,CPRCNT*1,fileprof*80
-      CHARACTER fileARMlist*64
       CHARACTER*8      HMOD                           
       DATA CDOL / '$'/,CPRCNT / '%'/
       NPROF=0
@@ -826,16 +806,14 @@
          CLOSE(90)
          RETURN
       ENDIF
- 2000 WRITE(*,*) 'ERROR OPENING ARM FILE'
  1000 WRITE(*,*) 'ERROR OPENING OR READING FILE in GETPROFNUMBER'
- 924  FORMAT (1X,I1,I3,I5,F10.6,A24) 
  972  FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2) 
  6000 WRITE(*,*) ' EXIT; ERROR READING :',FILEIN          
       STOP
       END
 
   SUBROUTINE CHECKINPUTS(NWN,NPROF,NWNMX)
-  INTEGER NWN,NPROF,NWNMX,NPROFMX
+  INTEGER NWN,NPROF,NWNMX
   IF (NWN.GT.NWNMX) THEN
      WRITE(*,*) 'Number of wavenumbers too big:',NWN
      WRITE(*,*) 'Maximum Allowed:',NWNMX
@@ -1672,7 +1650,7 @@ end
       USE RTMmono, ONLY: NWNMX
       !Include "declar.incl"
       dimension xspd(150000),xspave(nwnmx),xspd_int(0:10000000)
-      real*8 wm(nwnmx)
+      real*8 wn(nwnmx)
       data p0 /1013./
 
 !     Set up the halfwidths needed.

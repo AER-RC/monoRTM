@@ -95,9 +95,9 @@ CONTAINS
   CHARACTER HVRSUB*15
   REAL TMPSFC,ESFC,RSFC,SURFRAD,ALPH,COSMOS,TSKY
   REAL O(:,:)
-  REAL P(MXLAY), T(MXLAY), TZ(0:MXLAY)
+  REAL  T(MXLAY), TZ(0:MXLAY)
   REAL, DIMENSION(:) :: RAD,EMISS,REFLC,RUP,TRTOT,TB,RDN
-  REAL fbeta,beta,X
+  REAL beta,X
   COMMON /CVRSUB/ HVRSUB
 
   HVRSUB = '$Revision: 19812 $'
@@ -149,7 +149,7 @@ CONTAINS
      ENDIF
   ENDDO
   RETURN
-  END
+  END SUBROUTINE RTM
 
   SUBROUTINE RAD_UP_DN(T,nlayer,TZ,WN,rup,trtot,O,rdn,NWN,IDU,IRT)
   USE PhysConstants, ONLY: getPhysConst
@@ -216,7 +216,7 @@ CONTAINS
      TRTOT(I)=EXP(-ODTOT(I))
  60 ENDDO
   RETURN
-  END
+  END SUBROUTINE RAD_UP_DN
 
         function bb_fn(v,fbeta)
 
@@ -321,7 +321,7 @@ CONTAINS
         enddo
 
         return
-       end
+       end subroutine calctmr
 
 END MODULE RTMmono
 

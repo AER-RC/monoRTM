@@ -115,14 +115,12 @@ CONTAINS
        SUBROUTINE RDLNFL (VLO,IPR,LINFIL,IEOF,ILO,IHI) 
 !                                                                       
       REAL*8  ::          VLO
-      REAl*4  ::          XMOL, AMOL
 !                                                                       
       integer*4 leof,npnlhd,linfil 
 !                                                                       
       TYPE(INPUT_HEADER) :: RDLNPNL
       TYPE(INPUT_BLOCK)  :: RDLNBUF, DUMBUF
 
-      real*4 dum(2)
       integer*4 i_1 
 !
       DATA I_1/1/  
@@ -217,7 +215,6 @@ CONTAINS
 !                                                                       
       CHARACTER CHID10*8,CHARID*5,CHARDT*2,CHARI*1,CHTST*1
       CHARACTER*1 CNEGEPP(8)
-      CHARACTER*6 CDUM,SPCRT
 !                                                                       
 !                                                                       
       DATA CHARI / 'I'/
@@ -274,7 +271,7 @@ CONTAINS
 !                                                                       
 !     CHECK HEADER FOR FLAG INDICATING COMPATIBILITY WITH ISOTOPES      
 !                                                                       
-   30    WRITE (CHID10,925) HLINID(10)
+         WRITE (CHID10,925) HLINID(10)
          READ (CHID10,930) CHARID,CHARDT,CHTST
          IF (CHTST.NE.CHARI) THEN
             WRITE (IPR,935) CHARID,CHARDT,CHTST
@@ -300,9 +297,6 @@ CONTAINS
      &        'MUST BE PRESERVED ON TAPE3.  USE A TAPE3 *',/,3X,        &
      &        '* CREATED WITH THE 91I OR LATER VERSION OF LNFL.   *',   &
      &        /,3X,52('*'))        
-  940 FORMAT (' Molecule to be retrieved: ',A6,' not in linefile.',/,   &
-     &        ' Molecules in linefile: ')        
-  945 FORMAT (24X,A6) 
   950 FORMAT (8a1) 
   960 FORMAT ('0',/,23X,'COUPLED',4X,'NLTE',3X,'NEGATIVE',3X,           &
      &        'RESET',4X,'SUM LBLRTM',/,7X,'MOL',5X,'LINES',4X,         &

@@ -38,4 +38,6 @@ MODULE lblparams   ! Parameters for array dimensions in lblrtm
       integer, parameter :: MAXSTATE=26
       integer, parameter :: NFLTPT=3001
 
+    PUBLIC
+
 END MODULE lblparams

@@ -290,7 +290,7 @@ CONTAINS
       REAL A(4),B(4),TEMPLC(4)
       real scor(42,9)
 
-      real, dimension(mxbrdmol) ::  rhoslf,tmpcor_arr,alfa_tmp,dzero
+      real, dimension(mxbrdmol) ::  rhoslf,dzero
       integer*4, dimension(mxbrdmol) ::  izero
 
       DATA TEMPLC /200.0,250.0,296.0,340.0 /
@@ -1301,7 +1301,7 @@ CONTAINS
 !      C4 = (Z1-Z0)/X0**2-2.*X0**2*C6                                      
 !      C2 = Z0-X0**2*C4-X0**4*C6                                           
 !
-      FI = abs(deltaXnu)
+      FI = abs(deltXnu)
       IF (FI.LT.X0) THEN                                               
           CHI = 1.+C2*FI**2+C4*FI**4+C6*FI**6                   
       ELSE                                                            

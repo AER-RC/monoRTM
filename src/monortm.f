@@ -177,18 +177,18 @@ C**********************************************************************
         SUBROUTINE STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT, NPR, 
      &      O,O_BY_MOL, OC, O_CLW, ODXSEC, TMR, 
      &      WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS, 
-     &      NLAY,NMOL,ANGLE,IOT,IOD,FILEOUT) 
+     &      NLAY,NMOL,ANGLE,IOT,IOD) 
 
        INTEGER NWN,NLAY,NMOL,NPR,IOT,IOD
        REAL ANGLE
        REAL CLWCOLMN,TMPSFC,WVCOLMN
-       REAL*8 WN(NWNMX)
+       REAL*8 WN(:)
        REAL TMR(:)
-       REAL WBRODL(MXLAY)
+       REAL WBRODL(:)
        REAL, DIMENSION(:) :: RAD,TRTOT,TB,EMISS,REFLC
        REAL O(:,:),OC(:,:,:),  
      &      O_BY_MOL(:,:,:),O_CLW(:,:),  
-     &      odxsec(:,:),WKL(MXMOL,MXLAY)
+     &      odxsec(:,:),WKL(:,:)
        CHARACTER FILEOUT*60
  
        end subroutine
@@ -199,7 +199,7 @@ C**********************************************************************
 	INTEGER NWN,I,ICPL,IS,IOUT,IOD,IRT,J,IATM
         INTEGER IPASSATM
 	REAL*8 V1,V2,SECANT,XALTZ 
-	REAL TMPSFC,TPROF(mxlay),qprof(mxlay),press(mxlay)
+	REAL TMPSFC
         REAL zvec(mxlay),dzvec(mxlay),zbnd(mxfsc),zbnd2(mxfsc)
 	REAL,dimension(:,:),allocatable ::   O,O_CLW,ODXSEC 
 	REAL,dimension(:,:,:),allocatable ::  O_BY_MOL,OC
@@ -215,14 +215,13 @@ C**********************************************************************
         REAL WKL(MXMOL,MXLAY)
         CHARACTER HVRATM*15,HVRMODM*15,HVRSUB*15,HVRMON*15
         CHARACTER HVRREL*15, HVRSPEC*15
-	CHARACTER fileARMlist*64,hmod*60,CTYPE*3
+	CHARACTER fileARMlist*64,hmod*60
 	CHARACTER fileprof*80,HFILE*80,FILEOUT*60,ht1*4,ht2*4
 	CHARACTER*60 FILEIN,FILELOG
 	character*8 XID,HMOLID,YID,HDATE,HTIME
 	character*1 hmol_scal
 	character*10 holn2
 	CHARACTER*10 XSFILE,XSNAME,ALIAS,XNAME,XFILS(6),BLANK  
-	real tarray(2)
 	COMMON /CVRMON  / HVRMON
         COMMON /CVRATM  / HVRATM
         COMMON /CVRMODM / HVRMODM
@@ -270,7 +269,6 @@ c       ipts2 = same dimension as C
 	common /CDERIV/ icflg,iuf,v1absc,v2absc,dvabsc,nptabsc,delT_pert,
      &    dqh2oC(ipts),dTh2oC(ipts),dUh2o
 
-	real cself(ipts),cfrgn_aj(ipts)
 
 	icflg = -999
 	iuf = 0
@@ -312,7 +310,7 @@ c------------------------------------
 
 	!---GET THE PROFILES NUMBER
 
-	CALL GETPROFNUMBER(IATM,FILEIN,fileARMlist,fileprof,
+	CALL GETPROFNUMBER(IATM,FILEIN,fileprof,
      1    NPROF)
 	!---File Unit numbers/Open files
 	IPU  =7 
@@ -581,7 +579,7 @@ C
 	   CALL STOREOUT(NWN,WN,WKL,WBRODL,RAD,TB,TRTOT,NPR,
      1          O,O_BY_MOL, OC, O_CLW, ODXSEC,TMR,
      2          WVCOLMN,CLWCOLMN,TMPSFC,REFLC,EMISS,
-     4	        NLAYRS,NMOL,ANGLE,IOT,IOD,FILEOUT)
+     4	        NLAYRS,NMOL,ANGLE,IOT,IOD)
 
 	   WRITE(*,'(a30,i5)') 'PROCESSING PROFILE NUMBER:',NPR
 
@@ -595,13 +593,8 @@ C
 	!---Different formats
  900	FORMAT (1X,I1,I3,I5,F10.2,15A4) 
  910	FORMAT (E15.7,F10.4,F10.4,A3,I2,1X,2(F7.2,F8.3,F7.2))
- 911	FORMAT (3F10.4,A3,I2,1X,2(F7.2,F8.3,F7.2))                          
  915	FORMAT (E15.7,F10.4,F10.4,A3,I2,23X,(F7.2,F8.3,F7.2))
- 916	FORMAT (3F10.4,A3,I2,23X,(F7.2,F8.3,F7.2))              
- 924	FORMAT (1X,I1,I3,I5,F10.6,3A8) 
  925	FORMAT(1X,I1,I3,I5,F10.6,2A8,4X,F8.2,4X,F8.2,5X,F8.3,5X,I2) 
- 926	FORMAT (E15.7,F10.4,10X,I5,1X,F7.3,15X,F7.3,/,(1P8E15.7))    
- 927	FORMAT (8E10.3) 
  930	FORMAT (I5,5X,I5)
  932	FORMAT (/,'  THE CROSS-SECTION MOLECULES SELECTED ARE: ',/,/,(5X,   
      *        I5,3X,A))                                                   
@@ -610,8 +603,6 @@ C
  940	FORMAT (/,'***** NLAYRS = ',I5,' .NE. NLAYXS = ',I5,' *****',/)     
  942	FORMAT (/,'0 SECANTX  =',F13.4,/'0 NLAYXS=',I4,/'0 ISMOLS=',I4,/,   
      &   '0',15A4)                                                   
- 972	FORMAT (64a1)
- 973	FORMAT (7e15.7,/,(8e15.7,/))
  974    FORMAT (3f10.4,3x,i2,1x,2(f7.2,f8.3,f7.2),f7.2)
  9742   FORMAT (3f10.4,3x,i2,1x,22x,1(f7.2,f8.3,f7.2),f7.2)
  975    FORMAT (e15.7,2f10.4,3x,i2,1x,2(f7.2,f8.3,f7.2),f7.2)
