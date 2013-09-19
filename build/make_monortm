@@ -15,6 +15,12 @@ include makefile.common
 include make.vers_no
 PRODUCT = monortm
 VERSION = v$(vers)
+
+# Set netcdf output if desired
+ifndef NETCDF
+NETCDF := no
+endif
+
 # Set name of MONORTM executable.  
 OUTPUT = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE)
 
@@ -29,7 +35,7 @@ CPATH = ../src
 
 # Files contained in src directory.  If additional .f files are added,
 # add to this list. 
-SRCS = CntnmFactors.f90 lblparams.f90 PhysConstants.f90 struct_types.f90 PlanetEarth.f90 contnm.f90 monortm_sub.f90 modm.f90 RTMmono.f90 \
+SRCS = CntnmFactors.f90 lblparams.f90 PhysConstants.f90 struct_types.f90 PlanetEarth.f90 contnm.f90 monortm_sub.F90 modm.f90 RTMmono.f90 \
 lnfl_mod.f90 monortm.f tips_2003.f lblatm.f90 lblrtm_sub.f90  bufin_sgl.f90
 
 # Module dependencies
@@ -45,31 +51,46 @@ monortm.o modm.o monortm_sub.o: RTMmono.o
 
 INCLUDES:= -I. -I$(FDOTM) 
 
+ifeq ($(NETCDF),yes)
+   LIB_NETCDF = $(NCL)
+   INC_NETCDF = $(NCI)
+   INCLUDES += -I$(INC_NETCDF)
+   LDFLAG = -L$(LIB_NETCDF) -lnetcdf -lnetcdff
+   FCDF = -DUSENETCDF
+endif
+
 # Define makefile name
 MAKEFILE=make_$(PRODUCT)
 
 # Rule for compiling .o files
 
 %.o:%.f
-	$(FC) -c $(FCFLAG) $(INCLUDES) $< -o ${CDOTO}/$@
-##	$(FC) -c $(FCFLAG) $(INCLUDES) -v  $< -o ${CDOTO}/$@
+	$(FC) -c $(FCFLAG) $(INCLUDES)  $< -o ${CDOTO}/$@
 
 %.o:%.f90
-	$(FC) -c $(FCFLAG) $(INCLUDES) $< -o ${CDOTO}/$@
-##	$(FC) -c $(FCFLAG) $(INCLUDES) -v  $< -o ${CDOTO}/$@
+	$(FC) -c $(FCDF) $(FCFLAG) $(INCLUDES) $< -o ${CDOTO}/$@
+
+%.o:%.F90
+	$(FC) -c $(FCDF) $(FCFLAG) $(INCLUDES) $< -o ${CDOTO}/$@
 
 # Object file names
-OBSS:= $(patsubst %.f90,%.o,$(patsubst %.f,%.o,$(SRCS)))
+OBSS:= $(patsubst %.f90,%.o,$(patsubst %.f,%.o,$(patsubst %.F90,%.o,$(SRCS))))
 # Prepend the object file path to each file name
 OBPATH := $(foreach objt,$(OBSS),$(CDOTO)/$(objt))
 
-build : buildmain sweep
+build : buildmain sweep debug
 
 buildmain : $(OBSS)
-	$(FC) $(FCFLAG) -o ../$(OUTPUT) $(OBPATH)
+	$(FC) $(FCDF) $(FCFLAG) $(LDFLAG) -o ../$(OUTPUT) $(OBPATH)
 
 .PHONY: sweep
 
+debug:
+	echo "FCDF ${FCDF}"
+	echo "LDFLAG ${LDFLAG}"
+	echo "INCLUDES ${INCLUDES}"
+	echo "NETCDF ${NETCDF}"
+
 sweep:
 	@#sweep the .mod files so another platform does not confuse them
-	find . -name '*.mod' -maxdepth 1 -exec mv {} $(FDOTM)/. \;
+	find . -maxdepth 1 -name '*.mod' -exec mv {} $(FDOTM)/. \;

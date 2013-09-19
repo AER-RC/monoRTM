@@ -3,6 +3,7 @@
 #     created:   $Date: 2011-03-29 13:56:57 -0400 (Tue, 29 Mar 2011) $
 
 * Makefiles are designed for use with gmake. 
+* If netCDF output is NOT desired:
 * From monortm/build directory, type: gmake -f make_monortm <TARGET>
 
 OPTION            DESCRIPTION                                                       COMPILE EXECUTABLE NAME
@@ -31,3 +32,15 @@ sunSUNsgl         Sun/Solaris OS using Sun fortran,single precision             
 sgiMIPSdbl        SGI/IRIX64 OS using MIPS fortran,double precision                 f90
 sgiMIPSsgl        SGI/IRIX64 OS using MIPS fortran,single precision                 f90
 
+
+If netCDF output IS desired, two parameters need to be set BEFORE running make:
+
+setenv NCL netcdf_lib_dir	
+setenv NCI netcdf_include_dir
+
+where netcdf_lib_dir and netcdf_include_dir are the paths to the netCDF library and include directories
+on your system.
+
+IMPORTANT: the netCDF package needs to be compiled with same compiler used to compile MONORTM.	
+
+From monortm/build directory, type: gmake -f make_monortm <TARGET> NETCDF=yes
