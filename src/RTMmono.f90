@@ -110,19 +110,23 @@ CONTAINS
 
 !---RADIATIVE TRANSFER
   TSKY=2.75 !Cosmic background in Kelvin
-  beta= RADCN2/TMPSFC
-  alph= RADCN2/TSKY
 
-  if (irt.eq.3) then
+  if (irt.eq.3.OR.irt.eq.2) then
      print *, '     '
      print *, '***********************************'
      print *, &
-          'NB: for Downwelling Radiance the Boundary is ', &
+          'NB: for Downwelling or Limb Calculations the Boundary is ', &
           'Internally Set to the Cosmic Value: 2.75K'
 
      print *, '***********************************'
 
+     TMPSFC = TSKY   ! This is done to avoid problems with the call to bb_fn
+    
   endif
+    
+  alph= RADCN2/TSKY
+  beta = RADCN2/TMPSFC
+
 
   DO I=1,NWN
      vv = wn(i)
