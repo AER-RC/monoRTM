@@ -86,14 +86,26 @@ CONTAINS
 	       brd_mol_hw(mo,:,ii)   = bufr%brd_mol_hw(:,ik)
 	       brd_mol_tmp(mo,:,ii) =  bufr%brd_mol_tmp(:,ik)
 	       brd_mol_shft(mo,:,ii) = bufr%brd_mol_shft(:,ik)
+
             endif
 
             sdep(mo,ii) = bufr%speed_dep(ik)
 
-            !print *,mo,xnu0(mo,ii),sdep(mo,ii)
-         end do
-         if (bufr%vnu(ihi).GT.(v2+25.)) ieof=1
+!  HITRAN provides widths for broadening by air; LBLRTM and MONORTM have always treated these widths as foreign
+!  This assumption is valid for most species, but not for N2 or O2. We now adjust the HITRAN widths to obtain
+!  true foreign widths.
+         if (mo.eq.7.AND.bufr%iflg(ik).ge.0) then 
+            rvmr = 0.21
+            alpf(mo,ii) = (alpf(mo,ii)-rvmr*alps(mo,ii))/(1.0-rvmr)
+         endif
+         if (mo.eq.22.AND.bufr%iflg(ik).ge.0) then 
+            rvmr = 0.79
+            alpf(mo,ii) = (alpf(mo,ii)-rvmr*alps(mo,ii))/(1.0-rvmr)
+         endif
+
       end do
+      if (bufr%vnu(ihi).GT.(v2+25.)) ieof=1
+   end do
 
 
       !IF (ISPD.EQ.1) THEN

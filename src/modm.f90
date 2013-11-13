@@ -211,7 +211,6 @@ CONTAINS
 	      absrb(:) = 0.
 	      call oneMolecCntnm(im,cntnmScaleFac)
 	      call contnm(jrad)
-              !print *, ' '
 	      call pushCntnmFactors(cntnmScaleFac)   ! Restore factors
               if (icount.LT.ncont) then 
 ! Interpolate for gridded spectral resolution in one step
@@ -263,14 +262,11 @@ CONTAINS
             O_CLW(M,K)=ODCLW(WN(M),T(K),CLW(K))                       !OPTDEPTH CLW
             do imol = 1,nmol
                 O(M,K) = o(m,k) + O_BY_MOL(M,imol,K) 
-                !print *, imol,k,o_by_mol(m,imol,k)
-                !print *, oc(m,1:index_cont(5),k)
             enddo
             o(m,k) = o(m,k) + odxsec(m,k) +  oc_rayl(m,k) +  &
                     sum(oc(m,1:index_cont(5),k))+O_CLW(M,K)
 
          ENDDO
-        
       ENDDO                     ! end layer loop
       RETURN
       END SUBROUTINE MODM
@@ -319,6 +315,7 @@ CONTAINS
             OL = 0.
             GOTO 10
          ENDIF
+
          SF=0.
          J=0
          RAT=(Xn/XN0)*(W_SPECIES/WTOT)
@@ -326,6 +323,7 @@ CONTAINS
             J=J+1
             JJ=J
             IF ((XG(I,J).EQ.-1).OR.(XG(I,J).EQ.-3).OR.(XG(I,J).EQ.-5))THEN
+
                JJ=J+1 !the LCC are stored in XNU0(J+1),DELTNU(J+1),etc..
                A(1)=XNU0(I,JJ)
                B(1)=S0(I,JJ)
@@ -335,23 +333,24 @@ CONTAINS
                B(3)=ALPS(I,JJ)
                A(4)=X(I,JJ)
                B(4)=deltnu(I,JJ)
+	       IF ((XG(I,J).EQ.-5).AND.(XG(I,J-1).EQ.-5)) THEN   !Self LC!!
+                  JJ=JJ+1
+		  rho_for = (rhorat-rhoslf(i))/rhorat
+		  rho_sel = rhoslf(i)/rhorat
+		  A(1) = rho_for*A(1)+rho_sel*XNU0(I,JJ)
+		  B(1) = rho_for*B(1)+rho_sel*S0(I,JJ)
+		  A(2) = rho_for*A(2)+rho_sel*alpf(I,JJ)
+		  B(2) = rho_for*B(2)+rho_sel*E(I,JJ)
+		  A(3) = rho_for*A(3)+rho_sel*RMOL(I,JJ)
+		  B(3) = rho_for*B(3)+rho_sel*ALPS(I,JJ)
+		  A(4) = rho_for*A(4)+rho_sel*X(I,JJ)
+		  B(4) = rho_for*B(4)+rho_sel*deltnu(I,JJ)
+	       ENDIF
                AIP=A(ILC)+((A(ILC+1)-A(ILC))*RECTLC)*TMPDIF
                BIP=B(ILC)+((B(ILC+1)-B(ILC))*RECTLC)*TMPDIF
             ENDIF
-            IF ((XG(I,J).EQ.-5).AND.(XG(I,J-1).EQ.-5)) THEN   !Self LC!!
-               rho_for = (rhorat-rhoslf(i))/rhorat
-               rho_sel = rhoslf(i)/rhorat
-               A(1) = rho_for*A(1)+rho_sel*XNU0(I,JJ)
-               B(1) = rho_for*B(1)+rho_sel*S0(I,JJ)
-               A(2) = rho_for*A(2)+rho_sel*alpf(I,JJ)
-               B(2) = rho_for*B(2)+rho_sel*E(I,JJ)
-               A(3) = rho_for*A(3)+rho_sel*RMOL(I,JJ)
-               B(3) = rho_for*B(3)+rho_sel*ALPS(I,JJ)
-               A(4) = rho_for*A(4)+rho_sel*X(I,JJ)
-               B(4) = rho_for*B(4)+rho_sel*deltnu(I,JJ)
-            ENDIF
-
           
+
             !---application of the scaling factors
             IF ((XG(I,J).EQ.-1)) THEN !Scaling of the Line coupling parameters
                AIP=AIP*SCLCPL+Y0RES
@@ -366,13 +365,13 @@ CONTAINS
 
             ! get shift
              Xnu=Xnu0(I,J)+(deltnu(I,J)*(Xn/xn0))
-             !print *,'xnu0,xnu ',xnu0(i,j),xnu
             
 
             ! modify shift due to specific broadening by other molecules if information is available
             if (i.le.mxbrdmol) then
 	       xnu = xnu+sum(rhoslf(:)*brd_mol_flg(i,:,j)*(brd_mol_shft(i,:,j)-deltnu(i,j)))
             endif
+
                
             !check line within 25cm-1 from WN, (except for O2, cause line coupling)
             IF ((ABS(WN-Xnu).GT.deltnuC).and.(I.NE.7))  &
@@ -389,6 +388,7 @@ CONTAINS
             ! calculate  Lorentz halfwidth
             ! if specific broadening by other molecules available, recalculate halfwidth
             if (i.le.mxbrdmol) then 
+
 	       HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RHORAT,I, rhoslf,  &
 		    brd_mol_flg(i,:,j),brd_mol_hw(i,:,j),brd_mol_tmp(i,:,j))
             else
@@ -396,7 +396,6 @@ CONTAINS
 		    izero,dzero,dzero)
             endif
 
-            !stop
             ! calculate Doppler width
             HWHM_D=HALFWHM_D(I,ISO(I,J),Xnu,T)
          
@@ -409,7 +408,9 @@ CONTAINS
             !MJA 20130517 Assuming that even for speed dependence 
             !we should go to lorentz at high zeta and in wings
             !Seems consistent with Figure 1 of Boone et al., JQSRT, 105, 525-532, 2007.
+
             if ((ABS(WN-Xnu).GT.(100.*HWHM_D)).or.(zeta.GT.0.99)) ilshp=0
+
             IF (ilshp.eq.0) CALL LSF_LORTZ(XG(I,J),RP,RP2,AIP,BIP, &
                  HWHM_C,WN,Xnu,SLS,I)
             !MJA 20130517 New speed dependent voigt line shape
@@ -849,7 +850,6 @@ CONTAINS
 	    alfsum = sum(rhoslf(:)*brd_flg(:)*alfa_tmp)
 	    HALFWHM_C = (rhorat-sum(rhoslf(:)*brd_flg(:)))    &
 	      *alfa0i + alfsum
-  ! if no new self info, need to add standard self to total half width
 	    if(brd_flg(mol).eq.0)                                   &
 		 HALFWHM_C = HALFWHM_C + rhoslf(mol)*(hwhmsi-alfa0i)
 	 end if
