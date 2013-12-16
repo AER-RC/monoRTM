@@ -5336,8 +5336,7 @@
      &       DBNDX1,DBNDX2,DBNDX3,R1,R2,R3,X1,X2,X3,RATIO1,RATIO2,      &
      &       RATIO3,SINAI1,SINAI2,SINAI3,COSAI1,COSAI2,COSAI3,Y1,Y3,    &
      &       CPATH,DX,DH,SINAI,COSAI,D31,D32,D21,DHMIN,                 &
-     &       SH,GAMMA,ANDEXD,RADRFD, cos_sq(4), sin_sq(4), x_in(4),     &
-     &       y_in(4),a,b,d,c,p, c1, c2                       
+     &       SH,GAMMA,ANDEXD,RADRFD, ds_temp                    
 !                                                                       
       DATA EPSILN / 1.0E-5 / 
 !                                                                       
@@ -5355,53 +5354,15 @@
      &     Y1 = COSAI1**2/2.0+COSAI1**4/8.0+COSAI1**6*3.0/48.0          
       Y3 = 0.0 
       X1 = -R1*COSAI1 
+
+!     MJA Elevation bug fix 10/04/2013
+!     Calculate Ratios at top and bottom of layer (Z1 and Z2)
       RATIO1 = R1/RADRFD(H1,SH,GAMMA) 
+      ratio_bottom = RATIO1
+      rad_top = RE+Z2
+      ratio_top = rad_top/RADRFD(Z2,SH,GAMMA)
 
-!!! MJA, 20130912, Elevation bug fix
-      if (RATIO1 .LT. 1.0) then
-          DSDX1 = 1.0/(1.0-RATIO1*SINAI1**2) 
-      else
-        !!!Fix for cases where Ratio >= 1
-        !Find sin and cos of angle where above DSDX is infinite
-        cos_crit = SQRT(1-(1/RATIO1))
-
-        !The region of badness (where difference from truth is >=0.1%)
-        !seems to be the same distance in sin^2 or cos^2 (+/- 0.005)
-        !regardless of Ratio
-        !So check if we are within 0.005 of cos_crit
-        if(abs(cos_crit-COSAI1) .GT. 0.005) then !Still okay
-           DSDX1 = 1.0/(1.0-RATIO1*SINAI1**2) 
-        else   !Need to fix old formula for infinity problem
-           !Use 4 pt interp across 4 good points
-           cos_sq(1) = cos_crit*cos_crit-0.01
-           cos_sq(2) = cos_crit*cos_crit-0.005
-           cos_sq(3) = cos_crit*cos_crit+0.005
-           cos_sq(4) = cos_crit*cos_crit+0.01
-
-           !Do 4 point interpolation of DSDX vs 1/cos(theta)
-           do i = 1, 4
-              !a is 1/cos(theta)
-              x_in(i) = 1/sqrt(cos_sq(i))
-              !b = DSDX = 1/(1-Ratio1*sin(theta)**2)
-              sin_sq(i) = 1-cos_sq(i)
-              y_in(i) = 1/(1-Ratio1*sin_sq(i))
-           enddo
-
-           x_out = 1/COSAI1
-           c1 = (x_in(2) - x_in(1))/(x_in(3) - x_in(2))
-           c2 = (x_in(4) - x_in(3))/(x_in(3) - x_in(2))
-            
-           p = (x_out - x_in(2))/(x_in(3)-x_in(2))
-            
-           a = p*(-1 + 2*p - p*p)/(1 + c1)
-           b = 1 + p*p*(2*p - 3. + (1-p)/(1+c2))
-           c = p*p*(3-2*p) + p*(1 - 2*p + p*p)/(1+c1)
-           d = p*p*(p-1)/(1+c2)
-            
-           DSDX1 = a*y_in(1) + b*y_in(2) + c*y_in(3) + d*y_in(4)
-        endif
-      endif
-
+      DSDX1 = 1.0/(1.0-RATIO1*SINAI1**2) 
       DBNDX1 = DSDX1*SINAI1*RATIO1/R1 
       S = 0.0 
       BEND = 0.0 
@@ -5450,6 +5411,7 @@
 !     UNEQUALLY SPACED POINTS                                           
 !                                                                       
    60 CONTINUE 
+
       N = N+1 
       DH = -DELTAS*COSAI1 
       DH = MAX(DH,DHMIN) 
@@ -5463,6 +5425,7 @@
       SINAI3 = CPATH/(ANDEXD(H3,SH,GAMMA)*R3) 
       RATIO2 = R2/RADRFD(H2,SH,GAMMA) 
       RATIO3 = R3/RADRFD(H3,SH,GAMMA) 
+
       IF ((1.0-SINAI2).LE.EPSILN) THEN 
 !                                                                       
 !        Near a tangent height, COSAI = -SQRT(1-SINAI**2) loses         
@@ -5498,97 +5461,9 @@
          ENDIF 
       ENDIF 
 
-!!! MJA, 20130912, Elevation bug fix
-      if (RATIO2 .LT. 1.0) then
-          DSDX2 = 1.0/(1.0-RATIO2*SINAI2**2) 
-      else
-        !!!Fix for cases where Ratio >= 1
-        !Find sin and cos of angle where above DSDX is infinite
-        cos_crit = SQRT(1-(1/RATIO2))
+      DSDX2 = 1.0/(1.0-RATIO2*SINAI2**2) 
 
-        !The region of badness (where difference from truth is >=0.1%)
-        !seems to be the same distance in sin^2 or cos^2 (+/- 0.005)
-        !regardless of Ratio
-        !So check if we are within 0.005 of cos_crit
-        if(abs(cos_crit-COSAI2) .GT. 0.005) then !Still okay
-           DSDX2 = 1.0/(1.0-RATIO2*SINAI2**2) 
-        else   !Need to fix old formula for infinity problem
-           !Use 4 pt interp across 4 good points
-           cos_sq(1) = cos_crit*cos_crit-0.01
-           cos_sq(2) = cos_crit*cos_crit-0.005
-           cos_sq(3) = cos_crit*cos_crit+0.005
-           cos_sq(4) = cos_crit*cos_crit+0.01
-
-           !Do 4 point interpolation of DSDX vs 1/cos(theta)
-           do i = 1, 4
-              !a is 1/cos(theta)
-              x_in(i) = 1/sqrt(cos_sq(i))
-              !b = DSDX = 1/(1-Ratio1*sin(theta)**2)
-              sin_sq(i) = 1-cos_sq(i)
-              y_in(i) = 1/(1-RATIO2*sin_sq(i))
-           enddo
-
-           x_out = 1/COSAI2
-           c1 = (x_in(2) - x_in(1))/(x_in(3) - x_in(2))
-           c2 = (x_in(4) - x_in(3))/(x_in(3) - x_in(2))
-            
-           p = (x_out - x_in(2))/(x_in(3)-x_in(2))
-            
-           a = p*(-1 + 2*p - p*p)/(1 + c1)
-           b = 1 + p*p*(2*p - 3. + (1-p)/(1+c2))
-           c = p*p*(3-2*p) + p*(1 - 2*p + p*p)/(1+c1)
-           d = p*p*(p-1)/(1+c2)
-            
-           DSDX2 = a*y_in(1) + b*y_in(2) + c*y_in(3) + d*y_in(4)
-        endif
-      endif
-!      DSDX2 = 1.0/(1.0-RATIO2*SINAI2**2) 
-
-!!! MJA, 20130912, Elevation bug fix
-      if (RATIO3 .LT. 1.0) then
-          DSDX3 = 1.0/(1.0-RATIO3*SINAI3**2) 
-      else
-        !!!Fix for cases where Ratio >= 1
-        !Find sin and cos of angle where above DSDX is infinite
-        cos_crit = SQRT(1-(1/RATIO3))
-
-        !The region of badness (where difference from truth is >=0.1%)
-        !seems to be the same distance in sin^2 or cos^2 (+/- 0.005)
-        !regardless of Ratio
-        !So check if we are within 0.005 of cos_crit
-        if(abs(cos_crit-COSAI3) .GT. 0.005) then !Still okay
-           DSDX3 = 1.0/(1.0-RATIO3*SINAI3**2) 
-        else   !Need to fix old formula for infinity problem
-           !Use 4 pt interp across 4 good points
-           cos_sq(1) = cos_crit*cos_crit-0.01
-           cos_sq(2) = cos_crit*cos_crit-0.005
-           cos_sq(3) = cos_crit*cos_crit+0.005
-           cos_sq(4) = cos_crit*cos_crit+0.01
-
-           !Do 4 point interpolation of DSDX vs 1/cos(theta)
-           do i = 1, 4
-              !a is 1/cos(theta)
-              x_in(i) = 1/sqrt(cos_sq(i))
-              !b = DSDX = 1/(1-Ratio1*sin(theta)**2)
-              sin_sq(i) = 1-cos_sq(i)
-              y_in(i) = 1/(1-RATIO3*sin_sq(i))
-           enddo
-
-           x_out = 1/COSAI3
-           c1 = (x_in(2) - x_in(1))/(x_in(3) - x_in(2))
-           c2 = (x_in(4) - x_in(3))/(x_in(3) - x_in(2))
-            
-           p = (x_out - x_in(2))/(x_in(3)-x_in(2))
-            
-           a = p*(-1 + 2*p - p*p)/(1 + c1)
-           b = 1 + p*p*(2*p - 3. + (1-p)/(1+c2))
-           c = p*p*(3-2*p) + p*(1 - 2*p + p*p)/(1+c1)
-           d = p*p*(p-1)/(1+c2)
-            
-           DSDX3 = a*y_in(1) + b*y_in(2) + c*y_in(3) + d*y_in(4)
-        endif
-      endif
-!      DSDX3 = 1.0/(1.0-RATIO3*SINAI3**2) 
+      DSDX3 = 1.0/(1.0-RATIO3*SINAI3**2) 
 
 
       DBNDX2 = DSDX2*SINAI2*RATIO2/R2 
@@ -5597,9 +5472,45 @@
 !     INTEGRATE                                                         
 !                                                                       
       DS = W1*DSDX1+W2*DSDX2+W3*DSDX3 
-      S = S+DS 
       DBEND = W1*DBNDX1+W2*DBNDX2+W3*DBNDX3 
+
+! MJA Elevation bug fix 20131210
+! Check if top or bottom ratios are >= 1.0 and we are not near a tangent height
+      if (ratio_top .ge. 1.0 .or. ratio_bottom .ge. 1.0 .and. (1.0-SINAI2).gt.EPSILN) then
+
+
+               !Calculate weights in terms of R, not X
+               D31 = R3-R1 
+               D32 = R3-R2 
+               D21 = R2-R1 
+               IF (D32.EQ.0.0.OR.D21.EQ.0.0) THEN 
+                  W1 = 0.5*D31 
+                  W2 = 0.0 
+                  W3 = 0.5*D31 
+               ELSE 
+                  W1 = (2.0-D32/D21)*D31/6.0 
+                  W2 = D31**3/(D32*D21*6.0) 
+                  W3 = (2.0-D21/D32)*D31/6.0 
+               ENDIF 
+
+               !Calculate DSDRs
+               DSDR1 = -1.0/cosai1
+               DSDR2 = -1.0/cosai2
+               DSDR3 = -1.0/cosai3
+               ds = W1*DSDR1+W2*DSDR2+W3*DSDR3
+
+               !Calculate DBENDDRs
+               DBNDDR1 = (sinai1/cosai1/R1)*(2-ratio1)
+               DBNDDR2 = (sinai2/cosai2/R2)*(2-ratio2)
+               DBNDDR3 = (sinai3/cosai3/R3)*(2-ratio3)
+               DBND = W1*DBNDDR1+W2*DBNDDR2+W3*DBDNDR3
+           !endif
+ 
+      endif
+
+      S = S+DS 
       BEND = BEND+DBEND 
+
       IF (IAMT.NE.2) THEN 
 !                                                                       
 !         Calculate amounts                                             
