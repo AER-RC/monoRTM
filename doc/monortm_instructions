@@ -9,7 +9,7 @@
 *       MONORTM now reads in spectroscopic information from a binary file called TAPE3.
 *       This file must be created by running the MONOlnfl code which is part of the
 *       release package. The selection of a reduced set of parameters for the microwave
-*       (the ISPD=1) option is now done by selecting the appropriate input file for MONOlnfl. 
+*       (the ISPD=1) option is now done by selecting the appropriate input file for MonoLNFL. 
 *       The ISPD parameter is no longer used by MONORTM code.
 *
 *	Note: All flags or records with a * sign are either used  
