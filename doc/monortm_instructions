@@ -3,8 +3,14 @@
 *
 *                        USER INSTRUCTIONS FOR MONORTM
 * 
-*                                July 2008
+*                                December 2013
 *
+*       NOTE: IMPORTANT CHANGE IN MONORTM_v5.0 !!!!!!!!!!
+*       MONORTM now reads in spectroscopic information from a binary file called TAPE3.
+*       This file must be created by running the MONOlnfl code which is part of the
+*       release package. The selection of a reduced set of parameters for the microwave
+*       (the ISPD=1) option is now done by selecting the appropriate input file for MONOlnfl. 
+*       The ISPD parameter is no longer used by MONORTM code.
 *
 *	Note: All flags or records with a * sign are either used  
 *	differently (wrt LBLRTM) or are specific to MONORTM.
@@ -12,6 +18,7 @@
 *       Note: Currently, inputs of cloud amount can be input
 *	only from MONORTM_PROF.IN with IATM=0 (the cloud is read along 
 *       with the other layer information).
+*
 *
 ************************************************************************ 
 
@@ -67,16 +74,7 @@ IHIRAC,       ICNTNM,     IEMIT,     IPLOT,           IATM,      IOD,           
          IATM   -->  (0,1)   flag for LBLATM    1 = yes 
 	                                        0 = no.  If IATM=0, then user must supply an additional
                                                          input file (MONORTM_PROF.IN - See Record 2.1)
-	 IOD    -->  (0,1) flag for output of layer optical depths
-                           (Note that this flag has different meaning in MonoRTM than in LBLRTM)
-		     = 0  Do not output layer optical depths 
-		     = 1  Output layer optical depths to ascii files (one file per layer)
          IXSECT -->  (0,1) Cross section flag 
-        *ISPD    -->  (0,1)
- 	             =0 Slow version of MonoRTM (accurate) -default value-
- 		     =1 Fast version of MonoRTM (valid only in the microwave, and only valid if used with 
- 						 a spectral line file with ISPD flags.  Output from LNFL
-						 does not contain the ISPD flags).
 
 --------------
 RECORD 1.2a   (required if ICNTNM = 6)
@@ -120,7 +118,7 @@ RECORD 1.2a   (required if ICNTNM = 6)
            NMOL_SCAL  -->  Enables the scaling of the atmospheric profile for selected species
                            NMOL_SCAL is the highest molecule number for which scaling will be applied
                            See Record(s) 1.3.a/1.3.b.n
-			   Note that this scaling option is applied in LBLATM and therefore
+			   Note that this scaling option is applied before call to LBLATM and therefore
 			   only works for IATM=1.
 
 --------------   
