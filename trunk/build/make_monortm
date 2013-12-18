@@ -1,0 +1,96 @@
+# $Revision: 11217 $
+# Makefile for monortm
+# From monortm/build directory, type: gmake -f make_monortm <TARGET>
+
+# Include file containing user input. Directory is referenced to 
+# parent directory and common build rules
+include makefile.common
+
+###############################
+# Set variables/
+###############################
+#Set version name.  Used in the default OUTPUT and CDOTO variables.  If you
+# change those two variables from what is provided here, no need to set this variable.
+
+include make.vers_no
+PRODUCT = monortm
+VERSION = v$(vers)
+
+# Set netcdf output if desired
+ifndef NETCDF
+NETCDF := no
+endif
+
+# Set name of MONORTM executable.  
+OUTPUT = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE)
+
+# Set directory for object files.  
+CDOTO = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE).obj
+# Set directory for module files.  
+FDOTM = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE).mods
+
+# Set directory containing source files, relative to main directory from which
+# you are executing the makefile
+CPATH = ../src
+
+# Files contained in src directory.  If additional .f files are added,
+# add to this list. 
+SRCS = CntnmFactors.f90 lblparams.f90 PhysConstants.f90 struct_types.f90 PlanetEarth.f90 contnm.f90 monortm_sub.F90 modm.f90 RTMmono.f90 \
+lnfl_mod.f90 monortm.f90 tips_2003.f lblatm.f90 lblrtm_sub.f90  bufin_sgl.f90
+
+# Module dependencies
+monortm.o modm.o monortm_sub.o: CntnmFactors.o 
+lblatm.o lnfl_mod.o contnm.o: lblparams.o
+modm.o lnfl_mod.o: struct_types.o
+monortm_sub.o modm.o lblatm.o: PhysConstants.o 
+lblatm.o modm.o: PlanetEarth.o
+modm.o: lnfl_mod.o
+monortm.o: modm.o
+lnfl_mod.o: bufin_sgl.o
+monortm.o modm.o monortm_sub.o: RTMmono.o
+
+INCLUDES:= -I. -I$(FDOTM) 
+
+ifeq ($(NETCDF),yes)
+   LIB_NETCDF = $(NCL)
+   INC_NETCDF = $(NCI)
+   INCLUDES += -I$(INC_NETCDF)
+   LDFLAG = -L$(LIB_NETCDF) -lnetcdf -lnetcdff
+   FCDF = -DUSENETCDF
+endif
+
+# Define makefile name
+MAKEFILE=make_$(PRODUCT)
+
+# Rule for compiling .o files
+
+%.o:%.f
+	$(FC) -c $(FCFLAG) $(INCLUDES)  $< -o ${CDOTO}/$@
+
+%.o:%.f90
+	$(FC) -c $(FCDF) $(FCFLAG) $(INCLUDES) $< -o ${CDOTO}/$@
+
+%.o:%.F90
+	$(FC) -c $(FCDF) $(FCFLAG) $(INCLUDES) $< -o ${CDOTO}/$@
+
+# Object file names
+OBSS:= $(patsubst %.f90,%.o,$(patsubst %.f,%.o,$(patsubst %.F90,%.o,$(SRCS))))
+# Prepend the object file path to each file name
+OBPATH := $(foreach objt,$(OBSS),$(CDOTO)/$(objt))
+
+build : buildmain sweep debug
+
+buildmain : $(OBSS)
+	$(FC) $(FCDF) $(FCFLAG) $(LDFLAG) -o ../$(OUTPUT) $(OBPATH)
+
+.PHONY: sweep
+
+debug:
+	echo "FCDF ${FCDF}"
+	echo "LDFLAG ${LDFLAG}"
+	echo "INCLUDES ${INCLUDES}"
+	echo "NETCDF ${NETCDF}"
+
+sweep:
+	@#sweep the .mod files so another platform does not confuse them
+	find . -maxdepth 1 -name '*.mod' -exec mv {} $(FDOTM)/. \;
