@@ -9,12 +9,13 @@ The code was significantly restructured, new capabilities were added, and the sp
 
    - The code's spectroscopic line input structure and atmospheric profiling
      code were made more consistent with LBLRTM. Line parameters are now read
-     from a binary TAPE3 file produced with LNFL, as in LBLRTM.
+     from a binary TAPE3 file (as in LBLRTM) produced with MonoLNFL, which is
+     now included in the MonoRTM package.
 
    - The code to read in and store the spectroscopic data was removed from modm
      and is in a separate module: lnfl_mod.f90
 
-   - The RT codes are also in a new module: RTM mono.f
+   - The RT codes are also in a new module: RTMmono.f
 
    - Physical constants are all declared in one module, PhysConstants.f90, which
      also provides routines to access the values; geophysical parameters in
@@ -29,20 +30,20 @@ The code was significantly restructured, new capabilities were added, and the sp
      method is used to compute the line shape has been extended to provide
      greater accuracy (M. Alvarado, E. Mlawer, G. Villanueva).
 
-   - The method to compute path lengths in the codeÕs atmospheric module was
+   - The method to compute path lengths in the code's atmospheric module was
      changed to provide greater stability for cases with exceptionally high
      rates of change of refractive index with height (M. Alvarado, E. Mlawer, D.
      Turner, N. Miller)
 
    - A number of new input and output options, including optional netcdf output
      with spectral layer optical depths, have been added. (K. Cady-Pereira, D.
-     Berthiaume,???)
+     Berthiaume)
 
    - Mixing ratio inputs are now allowed for IATM=0 (K. Cady-Pereira, J. Delamere)
 
    - The capability to utilize available line broadening coefficients (width,
      temperature dependence, pressure shift) that are specific to a given pair
-of species was added (K. Cady-Pereira, E. Mlawer, M. Alvarado).
+     of species was added (K. Cady-Pereira, E. Mlawer, M. Alvarado).
 
    - A bug related to foreign broadening of oxygen transitions was fixed (E.
      Mlawer, M. Alvarado, K. Cady-Pereira).
@@ -50,26 +51,27 @@ of species was added (K. Cady-Pereira, E. Mlawer, M. Alvarado).
    - A bug related to the use of the continuum in MonoRTM for near-IR cases was
      fixed (K. Cady-Pereira, M. Alvarado).
 
-   - The incoming half-widths for N2 and O2, which are defined for broadening by
-     air, are now corrected to reflect broadening  by O2 and N2, respectively.
-
 * Spectroscopy 
 
    - The default microwave line parameter files ,
-     spectral_lines.dat.0_55.v5.0_slow and spectral_lines.dat.0_55.v5.0_fast,
-     now have a direct correspondence to the full AER linelist., whose current
+     spectral_lines.dat.0_55.v5.0_fast and spectral_lines.dat.0_55.v5.0_veryfast,
+     now have a direct correspondence to the full AER linelist, whose current
      version is aer_v_3.3 (M. Alvarado, K. Cady-Pereira, E. Mlawer).
 
    - Numerous lines were added to the default microwave line files so that the
      calculational accuracy at any frequency between 0 and 899.4 GHz (0-30 cm-1)
      with respect to the full line list aer_v_3.3 is:
 
-     # for spectral_lines.dat.0_55.v5.0_slow (corresponds to ISPD=0 in MonoRTM
+     # for spectral_lines.dat.0_55.v5.0_fast (corresponds to ISPD=0 in MonoRTM
        v4.2 and older): 0.1 K for upwelling, 0.2 K for downwelling  
 
-     # for spectral_lines.dat.0_55.v5.0_fast (corresponds to ISPD=1 in MonoRTM
+     # for spectral_lines.dat.0_55.v5.0_veryfast (corresponds to ISPD=1 in MonoRTM
        v4.2 and older): 0.5 K for upwelling, 1.0 K for downwelling 
           (M. Alvarado, E. Mlawer, K. Cady-Pereira) 
+
+     NOTE: Users who wish to run MonoRTM v5.0 in spectral regions other than the MW 
+                should use the full AER line file (either aer_v_3.2 or aer_v_3.3), 
+                keeping in mind that the full line file can take a long time to run.
 
    - Line parameters were taken from HITRAN 2012 with the exceptions noted below.
 
@@ -94,7 +96,8 @@ of species was added (K. Cady-Pereira, E. Mlawer, M. Alvarado).
       1. Oxygen transitions broadened by water vapor based on Drouin et al.
          (2013) (E. Mlawer, K. Cady-Pereira)
 
-      2. Carbon dioxide transitions broadened by water vapor based on Sung (2009) (K. Cady-Pereira).
+      2. Carbon dioxide transitions broadened by water vapor based on 
+         Sung (2009) (K. Cady-Pereira).
 
       3. Water vapor transitions broadened by carbon dioxide based on
          calculations by R. Gamache of U. Mass. Lowell (K. Cady-Pereira).
@@ -141,7 +144,7 @@ Vivienne Payne, AER Inc., March 2011
 *      line shape theory, the continuum, the radiative transfer
 *      model, line coupling, etc,..), the user is therefore strongly 
 *      advised to register to the MonoRTM mailing list. For this, 
-*      simply send an email to cadyp@aer.com.
+*      simply send an email to aer_monortm@aer.com.
 *      You will be notified each time there is an update.
 ****************************************************************
 
@@ -153,7 +156,7 @@ README -> This file.
 build  -> Contains makefiles for MonoRTM for different platforms
 run    -> Contains files required to run MonoRTM.
 	  .  run_monortm_example is a script to run some examples
-	  .  TAPE3_spectral_lines.dat.0_55.v5.0_slow  contains the spectral line information
+	  .  TAPE3_spectral_lines.dat.0_55.v5.0_fast  contains the spectral line information
 	    - (Note that if you wish to run a calculation for a spectral range 
               outside the wavenumber range of the spectral line files supplied 
 	      in the examples, you can create a line file using MonoLNFL, which is
@@ -245,7 +248,7 @@ contain all the variables above along with the layer optical depths and the laye
 
 QUESTIONS:
 ----------
-Any comments or questions should be forwarded to Karen Cady-Pereira (kcadyper@aer.com)
+Any comments or questions should be forwarded to Karen Cady-Pereira (aer_monortm@aer.com)
 
 AER , Radiation and Climate Group
 131 Hartwell Avenue
