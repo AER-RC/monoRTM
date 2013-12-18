@@ -1,4 +1,115 @@
 
+Version 5.0 
+
+The code was significantly restructured, new capabilities were added, and the spectroscopy was upgraded. 
+
+* Restructuring (K. Cady-Pereira, G. Uymin, A. Lipton)
+
+   - All routines except tips_2003.f are now f90.
+
+   - The code's spectroscopic line input structure and atmospheric profiling
+     code were made more consistent with LBLRTM. Line parameters are now read
+     from a binary TAPE3 file produced with LNFL, as in LBLRTM.
+
+   - The code to read in and store the spectroscopic data was removed from modm
+     and is in a separate module: lnfl_mod.f90
+
+   - The RT codes are also in a new module: RTM mono.f
+
+   - Physical constants are all declared in one module, PhysConstants.f90, which
+     also provides routines to access the values; geophysical parameters in
+     another similar module, PlanetEarth.f90.
+
+* Additional capabilities
+
+   - The capability to utilize a speed-dependent Voigt line shape has been added
+     using the approach of Boone et al. (2007; 2011) (M. Alvarado). 
+
+   - The spectral region about line center in which the detailed Humlicek (1982)
+     method is used to compute the line shape has been extended to provide
+     greater accuracy (M. Alvarado, E. Mlawer, G. Villanueva).
+
+   - The method to compute path lengths in the codeÕs atmospheric module was
+     changed to provide greater stability for cases with exceptionally high
+     rates of change of refractive index with height (M. Alvarado, E. Mlawer, D.
+     Turner, N. Miller)
+
+   - A number of new input and output options, including optional netcdf output
+     with spectral layer optical depths, have been added. (K. Cady-Pereira, D.
+     Berthiaume,???)
+
+   - Mixing ratio inputs are now allowed for IATM=0 (K. Cady-Pereira, J. Delamere)
+
+   - The capability to utilize available line broadening coefficients (width,
+     temperature dependence, pressure shift) that are specific to a given pair
+of species was added (K. Cady-Pereira, E. Mlawer, M. Alvarado).
+
+   - A bug related to foreign broadening of oxygen transitions was fixed (E.
+     Mlawer, M. Alvarado, K. Cady-Pereira).
+
+   - A bug related to the use of the continuum in MonoRTM for near-IR cases was
+     fixed (K. Cady-Pereira, M. Alvarado).
+
+   - The incoming half-widths for N2 and O2, which are defined for broadening by
+     air, are now corrected to reflect broadening  by O2 and N2, respectively.
+
+* Spectroscopy 
+
+   - The default microwave line parameter files ,
+     spectral_lines.dat.0_55.v5.0_slow and spectral_lines.dat.0_55.v5.0_fast,
+     now have a direct correspondence to the full AER linelist., whose current
+     version is aer_v_3.3 (M. Alvarado, K. Cady-Pereira, E. Mlawer).
+
+   - Numerous lines were added to the default microwave line files so that the
+     calculational accuracy at any frequency between 0 and 899.4 GHz (0-30 cm-1)
+     with respect to the full line list aer_v_3.3 is:
+
+     # for spectral_lines.dat.0_55.v5.0_slow (corresponds to ISPD=0 in MonoRTM
+       v4.2 and older): 0.1 K for upwelling, 0.2 K for downwelling  
+
+     # for spectral_lines.dat.0_55.v5.0_fast (corresponds to ISPD=1 in MonoRTM
+       v4.2 and older): 0.5 K for upwelling, 1.0 K for downwelling 
+          (M. Alvarado, E. Mlawer, K. Cady-Pereira) 
+
+   - Line parameters were taken from HITRAN 2012 with the exceptions noted below.
+
+      1. 60 GHz O2 lines and 120 Ghz O2 line from Tretyakov et al. (2005), as
+         implemented in MonoRTM v4.2.                                                                   
+
+      2. 0 cm-1 "Debye line" for O2 same as in MonoRTM v4.2, all other O2 lines
+         below 1.497951 cm-1 removed.                                                        
+
+      3. The intensities for the H2O lines at 0.7417 cm-1 (22.233 GHz), 6.1145
+         cm-1 (183.3 GHz), 10.84 cm-1 (325 GHz) and 12.68 cm-1 (380 GHz) are based on the
+         work of S. A. Clough (1973) and are the same as in MonoRTM v4.2.
+
+      4. The foreign widths of the 22 and 183 GHz water vapor lines were
+         rederived based on HITRAN 2012 line parameters using the approach of Payne et
+         al. (2009).  The temperature dependence parameters for these lines were adjusted
+         from their HITRAN 2012 values to provide better agreement with calculations by
+         Gamache (V. Payne, B. Gamache, E. Mlawer).
+
+   - Broadening parameters were implemented for the following pairs of molecules:
+
+      1. Oxygen transitions broadened by water vapor based on Drouin et al.
+         (2013) (E. Mlawer, K. Cady-Pereira)
+
+      2. Carbon dioxide transitions broadened by water vapor based on Sung (2009) (K. Cady-Pereira).
+
+      3. Water vapor transitions broadened by carbon dioxide based on
+         calculations by R. Gamache of U. Mass. Lowell (K. Cady-Pereira).
+
+      4. Carbon dioxide transitions broadened by carbon dioxide based on
+         calculations by R. Gamache of U. Mass. Lowell (K. Cady-Pereira).
+
+   - The continuum was updated to MT_CKD_2.5.  
+
+   - Speed dependent parameters were implemented for CO2 transitions in the
+     bands 68<-1 and 71<-1 (i.e., 30012<-00001 and 30013<-00001) following Devi
+         et al. (2007a,b) (M. Alvarado).
+
+Karen Cady-Pereira, AER, December 2013
+
 ****************************************************************
 Version 4.3
 
@@ -30,7 +141,7 @@ Vivienne Payne, AER Inc., March 2011
 *      line shape theory, the continuum, the radiative transfer
 *      model, line coupling, etc,..), the user is therefore strongly 
 *      advised to register to the MonoRTM mailing list. For this, 
-*      simply send an email to cadyp@aer.com or vpayne@aer.com.
+*      simply send an email to cadyp@aer.com.
 *      You will be notified each time there is an update.
 ****************************************************************
 
@@ -42,12 +153,11 @@ README -> This file.
 build  -> Contains makefiles for MonoRTM for different platforms
 run    -> Contains files required to run MonoRTM.
 	  .  run_monortm_example is a script to run some examples
-	  .  spectral_lines.dat contains the spectral line information
+	  .  TAPE3_spectral_lines.dat.0_55.v5.0_slow  contains the spectral line information
 	    - (Note that if you wish to run a calculation for a spectral range 
               outside the wavenumber range of the spectral line files supplied 
-	      in the examples, you can create a line file using LNFL, which is
-              publicly available on http://rtweb.aer.com.  The 
-              spectral_lines.dat file is the same format as the LNFL TAPE7.)
+	      in the examples, you can create a line file using MonoLNFL, which is
+              contained in this release package). 
 	  -> subdirectory run/in contains sample input files
 	     '_dn' denotes sample input files for downwelling radiance calculations
 	     '_up' denotes sample input files for upwelling radiance calculations
@@ -64,7 +174,7 @@ run    -> Contains files required to run MonoRTM.
 	        . TAPE7 (if LBLATM is ON)      
 src -> contains all source files needed by MonoRTM.
 doc -> detailed instructions manual about MonoRTM, in ascii format. 
-idl -> visualization tool and tool for creating monortm input from ARM sonde files.
+idl -> tool for creating monortm input from ARM sonde files.
 
 HOW TO RUN MONORTM:
 -------------------
@@ -72,7 +182,7 @@ Assuming you are in the main directory.
 
 . Compilation:
   > cd build
-  > make -f (with your chosen makefile from the makefiles subdirectory)
+  > make -f make_monortm OPTION, where the values for OPTION are listed in makefile.common
   > cd ..
 
 . Running (to generate example output):
@@ -81,11 +191,6 @@ Assuming you are in the main directory.
  (Note that you may have to modify the executable name in 
  "run_monortm_examples" to match the name of the executable that you 
   have created.)
-
-. Visualization of the output (from the "run" directory):
-  >idl
-  IDL> .run ../idl/monortm.pro
-  > cd ..
 
 
 . Numerical check
@@ -96,18 +201,17 @@ HOW TO TAILOR MONORTM TO SPECIFIC NEEDS:
 ----------------------------------------
 MONORTM is a driver program that calls the core module called the Monochromatic 
 Optical Depth Model (MODM). 
-The inputs to MODM could be modified inside monortm.f directly or through the input
+The inputs to MODM could be modified inside monortm.f90 directly or through the input
 file MONORTM.IN (same type of format as LBLRTM's TAPE5), see instructions for more details.
 MonoRTM is a forward model. MonoRTM is designed to be very flexible. We can either use 
 it as a black box and control everything from the MONORTM.IN input file, or one can modify 
 the code itself and recompile it. In the latter, it is structured in such a way that the 
-changes should always be done in "monortm.f" (the driver program). The other auxillary 
-files (monortm_sub.f, modm.f, lblatm_monortm.f, lblrtm_sub.f, tips_2003.f, declar.incl and 
+changes should always be done in "monortm.f90" (the driver program). The other auxillary 
+files (monortm_sub.f90, modm.f90, lblatm.f90, lblrtm_sub.f, tips_2003.f and 
  isotope.dat) should normally not be touched, except in rare situations. In case
-there is an update in the continuum calculations a new "contnm.f" module will be
-generated and sent to the users (or made available on the WEB/ftp site). In the same
-way, if the spectroscopic database is to be updated, only the file
-"spectral_lines.dat" file should be replaced. The code would not need to be modified.
+there is an update in the continuum calculations a new "contnm.f90" module will be
+generated and sent to the users (or made available on the WEB/ftp site). 
+
 The core of MonoRTM is the computation of the optical depths. It is designed as a
 subroutine for flexibility and could be easily plugged in a different radiative
 transfer model if needed.
@@ -118,11 +222,12 @@ OUTPUTS OF MONORTM:
 The records stored in MONORTM.OUT are the following:
 NPR	: 	Profile index used (not necessarily in order).
 FREQ	: 	Frequency in GHz (or wavenumbers, for wavenumbers greater than 100 cm-1)
-TB(I)	: 	Brightness temperature in Kelvin
+BT(I)	: 	Brightness temperature in Kelvin
+TMR(I)  :       Mean radiating temperature (K)
 RAD(I)	: 	Radiance (W/(cm^2 ster cm^-1))
 TRTOT(I): 	Total transmittance (no unit: between 0 and 1)
-WVCOLMN	: 	Integrated water vapor amount in cm
-CLWCOLMN: 	Integrated cloud liquid water in mm
+WVCOLMN	: 	Integrated water vapor amount along the optical path in cm
+CLWCOLMN: 	Integrated cloud liquid water along the optical path in mm
 TMPSFC	: 	Surface/target temperature in K
 EMISS(I): 	Surface/target emissivity (no unit, between 0 and 1)
 REFLC(I): 	Surface/target Reflectivity (no unit , between 0 and 1)
@@ -131,12 +236,16 @@ OTOT	: 	Total column-integrated optical depth due to all species
 OTOT_*	: 	Total column-integrated optical depth by molecules with line data
 ODXSEC	: 	Total column-integrated optical depth due to all cross-section molecules
 
+NETCDF OUTPUT
+-------------------
+If MONORTM is compiled with the nectdf option on (see README.build_instructions in the build directory)
+then a nectdf file named MONORTM.xxxxx.nc (where xxxxx is the profile number) will be created. This file will
+contain all the variables above along with the layer optical depths and the layer optical depths by molecule.
 
 
 QUESTIONS:
 ----------
-Any comments or questions should be forwarded to Karen Cady-Pereira
-or Vivienne Payne at AER at the address below:
+Any comments or questions should be forwarded to Karen Cady-Pereira (kcadyper@aer.com)
 
 AER , Radiation and Climate Group
 131 Hartwell Avenue
@@ -144,10 +253,6 @@ Lexington, MA 02421
 USA
 Tel: 1 781 761 2216
 Fax: 1 781 761 2299
-
-By E-mail:
-cadyp@aer.com
-vpayne@aer.com
 
 
 
