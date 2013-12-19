@@ -18,7 +18,7 @@ echo "---------------------------------------------------------------------"
 echo " case1 :downwelling; U.S. Standard atmosphere; input: in/MONORTM.IN_MDL_ATM_dn"
 
 ln -s in/MONORTM.IN_MDL_ATM_dn        MONORTM.IN
-ln -s in/TAPE3_spectral_lines.dat.0_55.v5.0_slow TAPE3
+ln -s in/TAPE3_spectral_lines.dat.0_55.v5.0_fast TAPE3
 
 time ../monortm_v5.0_linux_pgi_dbl
 
