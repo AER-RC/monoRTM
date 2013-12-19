@@ -1,0 +1,237 @@
+
+Version 5.0 
+
+The code was significantly restructured, new capabilities were added, and the spectroscopy was upgraded. 
+
+* Restructuring (K. Cady-Pereira, G. Uymin, A. Lipton)
+
+   - All routines except tips_2003.f are now f90.
+
+   - The code's spectroscopic line input structure and atmospheric profiling
+     code were made more consistent with LBLRTM. Line parameters are now read
+     from a binary TAPE3 file (as in LBLRTM) produced with MonoLNFL, which is
+     now included in the MonoRTM package.
+
+   - The code to read in and store the spectroscopic data was removed from modm
+     and is in a separate module: lnfl_mod.f90
+
+   - The RT codes are also in a new module: RTMmono.f
+
+   - Physical constants are all declared in one module, PhysConstants.f90, which
+     also provides routines to access the values; geophysical parameters in
+     another similar module, PlanetEarth.f90.
+
+* Additional capabilities
+
+   - The capability to utilize a speed-dependent Voigt line shape has been added
+     using the approach of Boone et al. (2007; 2011) (M. Alvarado). 
+
+   - The spectral region about line center in which the detailed Humlicek (1982)
+     method is used to compute the line shape has been extended to provide
+     greater accuracy (M. Alvarado, E. Mlawer, G. Villanueva).
+
+   - The method to compute path lengths in the code's atmospheric module was
+     changed to provide greater stability for cases with exceptionally high
+     rates of change of refractive index with height (M. Alvarado, E. Mlawer, D.
+     Turner, N. Miller)
+
+   - A number of new input and output options, including optional netcdf output
+     with spectral layer optical depths, have been added. (K. Cady-Pereira, D.
+     Berthiaume)
+
+   - Mixing ratio inputs are now allowed for IATM=0 (K. Cady-Pereira, J. Delamere)
+
+   - The capability to utilize available line broadening coefficients (width,
+     temperature dependence, pressure shift) that are specific to a given pair
+     of species was added (K. Cady-Pereira, E. Mlawer, M. Alvarado).
+
+   - A bug related to foreign broadening of oxygen transitions was fixed (E.
+     Mlawer, M. Alvarado, K. Cady-Pereira).
+
+   - A bug related to the use of the continuum in MonoRTM for near-IR cases was
+     fixed (K. Cady-Pereira, M. Alvarado).
+
+* Spectroscopy 
+
+   - The default microwave line parameter files,
+     spectral_lines.dat.0_55.v5.0_fast and spectral_lines.dat.0_55.v5.0_veryfast,
+     now have a direct correspondence to the full AER linelist, whose current
+     version is aer_v_3.3 (M. Alvarado, K. Cady-Pereira, E. Mlawer).
+
+   - Numerous lines were added to the default microwave line files so that the
+     calculational accuracy at any frequency between 0 and 899.4 GHz (0-30 cm-1)
+     with respect to the full line list aer_v_3.3 is:
+
+     # for spectral_lines.dat.0_55.v5.0_fast (corresponds to ISPD=0 in MonoRTM
+       v4.2 and older): 0.1 K for upwelling, 0.2 K for downwelling  
+
+     # for spectral_lines.dat.0_55.v5.0_veryfast (corresponds to ISPD=1 in MonoRTM
+       v4.2 and older): 0.5 K for upwelling, 1.0 K for downwelling 
+          (M. Alvarado, E. Mlawer, K. Cady-Pereira) 
+
+     NOTE: Users who wish to run MonoRTM v5.0 in spectral regions other than the MW 
+                should use the full AER line file (either aer_v_3.2 or aer_v_3.3), 
+                keeping in mind that the full line file can take a long time to run.
+
+   - Line parameters were taken from HITRAN 2012 with the exceptions noted below.
+
+      1. 60 GHz O2 lines and 120 Ghz O2 line from Tretyakov et al. (2005), as
+         implemented in MonoRTM v4.2.                                                                   
+
+      2. 0 cm-1 "Debye line" for O2 same as in MonoRTM v4.2, all other O2 lines
+         below 1.497951 cm-1 removed.                                                        
+
+      3. The intensities for the H2O lines at 0.7417 cm-1 (22.233 GHz), 6.1145
+         cm-1 (183.3 GHz), 10.84 cm-1 (325 GHz) and 12.68 cm-1 (380 GHz) are based on the
+         work of S. A. Clough (1973) and are the same as in MonoRTM v4.2.
+
+      4. The foreign widths of the 22 and 183 GHz water vapor lines were
+         rederived based on HITRAN 2012 line parameters using the approach of Payne et
+         al. (2009).  The temperature dependence parameters for these lines were adjusted
+         from their HITRAN 2012 values to provide better agreement with calculations by
+         Gamache (V. Payne, B. Gamache, E. Mlawer).
+
+   - Broadening parameters were implemented for the following pairs of molecules:
+
+      1. Oxygen transitions broadened by water vapor based on Drouin et al.
+         (2013) (E. Mlawer, K. Cady-Pereira)
+
+      2. Carbon dioxide transitions broadened by water vapor based on 
+         Sung (2009) (K. Cady-Pereira).
+
+      3. Water vapor transitions broadened by carbon dioxide based on
+         calculations by R. Gamache of U. Mass. Lowell (K. Cady-Pereira).
+
+      4. Carbon dioxide transitions broadened by carbon dioxide based on
+         calculations by R. Gamache of U. Mass. Lowell (K. Cady-Pereira).
+
+   - The continuum was updated to MT_CKD_2.5.  
+
+   - Speed dependent parameters were implemented for CO2 transitions in the
+     bands 68<-1 and 71<-1 (i.e., 30012<-00001 and 30013<-00001) following Devi
+         et al. (2007a,b) (M. Alvarado).
+
+Karen Cady-Pereira, AER, December 2013
+
+****************************************************************
+Version 4.3
+
+This version of MonoRTM includes the MT_CKD 2.5.2 continuum (updated from
+ MT_CKD 2.4). This continuum update includes a bug fix to the N2 continuum.
+
+Note that versions 4.0 onwards of MonoRTM represent a significant update  
+to previous versions where the version number begins with 3 or below.
+The code has been updated to allow the use of MonoRTM beyond the
+microwave region (provided an appropriate spectral line file is used).
+A number of changes were also made in order to make the input 
+more consistent with that of LBLRTM.  Note that the INP option is no 
+longer available.  The INP=1 option can be reproduced by setting IATM=1. 
+The INP=3 option may be reproduced by setting IATM=0. The INP=2 option  
+is no longer available.  Users wishing to run multiple profiles may now 
+do so by providing multiple profiles in the MONORTM.IN (for IATM=1) or
+MONORTM_PROF.IN (for IATM=0) files.  
+
+Vivienne Payne, AER Inc., March 2011
+
+****************************************************************
+MONORTM_v4.2
+
+An error related to the print-out of total optical depths in the
+MONORTM.OUT file was corrected.
+
+****************************************************************
+
+MONORTM_v4.1
+
+ Code is now using MT_CKD_2.4 continuum, which includes significant updates to
+the self- and foreign-broadened water vapor continuum in the range 0 to 600
+cm-1 (0 to 18 THz), based on new analyses of ARM measurements in the microwave
+and far-IR regions. (Payne et al., 2011; Delamere et al., 2010).  
+
+An error related to calculations for multiple profiles was corrected.  
+
+Code has been modified to pass optical depth arrays between subroutines as
+arguments in order to improve modularity of the Monochromatic Optical Depth
+Model (MODM) module. In addition, the IOD option may now be used as a flag to
+output layer optical depths to ascii files.
+
+****************************************************************
+
+MONORTM_v4.0
+
+Code has been updated to allow monochromatic calculations at frequencies
+beyond the microwave region. These updates include the implementation of CO2
+line coupling and the option to include cross-section molecules.
+
+Format of output files has been modified to accommodate this change.
+
+Calculation of the total internal partition sum has been updated to be
+consistent with the calculation in LBLRTM.
+
+MonoRTM now uses MT_CKD_2.1 continuum (previously was using CDK_2.4).
+
+An error in the nitrogen continuum has been corrected.
+
+The INP option has been replaced by the use of IATM=1 or IATM=0 (consistent
+with LBLRTM). A stand-alone IDL program is provided to convert ARM netCDF
+profiles into MONORTM input format.
+
+****************************************************************
+
+MONORTM_v3.3
+
+Directory structure has been changed to make it more consistent with LBLRTM
+
+The 22GHz and the 183GHz water vapor lines have been updated (Payne et al, 2008)
+
+The 325 GHz water vapor line has been updated to reflect CRB calculations by
+Gamache
+
+The 380 GHz water vapor line has been updated according to measurements by
+Koshelev et al (2007)
+
+Corrected error in surface reflectance code
+
+Updated limb radiative transfer code
+
+****************************************************************
+
+MONORTM_v3.0
+
+Code has been updated to allow scaling of profiles
+
+Spectral line file has been modified to include new oxygen line widths and
+line-coupling coefficients from Tretyakov et al (2005)
+
+More lines in the spectral line file are now included in the fast option, to
+increase accuracy at higher frequencies and lower water vapor amounts
+
+****************************************************************
+
+MONORTM_v2.20
+
+Code has been restructured and made more robust
+
+New makefiles allow for the creation of single and double precision code on
+SGIs and on MacOSX
+
+****************************************************************
+
+MONORTM_v2.12
+
+A new LBLATM module has been added, which is consistent with the LBLATM module
+currently used by LBLRTM
+
+Several minor coding inconsistencies, which led to compilation errors under
+some compilers, have been eliminated
+
+****************************************************************
+
+MONORTM_v2.11
+
+O2 line coupling parameters have been modified to yield significantly better
+agreement with MWRP measurements in the 50-60 GHz range
+
+Code output contains more detailed information on the current version of the
+software and the spectral lines file
+
