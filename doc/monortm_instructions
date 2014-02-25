@@ -52,9 +52,9 @@
 --------------
 
  
-IHIRAC,       ICNTNM,     IEMIT,     IPLOT,           IATM,      IOD,            IXSECT             ISPD
-     5,           15,        25,        40,           50,         65,            70             87-90
- 4X,I1, 9X,      I1, 9X,     I1, 14X,   I1,9X         I1, 14X,   I1,4X           I1, 16X,        I4
+IHIRAC,       ICNTNM,     IEMIT,     IPLOT,           IATM,      IOD,            IXSECT         ISPD             IBRD
+     5,           15,        25,        40,           50,         65,            70             87-90           91-94
+ 4X,I1, 9X,      I1, 9X,     I1, 14X,   I1,9X         I1, 14X,   I1,4X           I1, 16X,        I4              I4
  
  
          IHIRAC -->  Should be one: Voigt profile.
@@ -75,6 +75,9 @@ IHIRAC,       ICNTNM,     IEMIT,     IPLOT,           IATM,      IOD,           
 	                                        0 = no.  If IATM=0, then user must supply an additional
                                                          input file (MONORTM_PROF.IN - See Record 2.1)
          IXSECT -->  (0,1) Cross section flag 
+         IBRD   -->  (0,1)   flag for species specific broadening
+                                                1 = yes 
+	                                        0 = no (only foreign and self broadening are calculated)
 
 --------------
 RECORD 1.2a   (required if ICNTNM = 6)
