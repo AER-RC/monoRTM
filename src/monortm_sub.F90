@@ -38,7 +38,7 @@
 
   SUBROUTINE RDLBLINP(IATM,IPLOT,IOD,IRT,NWN,WN, &
        FILEIN,cntnmScaleFac,IXSECT,IBMAXOUT,TMPBND,ZBNDOUT, &
-       H1fout,H2fout,ISPD,IPASSATM)
+       H1fout,H2fout,ISPD,IPASSATM,IBRD)
 !-------------------------------------------------------------------------------
 !
 !     SUBROUTINE:  RDLBLINP
@@ -136,10 +136,10 @@
   DATA CDOL / '$'/,CPRCNT / '%'/
   DATA CONE / '1'/,CTWO / '2'/,CTHREE / '3'/,CFOUR / '4'/, &
        CA / 'A'/,CB / 'B'/,CC / 'C'/                   
-  character*6 idcntl(15)
-  DATA IDCNTL / ' HIRAC',' LBLF4',' CNTNM',' AERSL',' EMISS', &
-                ' SCNFN',' FILTR','  PLOT','  TEST','  IATM', &    
-                'CMRG_1','CMRG_2','  ILAS','  ISPD',' XSECT'/
+  character*6 idcntl(9)
+  DATA IDCNTL / ' HIRAC',' CNTNM',' EMISS', &
+                '  PLOT','  IATM','   IOD', &    
+                ' XSECT','  ISPD','  IBRD'/
   CHARACTER CEXST*2    
   DATA CEXST/'EX'/
   EQUIVALENCE (CXID,CXIDLINE)                    
@@ -152,82 +152,39 @@
       IF (CXID.NE.CDOL) GO TO 20                            
       READ (CXIDLINE,'(1x,10A8)') (XID(I),I=1,10)     
 
-      READ(IRD,925,END=80,ERR=6000) IHIRAC,ILBLF4, &!---record 1.2
-         ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT, &    
-         ITEST,IATM, CMRG,ILAS, IOD,IXSECT, &
-         MPTS,NPTS,ISPD
+      print *,'before header read'
+      READ(IRD,925,END=80,ERR=6000) IHIRAC, &!---record 1.2
+         ICNTNM,IEMIT,IPLOT, &    
+         IATM, IOD,IXSECT, &
+         ISPD,IBRD
+      print *,'after header read'
 
       IXSCNT = IXSECT*10 + ICNTNM
 
-      WRITE (IPR,935) (IDCNTL(I),I=1,15)  
+      WRITE (IPR,935) (IDCNTL(I),I=1,9)  
  935  FORMAT (15(A6,3X)) 
 
-      Write(ipr,940)                 IHIRAC,ILBLF4, &!---record 1.2           
-         ICNTNM,IAERSL,IEMIT,ISCAN,IFILTR,IPLOT, &   
-         ITEST,IATM,CMRG(1),CMRG(2),ILAS,ISPD,IXSECT
+      Write(ipr,940)                 IHIRAC,&!---record 1.2           
+         ICNTNM,IEMIT,IPLOT, &   
+         IATM,IOD,IXSECT,ISPD,IBRD
 
  940  FORMAT (1X,I4,9I9,2(8x,a1),3I9)
 
 !----CHECKING THE INPUTS FROM RECORD 1.2
-      IF (IAERSL.GT.0) THEN
-         WRITE(*,*) 'CURRENTLY MONORTM DOES NOT HANDLE AEROSOLS'
-         WRITE(*,*) 'CHECK YOUR INPUT FILE: ',FILEIN
-         STOP
-      ENDIF
-      IF (ILBLF4.GT.0) THEN
-          WRITE(*,*) '----------------------------------------'
-          WRITE(*,*) 'WARNING: ILBLF4 IS IGNORED IN MONORTM'
-          WRITE(*,*) 'IN ',FILEIN,' ILBLF4=',ILBLF4
-      ENDIF
       IF (IEMIT.NE.1) THEN
          WRITE(*,*) '----------------------------------------'
          WRITE(*,*) 'WARNING: IEMIT IS IGNORED IN MONORTM'
          WRITE(*,*) 'IT IS SET INTERNALLY TO ONE'
          WRITE(*,*) 'IN ',FILEIN,' IEMIT=',IEMIT
       ENDIF
-      IF (ISCAN.NE.0) THEN
-         PRINT *, 'MONORTM DOES NOT HANDLE SCANNING/INTERPOL/FFT'
-         PRINT *, 'PLEASE CHECK YOUR FILE:',FILEIN
-         STOP
-      ENDIF
-      IF (IFILTR.NE.0) THEN
-         PRINT *, 'MONORTM DOES NOT HANDLE ANY FILTERING'
-         PRINT *, 'PLEASE CHECK YOUR FILE:',FILEIN
-         STOP
-      ENDIF
       IF (IPLOT.NE.1) THEN 
          WRITE(*,*) 'WARNING: IPLOT MUST BE SET TO 1 TO OUTPUT TBs'
          WRITE(*,*)  'IN ', FILEIN, ' IPLOT=', IPLOT
-      ENDIF
-      IF (ILAS.GT.0) THEN
-         WRITE(*,*) '----------------------------------------'
-         WRITE(*,*) 'WARNING: ILAS IS IGNORED IN MONORTM'
-         WRITE(*,*) 'IN ',FILEIN,' ILAS=',ILAS
       ENDIF
       IF (IOD.EQ.1) THEN
          WRITE(*,*) '----------------------------------------'
          WRITE(*,*) 'IOD FLAG SET TO OUTPUT LAYER OPTICAL DEPTHS'
          WRITE(*,*) 'IN ',FILEIN,' IOD=',IOD
-      ENDIF
-      IF (MPTS.GT.0) THEN
-         WRITE(*,*) '----------------------------------------'
-         WRITE(*,*) 'WARNING: MPTS IS IGNORED IN MONORTM'
-         WRITE(*,*) 'IN ',FILEIN,' MPTS=',MPTS
-      ENDIF
-      IF (NPTS.GT.0) THEN
-         WRITE(*,*) '----------------------------------------'
-         WRITE(*,*) 'WARNING: NPTS IS IGNORED IN MONORTM'
-         WRITE(*,*) 'IN ',FILEIN,' NPTS=',NPTS
-      ENDIF
-      IF (CMRG(1).NE.'') THEN                  
-         WRITE(*,*) '----------------------------------------'
-         WRITE(*,*) 'WARNING: IMRG IS IGNORED IN MONORTM'
-         WRITE(*,*) 'IN ',FILEIN,' IMRG=',CMRG
-      ENDIF
-      IF (CMRG(2).NE.'') THEN                  
-         WRITE(*,*) '----------------------------------------'
-         WRITE(*,*) 'WARNING: IMRG IS IGNORED IN MONORTM'
-         WRITE(*,*) 'IN ',FILEIN,' IMRG=',CMRG
       ENDIF
 
 !------END CHECKING RECORD 1.2
@@ -453,7 +410,7 @@
  915  FORMAT (E15.7,F10.4,F10.6,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)
  916  FORMAT (2F10.4,f10.6,A3,I2,23X,(F7.2,F8.3,F7.2),E15.7)         
  920  FORMAT (I3)                                                 
- 925  FORMAT (10(4X,I1),3X,2A1,3(4X,I1),1X,I4,1X,I4,6X,I4)    
+ 925  FORMAT (4X,I1,9X,I1,9X,I1,14X,I1,9X,I1,14X,I1,4X,I1,16X,I4,I4)
  9255 FORMAT (8E15.7)
  927  FORMAT (8E10.3)                                          
  930  FORMAT (I1)                                               

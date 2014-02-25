@@ -20,7 +20,8 @@ CONTAINS
       SUBROUTINE MODM(IPR,ICP,NWN,WN,dvset,NLAY,P,T,CLW, &
                   O,O_BY_MOL, OC, O_CLW, ODXSEC, &
                        NMOL,WKL,WBRODL, &
-                 SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect)
+                 SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect,&
+                 IBRD)
 !
 !  --------------------------------------------------------------------------
 ! |                                                                          |
@@ -139,7 +140,7 @@ CONTAINS
       REAL WKL(MXMOL,MXLAY),WBRODL(MXLAY)
       real oc_rayl(nwn,mxlay)
       real scor(42,9)
-      integer index_cont(ncont), imol
+      integer*4 index_cont(ncont), imol
       COMMON /ABSORB/ V1ABS,V2ABS,DVABS,NPTABS,ABSRB(n_absrb)                
                                                                          
       TYPE(CntnmFactors_t) :: cntnmScaleFac
@@ -165,13 +166,13 @@ CONTAINS
       data index_cont/1,2,3,7,22,99/
       HVRMODM = '$Revision: 11207 $' 
 
-
 ! Set up useful constants
-      CALL getPhysConst(RADCN2=RADCN2)
       ONEPL = 1.001                                                       
       ONEMI = 0.999                                                      
       ARGMIN = 34.                                                      
       EXPMIN = EXP(-ARGMIN) 
+      CALL getPhysConst(RADCN2=RADCN2)
+
 
 ! Set up constants for call to contnm
          jrad = 0
@@ -257,9 +258,9 @@ CONTAINS
 
             CALL LINES(Xn,WN(M),T(K),NMOL,WKL(1:nmol,k)      , &       !PROCESS_LINES
             wbrodl(K),RADCT,T0,o_by_mol(m,1:nmol,k),XN0,RFT, &
-            P(K),P0,SCLCPL,SCLHW,Y0RES,scor)
+            P(K),P0,SCLCPL,SCLHW,Y0RES,scor,ibrd)
    
-            O_CLW(M,K)=ODCLW(WN(M),T(K),CLW(K))                       !OPTDEPTH CLW
+	    O_CLW(M,K)=ODCLW(WN(M),T(K),CLW(K))                       !OPTDEPTH CLW
             do imol = 1,nmol
                 O(M,K) = o(m,k) + O_BY_MOL(M,imol,K) 
             enddo
@@ -274,7 +275,7 @@ CONTAINS
 
       SUBROUTINE LINES(Xn,WN,T,NMOL,WK, &
            wbrod,RADCT, T0,o_by_mol, &
-           XN0,RFT,P,P0,SCLCPL,SCLHW,Y0RES,scor)
+           XN0,RFT,P,P0,SCLCPL,SCLHW,Y0RES,scor,ibrd)
 
 
       USE lnfl_mod, ONLY : NBLM,ISO,XNU0,DELTNU,E,ALPS,ALPF,X,XG,S0,Rmol, &
@@ -286,13 +287,15 @@ CONTAINS
       REAL A(4),B(4),TEMPLC(4)
       real scor(42,9)
 
-      real, dimension(mxbrdmol) ::  rhoslf,dzero
-      integer*4, dimension(mxbrdmol) ::  izero
+      real, dimension(mxbrdmol) ::  rho_molec,dzero,brd_tmp,brd_hw
+      integer*4, dimension(mxbrdmol) ::  brd_flg
 
       DATA TEMPLC /200.0,250.0,296.0,340.0 /
-      data dzero /7*0.0/
-      data izero /7*0/
 
+
+      data brd_tmp/ 7*0.0/
+      data brd_hw/ 7*0.0/
+      data brd_flg /7*0/
 
       deltnuC=25.          !cm-1
       WTOT=sum(wk)+wbrod
@@ -306,7 +309,7 @@ CONTAINS
       TMPDIF=T-TEMPLC(ILC)                                             
       RT=T/T0                   !ratio of temperature
       RHORAT=(Xn/XN0)               !ratio of number density
-      rhoslf(:) = rhorat*wk(1:mxbrdmol)/wtot
+      rho_molec(:) = rhorat*wk(1:mxbrdmol)/wtot
       o_by_mol(:)  = 0.         !initialization
 
       DO I=1,NMOL
@@ -315,13 +318,12 @@ CONTAINS
             OL = 0.
             GOTO 10
          ENDIF
-
          SF=0.
          J=0
-         RAT=(Xn/XN0)*(W_SPECIES/WTOT)
          DO WHILE (J.LT.NBLM(I))
             J=J+1
             JJ=J
+
             IF ((XG(I,J).EQ.-1).OR.(XG(I,J).EQ.-3).OR.(XG(I,J).EQ.-5))THEN
 
                JJ=J+1 !the LCC are stored in XNU0(J+1),DELTNU(J+1),etc..
@@ -333,97 +335,95 @@ CONTAINS
                B(3)=ALPS(I,JJ)
                A(4)=X(I,JJ)
                B(4)=deltnu(I,JJ)
-	       IF ((XG(I,J).EQ.-5).AND.(XG(I,J-1).EQ.-5)) THEN   !Self LC!!
+               IF ((XG(I,J).EQ.-5).AND.(XG(I,J-1).EQ.-5)) THEN   !Self LC!!
                   JJ=JJ+1
-		  rho_for = (rhorat-rhoslf(i))/rhorat
-		  rho_sel = rhoslf(i)/rhorat
-		  A(1) = rho_for*A(1)+rho_sel*XNU0(I,JJ)
-		  B(1) = rho_for*B(1)+rho_sel*S0(I,JJ)
-		  A(2) = rho_for*A(2)+rho_sel*alpf(I,JJ)
-		  B(2) = rho_for*B(2)+rho_sel*E(I,JJ)
-		  A(3) = rho_for*A(3)+rho_sel*RMOL(I,JJ)
-		  B(3) = rho_for*B(3)+rho_sel*ALPS(I,JJ)
-		  A(4) = rho_for*A(4)+rho_sel*X(I,JJ)
-		  B(4) = rho_for*B(4)+rho_sel*deltnu(I,JJ)
-	       ENDIF
+                  rho_for = (rhorat-rho_molec(i))/rhorat
+                  rho_sel = rho_molec(i)/rhorat
+                  A(1) = rho_for*A(1)+rho_sel*XNU0(I,JJ)
+                  B(1) = rho_for*B(1)+rho_sel*S0(I,JJ)
+                  A(2) = rho_for*A(2)+rho_sel*alpf(I,JJ)
+                  B(2) = rho_for*B(2)+rho_sel*E(I,JJ)
+                  A(3) = rho_for*A(3)+rho_sel*RMOL(I,JJ)
+                  B(3) = rho_for*B(3)+rho_sel*ALPS(I,JJ)
+                  A(4) = rho_for*A(4)+rho_sel*X(I,JJ)
+                  B(4) = rho_for*B(4)+rho_sel*deltnu(I,JJ)
+               ENDIF
                AIP=A(ILC)+((A(ILC+1)-A(ILC))*RECTLC)*TMPDIF
                BIP=B(ILC)+((B(ILC+1)-B(ILC))*RECTLC)*TMPDIF
             ENDIF
-          
+         
 
-            !---application of the scaling factors
+            !---application of the scaling factors 
             IF ((XG(I,J).EQ.-1)) THEN !Scaling of the Line coupling parameters
                AIP=AIP*SCLCPL+Y0RES
                BIP=BIP*SCLCPL+Y0RES
             ENDIF
-            IF ((XG(I,J).EQ.-3)) THEN !Press depend of the hwidth of the 0 band 
+            IF ((XG(I,J).EQ.-3)) THEN !Press depend of the hwidth of the 0 band  
                AIP=AIP*SCLHW
                BIP=BIP*SCLHW
             ENDIF
-            ! convert S0 back to HITRAN form
-	    S0_adj = S0(I,J)*(xnu0(i,j)*(1.0-exp(-(RADCT*Xnu0(i,j)/T0))))
 
+           ! convert S0 back to HITRAN form
+            S0_adj = S0(I,J)*(xnu0(i,j)*(1.0-exp(-(RADCT*Xnu0(i,j)/T0))))
+    
             ! get shift
-             Xnu=Xnu0(I,J)+(deltnu(I,J)*(Xn/xn0))
-            
+            Xnu=Xnu0(I,J)+(deltnu(I,J)*(Xn/xn0))
 
-            ! modify shift due to specific broadening by other molecules if information is available
+             !modify shift due to specific broadening by other molecules if information is available
             if (i.le.mxbrdmol) then
-	       xnu = xnu+sum(rhoslf(:)*brd_mol_flg(i,:,j)*(brd_mol_shft(i,:,j)-deltnu(i,j)))
+               xnu = xnu+sum(rho_molec(:)*brd_mol_flg(i,:,j)*(brd_mol_shft(i,:,j)-deltnu(i,j)))
             endif
 
-               
+
             !check line within 25cm-1 from WN, (except for O2, cause line coupling)
-            IF ((ABS(WN-Xnu).GT.deltnuC).and.(I.NE.7))  &
+            IF ((ABS(WN-Xnu).GT.deltnuC).and.(I.NE.7))   &
                  GOTO 30   
 
             XIPSF = scor(i,iso(i,j))
 
-            !CALL INTENS(T,S0(I,J),E(I,J),RADCT,T0,Xnu,STILD,XIPSF)
             CALL INTENS(T,S0_adj,E(I,J),RADCT,T0,Xnu,STILD,XIPSF)
 
-            ! since parameters are now coming from binary file tdep (here called X) comes in correctly
+! since parameters are now coming from binary file tdep (here called X) comes in correctly
             XTILD=X(I,J)
 
-            ! calculate  Lorentz halfwidth
+          ! calculate  Lorentz halfwidth
             ! if specific broadening by other molecules available, recalculate halfwidth
-            if (i.le.mxbrdmol) then 
-
-	       HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RHORAT,I, rhoslf,  &
-		    brd_mol_flg(i,:,j),brd_mol_hw(i,:,j),brd_mol_tmp(i,:,j))
-            else
-	       HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RHORAT,I, rhoslf,  &
-		    izero,dzero,dzero)
-            endif
+	     brd_flg = 0
+	     brd_hw = 0.0
+	     brd_tmp = 0.0
+              if (i.le.mxbrdmol.AND.ibrd.ne.0) then 
+                 brd_flg = brd_mol_flg(i,:,j)
+                 brd_hw = brd_mol_hw(i,:,j)
+                 brd_tmp = brd_mol_tmp(i,:,j)
+              endif
+                HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RHORAT,I, rho_molec  ,  &
+                    ! brd_mol_flg(i,:,j),brd_mol_hw(i,:,j),brd_mol_tmp(i,:,j))
+                     brd_flg,brd_hw,brd_tmp)
+             !else
+             !  HWHM_C=HALFWHM_C(alpf(I,J),alps(I,J),RT,XTILD,RHORAT,I, rho_molec,  &
+             !       izero,dzero,dzero)
+             !endif
 
             ! calculate Doppler width
             HWHM_D=HALFWHM_D(I,ISO(I,J),Xnu,T)
-         
+
+
             IF(XG(I,J).EQ.-3.) THEN
                HWHM_C=HWHM_C*(1-(AIP*(RP))-(BIP*(RP2)))
             ENDIF
             zeta=HWHM_C/(HWHM_C+HWHM_D)
             ilshp=1                            !=0->Lorentz, =1->Voigt
 
-            !MJA 20130517 Assuming that even for speed dependence 
+           !MJA 20130517 Assuming that even for speed dependence 
             !we should go to lorentz at high zeta and in wings
             !Seems consistent with Figure 1 of Boone et al., JQSRT, 105, 525-532, 2007.
 
+
             if ((ABS(WN-Xnu).GT.(100.*HWHM_D)).or.(zeta.GT.0.99)) ilshp=0
-
-            IF (ilshp.eq.0) CALL LSF_LORTZ(XG(I,J),RP,RP2,AIP,BIP, &
+            IF (ilshp.eq.0) CALL LSF_LORTZ(XG(I,J),RP,RP2,AIP,BIP,   &
                  HWHM_C,WN,Xnu,SLS,I)
-            !MJA 20130517 New speed dependent voigt line shape
-            !IF (ilshp.eq.1) CALL LSF_VOIGT(XG(I,J),RP,RP2,AIP,BIP, &
-            !     HWHM_C,WN,Xnu,SLS,HWHM_D,I)
-!            IF (sdep(I,J) .ne. 0.0) THEN
-!               print *, "WVN",  Xnu0(I,J)
-!               print *, "SDEP", sdep(I,J)
-!               print *, "RP", RP
-!            ENDIF
-            IF (ilshp.eq.1) CALL LSF_SDVOIGT(XG(I,J),RP,RP2,AIP,BIP, &
-                 HWHM_C,WN,Xnu,SLS,HWHM_D,I, sdep(I,J))
-
+            IF (ilshp.eq.1) CALL LSF_SDVOIGT(XG(I,J),RP,RP2,AIP,BIP,   &
+                 HWHM_C,WN,Xnu,SLS,HWHM_D,I,sdep(I,J))
             SF=SF+(STILD*SLS)
  30         CONTINUE
             J=JJ
@@ -432,12 +432,12 @@ CONTAINS
          OL =RFT*SPSD
  10      o_by_mol(i)  = OL
       ENDDO
-      END SUBROUTINE LINES
+      END  SUBROUTINE LINES
 
       FUNCTION HALFWHM_D(MOL,ISO,XNU,T)
       PARAMETER (NMOL=39,Nspeci=85)
       REAL BOLTZ,CLIGHT,AVOGAD
-      REAL C,K,T,M
+      REAL C,K,T,M 
       REAL*8 XNU  
       INTEGER ILOC,ISO
       COMMON /ISVECT/ ISO_MAX(NMOL),SMASS(nmol,9)
@@ -700,7 +700,6 @@ CONTAINS
 
       END SUBROUTINE LSF_SDVOIGT
 
-      
       SUBROUTINE LSF_LORTZ(XF,RP,RP2,AIP,BIP,HWHM,WN,Xnu,SLS, &
           MOL)
       REAL*8 WN,Xnu,deltnuC,deltXNU,CHI
@@ -828,31 +827,30 @@ CONTAINS
 
       END SUBROUTINE LSF_LORTZ
 
-
-      
-      FUNCTION HALFWHM_C(AF,AS,RT,XTILD,RHORAT,MOL,rhoslf,brd_flg,brd_hw,brd_tmp)
+     FUNCTION HALFWHM_C(AF,AS,RT,XTILD,RHORAT,MOL,rho_molec,brd_flg,brd_hw,brd_tmp)
+     !FUNCTION HALFWHM_C(AF,AS,RT,XTILD,RHORAT,MOL,rho_molec)
       parameter (mxbrdmol=7)
       integer*4, dimension(mxbrdmol) :: brd_flg
-      real, dimension(mxbrdmol)      :: brd_hw,brd_tmp,rhoslf
-
+      real, dimension(mxbrdmol)      :: brd_hw,brd_tmp,rho_molec
+            
       real, dimension(mxbrdmol)  :: tmpcor,alfa_tmp
-
+            
       IF ((MOL.EQ.1).AND.(AS.EQ.0.)) AS=5*AF
       alfa0i = AF*(RT**XTILD)
       hwhmsi = AS*(RT**XTILD)
-      !HALFWHM_C=AF*(RT**XTILD)*(RHORAT-RAT)+AS*(RT**XTILD)*RAT
-      HALFWHM_C= alfa0i*(RHORAT-rhoslf(mol)) + hwhmsi*rhoslf(mol)
-
+     ! HALFWHM_C=AF*(RT**XTILD)*(RHORAT-RAT)+AS*(RT**XTILD)*RAT
+      HALFWHM_C= alfa0i*(RHORAT-rho_molec(mol)) + hwhmsi*rho_molec(mol)
+            
       !recalculate halfwith if information on broadening by specific molecules is available
-	 if(sum(brd_flg(:)).gt.0) then
-	    tmpcor = RT**brd_tmp(:)
-	    alfa_tmp = brd_hw(:)*tmpcor
-	    alfsum = sum(rhoslf(:)*brd_flg(:)*alfa_tmp)
-	    HALFWHM_C = (rhorat-sum(rhoslf(:)*brd_flg(:)))    &
-	      *alfa0i + alfsum
-	    if(brd_flg(mol).eq.0)                                   &
-		 HALFWHM_C = HALFWHM_C + rhoslf(mol)*(hwhmsi-alfa0i)
-	 end if
+            if(sum(brd_flg(:)).gt.0) then
+              tmpcor = RT**brd_tmp(:)
+              alfa_tmp = brd_hw(:)*tmpcor
+              alfsum = sum(rho_molec(:)*brd_flg(:)*alfa_tmp)
+              HALFWHM_C = (rhorat-sum(rho_molec(:)*brd_flg(:)))    &
+                *alfa0i + alfsum
+              if(brd_flg(mol).eq.0)                                   &
+                   HALFWHM_C = HALFWHM_C + rho_molec(mol)*(hwhmsi-alfa0i)
+            end if
       END FUNCTION HALFWHM_C
 
       
@@ -862,6 +860,7 @@ CONTAINS
       STILD=S*((1+EXP(-(RADCT*Xnus/T)))/ &
       (Xnus*(1-EXP(-(RADCT*Xnus/T0)))))
       END SUBROUTINE INTENS
+      
 
       SUBROUTINE INITI(P,T,RADCT,T0,P0,NMOL,WK,WBROD,XN0, &
                        Xn,Xn_WV)
@@ -879,10 +878,10 @@ CONTAINS
       WVPRESS=(RATIOMIX/(RATIOMIX+(WVMOLMASS/DRYMOLMASS)))*P
       Xn_WV=(WVPRESS/(BOLTZ*T))*1.E+3
       END SUBROUTINE INITI
-      
+ 
         
 
-      FUNCTION ODCLW(WN,TEMP,CLW)
+     FUNCTION ODCLW(WN,TEMP,CLW)
       !INPUTS: WN (WaveNUmber in cm-1)
       !        Temp (in K)
       !        CLW  (in mm or kg/m2)
@@ -896,30 +895,33 @@ CONTAINS
       FREQ=WN*CLIGHT/1.E9
       IF ((FREQ.GT.3000.).AND.(CLW.GT.0.)) THEN
          WRITE(*,*) 'STOP: CLOUD IS PRESENT FOR SIMULATIONS'
-         WRITE(*,*) 'IN A NON-MICROWAVE SPECTRAL REGION'
+         WRITE(*,*) 'IN A NON-MICROWAVE SPECTRAL REGION' 
          STOP
-      ENDIF
+      ENDIF   
       THETA1 = 1.-300./TEMP
       EPS0 = 77.66 - 103.3*THETA1
       EPS1 = .0671*EPS0
       EPS2 = 3.52 + 7.52*THETA1
       FP = 20.1*EXP(7.88*THETA1)
-      FS = 39.8*FP
+      FS = 39.8*FP 
       EPS = (EPS0-EPS1)/CMPLX(1.,FREQ/FP) + &
            (EPS1-EPS2)/CMPLX(1.,FREQ/FS) +EPS2
       RE = (EPS-1.)/(EPS+2.)
       ODCLW = -(6.*PI/299.792458)*CLW*AIMAG(RE)*FREQ
-      RETURN
+      RETURN  
       END FUNCTION ODCLW
 
 
+              
       FUNCTION XLORENTZ(Z)
-      REAL*8 Z
-      REAL PI
-      CALL getPhysConst(PI=PI)
-      XLORENTZ=1./(PI*(1.+(Z**2))) 
-      RETURN
+      REAL*8 Z      
+      REAL PI  
+      !CALL getPhysConst(PI=PI)
+      PI = 3.1415926535898
+      XLORENTZ=1./(PI*(1.+(Z**2)))
+      RETURN  
       END FUNCTION XLORENTZ
+
 
 
 

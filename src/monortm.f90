@@ -305,7 +305,7 @@
 	HVRMON = '$Revision: 22629 $' 
 
 	!---Release number of MonoRTM
-	HVRREL = 'Release  5.0'
+	HVRREL = 'Release  5.1'
 
 	!---GET THE PROFILES NUMBER
 
@@ -325,7 +325,7 @@
 
 	!---Get info about IBMAX/ZBND/H1/H2...
 	CALL RDLBLINP(IATM,IOUT,IOD,IRT,NWN,WN,FILEIN, &
-         cntnmScaleFac,IXSECT,IBMAX,TMPSFC,ZBND,H1f,H2f,ISPD,IPASSATM)
+         cntnmScaleFac,IXSECT,IBMAX,TMPSFC,ZBND,H1f,H2f,ISPD,IPASSATM,IBRD)
         if (ISPD .eq. 1) then
            print *, '****************************************'
            print *, '*            W A R N I N G             *'
@@ -362,7 +362,7 @@
 	      ENDIF
 	      CALL RDLBLINP(IATM,IOUT,IOD,IRT,NWN,WN,FILEIN, &
      	         cntnmScaleFac,IXSECT,IBMAX,TMPSFC,ZBND,H1f,H2f,ISPD, &
-                IPASSATM)
+                IPASSATM,IBRD)
 	   ENDIF
 
 
@@ -551,7 +551,8 @@
            CALL MODM(IPR,ICPL,NWN,WN,dvset,NLAYRS,P,T,CLW, &
                       O,O_BY_MOL, OC, O_CLW, ODXSEC,       &
      	               NMOL,WKL,WBRODL,                    &
-     	        SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,ixsect)
+     	        SCLCPL,SCLHW,Y0RES,HFILE,cntnmScaleFac,    &
+                ixsect, ibrd)
 	   
 	   !***********************************************
 	   !* Fourth  Step:  Mean Radiating Temperature
