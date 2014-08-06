@@ -34,11 +34,11 @@
 !**********************************************************************
 !   Comments and/or questions are appreciated. 
 !   They should be forwarded to:
-!   AER Inc. (Karen Cady-Pereira or Vivienne Payne)
+!   AER Inc. (Karen Cady-Pereira) 
 !   131 Hartwell Avenue, Lexington, MA02421, USA
-!   By phone  : 1 781 761 2288
+!   By phone  : 1 781 761 2216
 !   By Fax    : 1 781 761 2299
-!   By E-mail : cadyp@aer.com, vpayne@aer.com
+!   By E-mail : cadyp@aer.com
 !
 !
 !   Vivienne H. Payne, AER Inc, August, 2008
@@ -306,6 +306,9 @@
 
 	!---Release number of MonoRTM
 	HVRREL = 'Release  5.1'
+
+        ! Initialize CLW
+          CLW(:) = 0.0
 
 	!---GET THE PROFILES NUMBER
 
