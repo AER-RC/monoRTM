@@ -5,6 +5,13 @@ handle species specific line broadening coefficients significacntly slows the
 code down. An additional input parameter (IBRD)  was added to make using these
 broadening coefficients optional.
 
+CLW was initialized in monortm.f90, to avoid NaNs occuring in some compilers.
+
+lnfl_mod.90 now reads the spectral lines file (TAPE3) starting at 25 cm-1 to 
+the left of the first requested spectral point, or the beginning of the TAPE3,
+if the requested point is within 25 cm-1 of the beginning.
+
+
 
 Version 5.0 
 
