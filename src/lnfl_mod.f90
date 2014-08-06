@@ -126,7 +126,7 @@ CONTAINS
 
        SUBROUTINE RDLNFL (VLO,IPR,LINFIL,IEOF,ILO,IHI) 
 !                                                                       
-      REAL*8  ::          VLO
+      REAL*8  ::          VLO, VLO_ADJ
 !                                                                       
       integer*4 leof,npnlhd,linfil 
 !                                                                       
@@ -148,15 +148,17 @@ CONTAINS
    10 CALL BUFIN_sgl(linfil,LEOF,RDLNPNL,npnlhd)
 
 !                                                                       
+      
+      vlo_adj = max(0.0,vlo-25.)
       IF (LEOF.EQ.0) GO TO 30
-      IF (RDLNPNL%VMAX.LT.VLO) THEN
+      IF (RDLNPNL%VMAX.LT.VLO_ADJ) THEN
          CALL BUFIN_sgl(linfil,LEOF,DUMBUF,i_1)
          GO TO 10
       ELSE
          CALL BUFIN_sgl(linfil,LEOF,rdlnbuf,RDLNPNL%NWDS)
       ENDIF
 !                                                                       
-      IF ((IPASS.EQ.1).AND.(RDLNBUF%VNU(1).GT.VLO)) WRITE (ipr,900)
+      IF ((IPASS.EQ.1).AND.(RDLNBUF%VNU(1).GT.VLO_ADJ)) WRITE (ipr,900)
 !                                                                       
       IJ = 0
 !                                                                       
