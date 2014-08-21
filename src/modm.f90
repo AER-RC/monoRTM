@@ -584,16 +584,17 @@ CONTAINS
                XL1=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (+) osc.
                XL3=SDVOIGT(deltnuC,HWHM,AD, SDEP) !VOIGT for 25cm-1 wn (pedestal) 
                Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))! line coupling for (+) osc
-               Y1P=(1.+(AIP*(1/HWHM)*RP*(deltnuC-Xnu))+(BIP*RP2))! line coupling for (+) osc pedestal            
+               Y1P=(1.+(AIP*(1/HWHM)*RP*(deltnuC))+(BIP*RP2))! line coupling for (+) osc pedestal            
                IF (DIFF .LE. 0.) THEN !Within 25 cm-1 of 0 cm-1
                     deltXNU=(WN+Xnu)
                     XL2=SDVOIGT(deltXNU,HWHM,AD, SDEP) !VOIGT for (-) osc.                    
                     Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2)) ! line coupling for (-) osc
-                    Y2P=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2)) ! line coupling contributions to (-)pedestal                  
+                    Y2P=(1.-(AIP*(1/HWHM)*RP*(DeltnuC))+(BIP*RP2)) ! line coupling contributions to (-)pedestal                  
                     SLS = (Y1*(XL1)-Y1P*(XL3)+Y2*(XL2)-Y2P*(XL3))
                     !SLS = (XL1 + XL2 - (2 * XL3)) 
                ELSE
                     SLS = Y1*(XL1) - Y1P*(XL3)
+                    !WRITE(*,*) deltXNU, SLS, Y1*(XL1), Y1P*(XL3)
                     !SLS = (XL1 - XL3) 
                ENDIF
           ELSE !No line coupling
@@ -726,16 +727,17 @@ CONTAINS
                XL1=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (+) osc.
                XL3=XLORENTZ((deltnuC)/HWHM) !LORENTZ for 25cm-1 wn               
                Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))! line coupling for (+) osc
-               Y1P=(1.+(AIP*(1/HWHM)*RP*(deltnuC-Xnu))+(BIP*RP2))! line coupling for (+) osc pedestal            
+               Y1P=(1.+(AIP*(1/HWHM)*RP*(deltnuC))+(BIP*RP2))! line coupling for (+) osc pedestal            
                IF (DIFF .LE. 0.) THEN !Within 25 cm-1 of 0 cm-1
                     deltXNU=(WN+Xnu)
                     XL2=XLORENTZ((deltXNU)/HWHM) !LORENTZ for (-) osc.
                     Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2)) ! line coupling for (-) osc
-                    Y2P=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2)) ! line coupling contributions to (-)pedestal                  
-                    SLS = (Y1*(XL1)-Y1P*(XL3)+Y2*(XL2)-Y2P*(XL3))
+                    Y2P=(1.-(AIP*(1/HWHM)*RP*(deltnuC))+(BIP*RP2)) ! line coupling contributions to (-)pedestal                  
+                    SLS = (Y1*(XL1)-Y1P*(XL3)+Y2*(XL2)-Y2P*(XL3))/ HWHM
                     !SLS = (XL1 + XL2 - (2 * XL3)) 
                ELSE
-                    SLS = Y1*(XL1) - Y1P*(XL3)
+                    SLS = (Y1*(XL1) - Y1P*(XL3))/ HWHM
+                    !WRITE(*,*) deltXNU, SLS, Y1*(XL1), Y1P*(XL3)
                     !SLS = (XL1 - XL3) 
                ENDIF
           ELSE !No line coupling
