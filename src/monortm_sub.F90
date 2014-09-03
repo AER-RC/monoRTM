@@ -1,9 +1,3 @@
-!     path:		$Source$
-!     author:		$Author $
-!     revision:	        $Revision: 19812 $
-!     created:	        $Date: 2013-05-03 15:25:58 -0400 (Fri, 03 May 2013) $
-
-
   SUBROUTINE READEM(ICOEF)
 !Reads in emission function values directly from file "EMISSION"
   IMPLICIT REAL*8           (V)
@@ -361,7 +355,7 @@
 
       IF (IATM.EQ.1) then
 
-!          clw is not returned from lblatm	   
+!          clw is not returned from lblatm         
          do l=1,nlayrs
             clw(l) = 0.
          enddo
@@ -533,13 +527,15 @@
             NLAY,NMOL,ANGLE,IOT,IOD) 
        USE PhysConstants, ONLY: getPhysConst
        USE RTMmono, ONLY: NWNMX
+       USE netcdf_helper_mod
        !include "declar.incl"
        USE lblparams, ONLY: MXLAY,MXMOL
 #ifdef USENETCDF
        USE netcdf
 #endif
 
-       INTEGER NWN,NLAY,NMOL,NPR,IOT,IOD
+       INTEGER*4 NWN,NLAY
+       INTEGER NMOL,NPR,IOT,IOD
        REAL ANGLE
        REAL CLWCOLMN,TMPSFC,WVCOLMN
        REAL*8 WN(:)
@@ -565,17 +561,17 @@
        REAL FREQ
 
        integer rv
-       integer ncid
-       integer wn_dimid
-       integer mol_dimid
-       integer dimids(2)
-       integer cdimids(2)
-       integer odimids(2)
-       integer fdimids(3)
-       integer s_dimid
-       integer lay_dimid
+       integer*4 ncid
+       integer*4 wn_dimid
+       integer*4 mol_dimid
+       integer*4 dimids(2)
+       integer*4 cdimids(2)
+       integer*4 odimids(2)
+       integer*4 fdimids(3)
+       integer*4 s_dimid
+       integer*4 lay_dimid
 
-       integer varid(20)
+       integer*4 varid(20)
 
        real freqa(NWN)
        real wvcolmna(NWN)
@@ -590,8 +586,8 @@
 
        character (len = 40) :: NETCDF_FILE_NAME
 
-
-       save cmol, id_mol, kount
+       integer*4, save :: kount
+       save cmol, id_mol
 
        DATA HMOLC / &
              '  H2O   ' , '  CO2   ' , '   O3   ' , '  N2O   ' ,&
@@ -719,7 +715,7 @@
        call checkm(nf90_def_dim(ncid, "FREQUENCY", NWN, wn_dimid))
        call checkm(nf90_def_dim(ncid, "MOLECULE", kount, mol_dimid))
        call checkm(nf90_def_dim(ncid, "LAYERS", nlay, lay_dimid))
-       call checkm(nf90_def_dim(ncid, "STRING_LENGTH", 8, s_dimid))
+       call checkm(nf90_def_dim(ncid, "STRING_LENGTH", int(8,4), s_dimid))
 
 ! Setup arrays for multi-dimensional output       
        dimids(1) = mol_dimid
@@ -736,28 +732,28 @@
        fdimids(3) = lay_dimid
 
 ! Define the variables
-       call checkm(nf90_def_var(ncid, "FREQUENCY", NF90_FLOAT, wn_dimid, varid(1)))
-       call checkm(nf90_def_var(ncid, "BT", NF90_FLOAT, wn_dimid, varid(2)))
-       call checkm(nf90_def_var(ncid, "RAD", NF90_FLOAT, wn_dimid, varid(3)))
-       call checkm(nf90_def_var(ncid, "TRANS", NF90_FLOAT, wn_dimid, varid(4)))
-       call checkm(nf90_def_var(ncid, "PWV", NF90_FLOAT, wn_dimid, varid(5)))
-       call checkm(nf90_def_var(ncid, "CLW", NF90_FLOAT, wn_dimid, varid(6)))
-       call checkm(nf90_def_var(ncid, "SFCT", NF90_FLOAT, wn_dimid, varid(7)))
-       call checkm(nf90_def_var(ncid, "EMIS", NF90_FLOAT, wn_dimid, varid(8)))
-       call checkm(nf90_def_var(ncid, "REFL", NF90_FLOAT, wn_dimid, varid(9)))
-       call checkm(nf90_def_var(ncid, "ANGLE", NF90_FLOAT, wn_dimid, varid(10)))
-       call checkm(nf90_def_var(ncid, "TMR", NF90_FLOAT, wn_dimid, varid(11)))
-       call checkm(nf90_def_var(ncid, "TOTAL_OD", NF90_FLOAT, wn_dimid, varid(12)))
-       call checkm(nf90_def_var(ncid, "TOTAL_OD_BY_MOLECULE", NF90_FLOAT, dimids, varid(13)))
-       call checkm(nf90_def_var(ncid, "XSEC_OD", NF90_FLOAT, wn_dimid, varid(14)))
+       call checkm(nf90_def_var(ncid, "FREQUENCY", nf90_xtype(freqa(1)), wn_dimid, varid(1)))
+       call checkm(nf90_def_var(ncid, "BT", nf90_xtype(tb(1)), wn_dimid, varid(2)))
+       call checkm(nf90_def_var(ncid, "RAD", nf90_xtype(rad(1)), wn_dimid, varid(3)))
+       call checkm(nf90_def_var(ncid, "TRANS", nf90_xtype(trtot(1)), wn_dimid, varid(4)))
+       call checkm(nf90_def_var(ncid, "PWV", nf90_xtype(wvcolmna(1)), wn_dimid, varid(5)))
+       call checkm(nf90_def_var(ncid, "CLW", nf90_xtype(clwcolmna(1)), wn_dimid, varid(6)))
+       call checkm(nf90_def_var(ncid, "SFCT", nf90_xtype(tmpsfca(1)), wn_dimid, varid(7)))
+       call checkm(nf90_def_var(ncid, "EMIS", nf90_xtype(emiss(1)), wn_dimid, varid(8)))
+       call checkm(nf90_def_var(ncid, "REFL", nf90_xtype(reflc(1)), wn_dimid, varid(9)))
+       call checkm(nf90_def_var(ncid, "ANGLE", nf90_xtype(anglea(1)), wn_dimid, varid(10)))
+       call checkm(nf90_def_var(ncid, "TMR", nf90_xtype(tmr(1)), wn_dimid, varid(11)))
+       call checkm(nf90_def_var(ncid, "TOTAL_OD", nf90_xtype(otota(1)), wn_dimid, varid(12)))
+       call checkm(nf90_def_var(ncid, "TOTAL_OD_BY_MOLECULE", nf90_xtype(otot_by_mol(1,1)), dimids, varid(13)))
+       call checkm(nf90_def_var(ncid, "XSEC_OD", nf90_xtype(odxtota(1)), wn_dimid, varid(14)))
        call checkm(nf90_def_var(ncid, "MOLECULE", NF90_CHAR, cdimids, varid(15)))
-       call checkm(nf90_def_var(ncid, "LAYER_OPTICAL_DEPTH", NF90_FLOAT, odimids, varid(16)))
+       call checkm(nf90_def_var(ncid, "LAYER_OPTICAL_DEPTH", nf90_xtype(o(1,1)), odimids, varid(16)))
        call checkm(nf90_def_var(ncid, "LAYER_OPTICAL_DEPTH_BY_MOLECULE", NF90_FLOAT, fdimids, varid(17)))
 
 ! Define the dimensions 
        call NF_PUT_ATT_TEXT  (ncid, varid(1),"units", 11 ,wnunits)
-       call NF_PUT_ATT_TEXT  (ncid, varid(3),"units", 18 ,"(W/cm2_ster_cm-1)")
-       call NF_PUT_ATT_TEXT  (ncid, varid(10),"units", 7 ,"degrees")
+       ! call NF_PUT_ATT_TEXT  (ncid, varid(3),"units", 18 ,"(W/cm2_ster_cm-1)")
+       ! call NF_PUT_ATT_TEXT  (ncid, varid(10),"units", 7 ,"degrees")
 
 ! We need to end definition mode       
        call checkm(nf90_enddef(ncid))
@@ -786,8 +782,6 @@
 ! Clean up dynamic memory usage       
        deallocate(O_BY_MOL_LAYER)
 #endif
-
-
  
  11    format (a5,a10,2a11,a22,a8,2a8,3a8,a9,36a12)
  21    format (i5,f10.3,2f11.5,1p,E21.9,0p,f9.5,2f8.4,3f8.2,f9.3,&
@@ -799,11 +793,11 @@
        END
 
 #ifdef USENETCDF
-! This subroutine is used to check the status of netcdf calls.
-! It display an error message and exit the program if an error occurs.
   subroutine checkm(status)
+! This interface is used to check the status of netcdf calls.
+! It display an error message and exit the program if an error occurs.
     USE netcdf
-    integer, intent ( in) :: status
+    integer*4, intent ( in) :: status
 
     if(status /= nf90_noerr) then
       print *, nf90_strerror(status)
@@ -811,7 +805,6 @@
     end if
     end subroutine checkm
 #endif
-
 
   SUBROUTINE CORR_OPTDEPTH(INP,NLAY,SECNTA,NWN,ANGLE,O,IRT)
   USE PhysConstants, ONLY: getPhysConst
@@ -1849,4 +1842,3 @@ end
       return
       
       end
-
