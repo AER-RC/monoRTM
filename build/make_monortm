@@ -35,7 +35,8 @@ CPATH = ../src
 
 # Files contained in src directory.  If additional .f files are added,
 # add to this list. 
-SRCS = CntnmFactors.f90 lblparams.f90 PhysConstants.f90 struct_types.f90 PlanetEarth.f90 contnm.f90 monortm_sub.F90 modm.f90 RTMmono.f90 \
+SRCS = CntnmFactors.f90 lblparams.f90 PhysConstants.f90 struct_types.f90 PlanetEarth.f90 \
+contnm.f90 monortm_sub.F90 modm.f90 RTMmono.f90 CloudOptProp.f90 \
 lnfl_mod.f90 monortm.f90 tips_2003.f lblatm.f90 lblrtm_sub.f90  bufin_sgl.f90 netcdf_helper_mod.F90
 
 # Module dependencies
@@ -44,7 +45,7 @@ lblatm.o lnfl_mod.o contnm.o: lblparams.o
 modm.o lnfl_mod.o: struct_types.o
 monortm_sub.o modm.o lblatm.o: PhysConstants.o 
 lblatm.o modm.o: PlanetEarth.o
-modm.o: lnfl_mod.o
+modm.o: lnfl_mod.o CloudOptProp.o
 monortm.o: modm.o
 lnfl_mod.o: bufin_sgl.o
 monortm.o modm.o monortm_sub.o: RTMmono.o

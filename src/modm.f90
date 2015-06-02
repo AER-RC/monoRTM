@@ -6,6 +6,7 @@ MODULE ModmMod
 
   USE PhysConstants, ONLY: getPhysConst
   USE PlanetConstants, ONLY: getPlanetConst
+  USE CloudOptProp, ONLY: ODCLW
   PRIVATE
 
   !---------------------------------------------------------------
@@ -881,37 +882,6 @@ CONTAINS
       Xn_WV=(WVPRESS/(BOLTZ*T))*1.E+3
       END SUBROUTINE INITI
  
-        
-
-     FUNCTION ODCLW(WN,TEMP,CLW)
-      !INPUTS: WN (WaveNUmber in cm-1)
-      !        Temp (in K)
-      !        CLW  (in mm or kg/m2)
-      !OUTPUT: ODCLW: optical depth of the Cloud Liquid Water
-      !FROM EQUATIONS OF LIEBE, HUFFORD AND MANABE
-      !Ref:(INT. J. IR & MM WAVES V.12(17) JULY 1991
-      COMPLEX EPS,RE
-      REAL*8 WN
-      REAL PI,CLIGHT
-      CALL getPhysConst(PI=PI,CLIGHT=CLIGHT) 
-      FREQ=WN*CLIGHT/1.E9
-      IF ((FREQ.GT.3000.).AND.(CLW.GT.0.)) THEN
-         WRITE(*,*) 'STOP: CLOUD IS PRESENT FOR SIMULATIONS'
-         WRITE(*,*) 'IN A NON-MICROWAVE SPECTRAL REGION' 
-         STOP
-      ENDIF   
-      THETA1 = 1.-300./TEMP
-      EPS0 = 77.66 - 103.3*THETA1
-      EPS1 = .0671*EPS0
-      EPS2 = 3.52 + 7.52*THETA1
-      FP = 20.1*EXP(7.88*THETA1)
-      FS = 39.8*FP 
-      EPS = (EPS0-EPS1)/CMPLX(1.,FREQ/FP) + &
-           (EPS1-EPS2)/CMPLX(1.,FREQ/FS) +EPS2
-      RE = (EPS-1.)/(EPS+2.)
-      ODCLW = -(6.*PI/299.792458)*CLW*AIMAG(RE)*FREQ
-      RETURN  
-      END FUNCTION ODCLW
 
 
               
