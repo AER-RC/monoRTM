@@ -361,7 +361,7 @@ aixIBMdbl:
 	${MAKE} -f ${MAKEFILE} all P_TYPE=dbl FC_TYPE=ibm_xl \
 	PLTFRM=AIX  \
 	FC=xlf90 \
-	FCFLAG="-O2 -qfixed=72 -qmaxmem=-1 -qrealsize=8 -qintsize=8"
+	FCFLAG="-O2 -qmaxmem=-1 -qrealsize=8 -qintsize=8"
 
 
 ##############################################################
@@ -371,7 +371,7 @@ aixIBMsgl:
 	${MAKE} -f ${MAKEFILE} all P_TYPE=sgl FC_TYPE=ibm_xl \
 	PLTFRM=AIX \
 	FC=xlf90 \
-	FCFLAG="-O2 -qfixed=72 -qmaxmem=-1"
+	FCFLAG="-O2 -qmaxmem=-1"
 
 # Rule for compiling .o files
 
