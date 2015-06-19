@@ -4165,12 +4165,15 @@
 !     ATMOSPHERIC PROFILE STORED IN /MDATA/                             
 !     ***************************************************************** 
 !                                                                       
+      USE PhysConstants, ONLY: getPhysConst
+
       COMMON /IFIL/ IRD,IPR,IPU,NOPR,NFHDRF,NPHDRF,NFHDRL,NPHDRL,       &
      &              NLNGTH,KFILE,KPANEL,LINFIL,NFILE,IAFIL,IEXFIL,      &
      &              NLTEFL,LNFIL4,LNGTH4                                
       COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX,       &
      &                IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX,            &
      &                IPHMID,IPDIM,KDIM,KMXNOM,NMOL                     
+      REAL PI
 !                                                                       
       ITER = 0 
 !                                                                       
@@ -4340,6 +4343,7 @@
 !                                                                       
 !     Calculate sin(PHI) and sin(ANGLE) and output                      
 !                                                                       
+      call getPhysConst(PI=PI)
       radconv = 2.*pi/360. 
       sinphi = sin(radconv*phi) 
       sinangle = sin(radconv*angle) 
@@ -7622,7 +7626,7 @@
 !                                                                       
       DATA DR/0.005/ 
 !                                                                       
-      IF (RANGEI .LT. DR) STOP'STOPPED IN FNDPTH' 
+      IF (RANGEI .LT. DR) STOP 'STOPPED IN FNDPTH' 
 !                                                                       
 !     (RANGEI .LT. DR) SHOULD NOT HAPPEN; SO THIS CHECK IS REDUNDANT.   
 !                                                                       
