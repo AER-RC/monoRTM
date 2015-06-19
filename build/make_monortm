@@ -12,9 +12,13 @@ include makefile.common
 #Set version name.  Used in the default OUTPUT and CDOTO variables.  If you
 # change those two variables from what is provided here, no need to set this variable.
 
-include make.vers_no
+# Set directory containing source files, relative to main directory from which
+# you are executing the makefile
+CPATH = ../src
+
+include $(CPATH)/versionNum.incl
 PRODUCT = monortm
-VERSION = v$(vers)
+VERSION = v$(subst ',,$(vers))
 
 # Set netcdf output if desired
 ifndef NETCDF
@@ -29,15 +33,11 @@ CDOTO = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE).obj
 # Set directory for module files.  
 FDOTM = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE).mods
 
-# Set directory containing source files, relative to main directory from which
-# you are executing the makefile
-CPATH = ../src
-
 # Files contained in src directory.  If additional .f files are added,
 # add to this list. 
 SRCS = CntnmFactors.f90 lblparams.f90 PhysConstants.f90 struct_types.f90 PlanetEarth.f90 \
 contnm.f90 monortm_sub.F90 modm.f90 RTMmono.f90 CloudOptProp.f90 \
-lnfl_mod.f90 monortm.f90 tips_2003.f lblatm.f90 lblrtm_sub.f90  bufin_sgl.f90 netcdf_helper_mod.F90
+lnfl_mod.f90 monortm.f90 tips_2003.f90 lblatm.f90 lblrtm_sub.f90  bufin_sgl.f90 netcdf_helper_mod.F90
 
 # Module dependencies
 monortm.o modm.o monortm_sub.o: CntnmFactors.o 

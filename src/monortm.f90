@@ -268,6 +268,10 @@
 	common /CDERIV/ icflg,iuf,v1absc,v2absc,dvabsc,nptabsc,delT_pert, &
          dqh2oC(ipts),dTh2oC(ipts),dUh2o
 
+        ! This pair of statements must be at the end of the declarations section
+        CHARACTER(LEN=6) :: vers
+        INCLUDE 'versionNum.incl'
+
 
 	icflg = -999
 	iuf = 0
@@ -305,7 +309,7 @@
 	HVRMON = '$Revision: 22629 $' 
 
 	!---Release number of MonoRTM
-	HVRREL = 'Release  5.1'
+	HVRREL = 'Release  '//TRIM(ADJUSTL(vers))
 
         ! Initialize CLW
           CLW(:) = 0.0
