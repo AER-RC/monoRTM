@@ -149,7 +149,7 @@ CONTAINS
 
 !                                                                       
       
-      vlo_adj = max(0.0,vlo-25.)
+      vlo_adj = max(0.0d0,vlo-25.d0)
       IF (LEOF.EQ.0) GO TO 30
       IF (RDLNPNL%VMAX.LT.VLO_ADJ) THEN
          CALL BUFIN_sgl(linfil,LEOF,DUMBUF,i_1)
