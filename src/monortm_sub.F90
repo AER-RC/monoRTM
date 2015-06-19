@@ -108,8 +108,6 @@
   COMMON /PARMTR/ DEG,GCAIR,RE,DELTAS,ZMIN,ZMAX,NOPRNT,IMMAX, &
        IMDIM,IBMAX,IBDIM,IOUTMX,IOUTDM,IPMAX, & 
        IPHMID,IPDIM,KDIM,KMXNOM,KMAX                      
-  COMMON /PATHD/ P,T,WKL,WBRODL,DVL,WTOTL,ALBL, &
-       ADBL,AVBL,H2OSL,IPTH,ITYL,SECNTA,HT1,HT2,ALTZ,PZ,TZ                          
   common /profil_scal/ nmol_scal,hmol_scal(64),xmol_scal(64)
 
   COMMON /PATHX/ IXMAX,IXMOLS,IXINDX(mx_xs),XAMNT(mx_xs,MXLAY)
@@ -948,6 +946,10 @@
      USE lblparams, ONLY: MXMOL,MXLAY
      REAL WKL(MXMOL,MXLAY)
      REAL, DIMENSION(MXLAY) :: P,T,WBRODL
+     REAL,    DIMENSION(MXLAY)   :: DVL,WTOTL,ALBL,ADBL,AVBL,H2OSL,SECNTA
+     INTEGER, DIMENSION(MXLAY)   :: IPATH,ITYL
+     REAL,    DIMENSION(0:MXLAY) :: ALTZ,PZ,TZ
+     CHARACTER*4                 :: HT1,HT2
      REAL*8 V1,V2,SECANT,XALTZ 
      character*1 hmol_scal
      character*10 holn2
