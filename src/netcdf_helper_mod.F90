@@ -26,4 +26,9 @@ contains
 
 #endif
 
+! IBM AIX compiler requires at least one proceedure in the module
+  integer function dummy()
+    dummy=1
+  end function dummy
+
 end module netcdf_helper_mod
