@@ -11,8 +11,12 @@ obtain the cloud liquid water optical depth from one of the models in
 CloudOptProp, and that interface points to the new model by default. 
  
 
-Alan Lipton, AER, December 2013
+Alan Lipton, AER, June  2015
  
+
+Fixed bug in reading TAPE3
+
+Karen Cady-Pereira, AER, August 2014
 ****************************************************************
 
 Version 5.1 
