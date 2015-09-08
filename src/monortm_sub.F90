@@ -144,12 +144,10 @@
       IF (CXID.NE.CDOL) GO TO 20                            
       READ (CXIDLINE,'(1x,10A8)') (XID(I),I=1,10)     
 
-      print *,'before header read'
       READ(IRD,925,END=80,ERR=6000) IHIRAC, &!---record 1.2
          ICNTNM,IEMIT,IPLOT, &    
          IATM, IOD,IXSECT, &
          ISPD,IBRD
-      print *,'after header read'
 
       IXSCNT = IXSECT*10 + ICNTNM
 
