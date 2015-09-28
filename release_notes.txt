@@ -16,7 +16,7 @@ Alan Lipton, AER, June  2015
 
 Fixed bug in reading TAPE3
 
-Karen Cady-Pereira, AER, August 2014
+Karen Cady-Pereira, AER, August 2015
 ****************************************************************
 
 Version 5.1 
