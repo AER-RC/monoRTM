@@ -7,7 +7,7 @@ MODULE RTMmono
   !---------------------------------------------------------------
   PUBLIC :: RTM, calctmr 
 
-  INTEGER, parameter :: NWNMX=10000
+  INTEGER, parameter :: NWNMX=20000
 
 CONTAINS
   SUBROUTINE RTM(IOUT,IRT,NWN,WN,NLAY,T,TZ,O, &
@@ -87,7 +87,6 @@ CONTAINS
 !
 !-------------------------------------------------------------------------------
   USE PhysConstants, ONLY: getPhysConst
-  !include "declar.incl"
   USE lblparams, ONLY: MXLAY
   INTEGER NWN,NLAY,IRT,I,IOUT,IDU
   REAL RADCN1,RADCN2
@@ -160,7 +159,6 @@ CONTAINS
   USE lblparams, ONLY: MXLAY
  
   IMPLICIT REAL*8 (V)
-  !include "declar.incl"
   REAL T(MXLAY), TZ(0:MXLAY)
   REAL RADCN1,RADCN2
   INTEGER  layer,nlayer,NWN,IDU,lmin,lmax,nl
@@ -268,7 +266,6 @@ CONTAINS
 !  Vivienne Payne, AER Inc, 2008
 !------------------------------------------------------------------------------
         USE PhysConstants, ONLY: getPhysConst
-        !include "declar.incl"
         USE lblparams, ONLY: MXLAY
 
         real*8  wn(NWNMX), vv

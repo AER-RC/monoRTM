@@ -90,6 +90,7 @@ CONTAINS
             endif
 
             sdep(mo,ii) = bufr%speed_dep(ik)
+            !sdep(mo,ii) =  0.0
 
 !  HITRAN provides widths for broadening by air; LBLRTM and MONORTM have always treated these widths as foreign
 !  This assumption is valid for most species, but not for N2 or O2. We now adjust the HITRAN widths to obtain

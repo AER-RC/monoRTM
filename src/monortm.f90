@@ -72,7 +72,7 @@
 	!   recompile it. In the latter, it is structured in such a way 
 	!   that the changes should always be done in "monortm.f" (the  
 	!   driver program). The other auxillary files (monortm_sub.f, 
-	!   modm.f, lblatm.f and declar.incl, continuumDATASTAT.dat) 
+	!   modm.f, lblatm.f , continuumDATASTAT.dat) 
 	!   should normally not be touched, except in rare situations.
 	!   In case there is an update in the continuum calculations
 	!   a new file "continuumDATASTAT.dat" will be generated
@@ -195,7 +195,6 @@
        end interface
 
 
-	!include "declar.incl"
 	INTEGER NWN,I,ICPL,IS,IOUT,IOD,IRT,J,IATM
         INTEGER IPASSATM
 	REAL*8 V1,V2,SECANT,XALTZ 
@@ -610,7 +609,7 @@
  9742   FORMAT (3f10.4,3x,i2,1x,22x,1(f7.2,f8.3,f7.2),f7.2)
  975    FORMAT (e15.7,2f10.4,3x,i2,1x,2(f7.2,f8.3,f7.2),f7.2)
  9752   FORMAT (e15.7,2f10.4,3x,i2,1x,22x,1(f7.2,f8.3,f7.2),f7.2)
- 978	FORMAT (1P8E15.7)                                             
+ 978	FORMAT (8E15.7)                                             
  1000	FORMAT ('Modules and versions used in this calculation:',/,/, &
          A15,/,/, &
          5x,  'spectral file :',          5X,A15,/,   &

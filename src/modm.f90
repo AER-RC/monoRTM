@@ -128,7 +128,6 @@ CONTAINS
       USE lnfl_mod, ONLY : GET_LNFL
       USE RTMmono,  ONLY : NWNMX
       USE lblparams, ONLY: MXLAY,MXMOL
-      !include "declar.incl"
 
       parameter (n_absrb=5050,ncont=6)
       INTEGER, INTENT(IN) :: IPR

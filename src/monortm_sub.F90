@@ -76,7 +76,6 @@
   USE CntnmFactors, ONLY: CntnmFactors_t,applyCntnmCombo
   USE lblparams, ONLY: MXLAY,MXFSC,MX_XS
   USE RTMmono, ONLY: NWNMX
-  !include "declar.incl"
   REAL*8           V1,V2,SECANT,XALTZ,WN(NWNMX) 
   character*4 ht1,ht2
   CHARACTER*1 CMRG(2),CONE,CTWO,CTHREE,CFOUR,CXIDLINE*80
@@ -267,7 +266,7 @@
             IF (NWN.GT.NWNMX) THEN
                WRITE(*,*) 'STOP: NUMBER OF WAVENUMBERS ', &
                    'EXCEEDS LIMIT. ',NWN,NWNMX
-               WRITE(*,*) 'FIX: EXTEND NWNMX IN DECLAR.INCL'
+               WRITE(*,*) 'FIX: EXTEND NWNMX IN RTMmono'
                STOP
             ENDIF
        
@@ -281,7 +280,7 @@
                IF (NWN.GT.NWNMX) THEN
                   WRITE(*,*) 'STOP: NUMBER OF WAVENUMBERS ', &
                        'EXCEEDS LIMIT. ',NWN,NWNMX
-                  WRITE(*,*) 'FIX: EXTEND NWNMX IN DECLAR.INCL'
+                  WRITE(*,*) 'FIX: EXTEND NWNMX IN RTMmono'
                   STOP
                ENDIF
                DO J=1,NWN
@@ -524,7 +523,6 @@
        USE PhysConstants, ONLY: getPhysConst
        USE RTMmono, ONLY: NWNMX
        USE netcdf_helper_mod
-       !include "declar.incl"
        USE lblparams, ONLY: MXLAY,MXMOL
 #ifdef USENETCDF
        USE netcdf
@@ -805,7 +803,6 @@
   SUBROUTINE CORR_OPTDEPTH(INP,NLAY,SECNTA,NWN,ANGLE,O,IRT)
   USE PhysConstants, ONLY: getPhysConst
   USE RTMmono, ONLY: NWNMX
-  !include "declar.incl"
   USE lblparams, ONLY: MXLAY
   INTEGER INP,J,NLAY,NWN,I,IRT
   REAL SECNT,ALPHA,ANGLE
@@ -871,7 +868,6 @@
 
       SUBROUTINE GETPROFNUMBER(IATM,FILEIN,fileprof, &
            NPROF)
-      !include "declar.incl"
       CHARACTER FILEIN*60,CXID*1
       CHARACTER CDOL*1,CPRCNT*1,fileprof*80
       CHARACTER fileARMlist*64
@@ -928,7 +924,7 @@
   IF (NWN.GT.NWNMX) THEN
      WRITE(*,*) 'Number of wavenumbers too big:',NWN
      WRITE(*,*) 'Maximum Allowed:',NWNMX
-     WRITE(*,*) 'Must extend NWNMX in declar.incl AND RECOMPILE'
+     WRITE(*,*) 'Must extend NWNMX in RTMmono AND RECOMPILE'
      STOP
   ENDIF
   RETURN
@@ -940,7 +936,6 @@
 
      subroutine profil_scal_sub(nlayrs)
 
-     !include "declar.incl"
      USE lblparams, ONLY: MXMOL,MXLAY
      REAL WKL(MXMOL,MXLAY)
      REAL, DIMENSION(MXLAY) :: P,T,WBRODL
@@ -1258,7 +1253,6 @@ end
 !     MOLECULES WHICH ARE THEN MATCHED TO THE DATA CONTAINED
 !     ON INPUT FILE FSCDXS.
 !********************************************************************
-      !include "declar.incl"
 !
 !     IFIL CARRIES FILE INFORMATION
 !
@@ -1430,7 +1424,6 @@ end
       USE lblparams, ONLY: MX_XS
       IMPLICIT REAL*8           (V)
 
-!include "declar.incl"
 !      parameter (mx_xs=38)
 !
 !**   XSNAME=NAMES, ALIAS=ALIASES OF THE CROSS-SECTION MOLECULES
@@ -1567,7 +1560,6 @@ end
 !
 ! Output:  
 !      odxsec   total optical depth for all cross-sections in array odxsec
-!               (stored through declar.incl)
 !    
 !----------------------------------------------------------------
 
@@ -1576,7 +1568,6 @@ end
       USE lblparams, ONLY: MX_XS,MXLAY
       IMPLICIT REAL*8           (V) ! for consistency with LBLRTM routines
       REAL*8 WN(NWNMX),P(MXLAY),T(MXLAY)
-      !Include "declar.incl"
 
 
 !                                                                         
@@ -1763,7 +1754,6 @@ end
 ! performs pressure convolution for cross sections
 
       USE RTMmono, ONLY: NWNMX
-      !Include "declar.incl"
       dimension xspd(150000),xspave(nwnmx),xspd_int(0:10000000)
       real*8 wn(nwnmx)
       data p0 /1013./
