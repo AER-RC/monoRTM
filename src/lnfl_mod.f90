@@ -98,10 +98,12 @@ CONTAINS
          if (mo.eq.7.AND.bufr%iflg(ik).ge.0) then 
             rvmr = 0.21
             alpf(mo,ii) = (alpf(mo,ii)-rvmr*alps(mo,ii))/(1.0-rvmr)
+            deltnu(mo,ii) = (deltnu(mo,ii)-rvmr*brd_mol_shft(mo,mo,ii))/(1.0-rvmr)
          endif
          if (mo.eq.22.AND.bufr%iflg(ik).ge.0) then 
             rvmr = 0.79
             alpf(mo,ii) = (alpf(mo,ii)-rvmr*alps(mo,ii))/(1.0-rvmr)
+            deltnu(mo,ii) = (deltnu(mo,ii)-rvmr*brd_mol_shft(mo,mo,ii))/(1.0-rvmr)
          endif
 
       end do

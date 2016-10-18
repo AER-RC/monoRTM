@@ -255,6 +255,7 @@ CONTAINS
             CALL INITI(P(K),T(K),RADCT,T0,P0,NMOL, &
               WKL(1:NMOL,K),WBRODL(K),XN0,Xn,Xn_WV)         !INITIALIZATION
             RFT=WN(M)*TANH((RADCT*WN(M))/(2*T(K)))	              !RAD_FIELD_TERM
+            !print *,wn(m),xkt
 
             CALL LINES(Xn,WN(M),T(K),NMOL,WKL(1:nmol,k)      , &       !PROCESS_LINES
             wbrodl(K),RADCT,T0,o_by_mol(m,1:nmol,k),XN0,RFT, &
@@ -357,11 +358,15 @@ CONTAINS
             IF ((XG(I,J).EQ.-1)) THEN !Scaling of the Line coupling parameters
                AIP=AIP*SCLCPL+Y0RES
                BIP=BIP*SCLCPL+Y0RES
+	       !print *,' '
+	       !print *, xnu0(i,j)
+	       !print *, aip, bip
             ENDIF
             IF ((XG(I,J).EQ.-3)) THEN !Press depend of the hwidth of the 0 band  
                AIP=AIP*SCLHW
                BIP=BIP*SCLHW
             ENDIF
+
 
            ! convert S0 back to HITRAN form
             S0_adj = S0(I,J)*(xnu0(i,j)*(1.0-exp(-(RADCT*Xnu0(i,j)/T0))))
@@ -370,7 +375,7 @@ CONTAINS
             Xnu=Xnu0(I,J)+(deltnu(I,J)*(Xn/xn0))
 
              !modify shift due to specific broadening by other molecules if information is available
-            if (i.le.mxbrdmol) then
+            if (i.le.mxbrdmol.AND.ibrd.ne.0) then
                xnu = xnu+sum(rho_molec(:)*brd_mol_flg(i,:,j)*(brd_mol_shft(i,:,j)-deltnu(i,j)))
             endif
 
