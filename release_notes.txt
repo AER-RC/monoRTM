@@ -1,3 +1,16 @@
+
+Version 5.3
+
+The continuum has been updated to MT_CKD v3.0, which included modifications
+to the H2O foreign continuum from 0-600 cm-1 and the self continuum in the 
+microwave that resulted from an analysis of measurements taken at the ARM
+RHUBC-II campaign and a re-analysis of RHUBC-I measurements. (E.J. Mlawer, 
+D.D. Turner, S.N. Paine, V.H. Payne)     
+
+Eli Mlawer, November 2016
+
+****************************************************************
+
 Version 5.2
 
 The model for computing cloud liquid water absorption coefficients was replaced.

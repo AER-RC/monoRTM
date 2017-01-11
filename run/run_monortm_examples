@@ -20,7 +20,7 @@ echo " case1 :downwelling; U.S. Standard atmosphere; input: in/MONORTM.IN_MDL_AT
 ln -s in/MONORTM.IN_MDL_ATM_dn        MONORTM.IN
 ln -s in/TAPE3_spectral_lines.dat.0_55.v5.0_fast TAPE3
 
-time ../monortm_v5.0_linux_pgi_dbl
+time ../monortm_v5.3_linux_pgi_dbl
 
 \rm   MONORTM.IN
 cp    MONORTM.OUT     out/MONORTM.OUT
@@ -39,7 +39,7 @@ echo " case2 :upwelling; U.S. Standard atmosphere; input: in/MONORTM.IN_MDL_ATM_
 
 ln -s in/MONORTM.IN_MDL_ATM_up        MONORTM.IN
 
-time ../monortm_v5.0_linux_pgi_dbl
+time ../monortm_v5.3_linux_pgi_dbl
 
 \rm   MONORTM.IN
 mv    MONORTM.OUT     out/$prefix{MONORTM.OUT_MDL_ATM_up}
@@ -58,7 +58,7 @@ echo " case3 :downwelling; user-defined atmosphere; input: in/MONORTM.IN_NOSCALE
 
 ln -s in/MONORTM.IN_NOSCALE_IATM1_dn        MONORTM.IN
 
-time ../monortm_v5.0_linux_pgi_dbl
+time ../monortm_v5.3_linux_pgi_dbl
 
 \rm   MONORTM.IN
 mv    MONORTM.OUT     out/$prefix{MONORTM.OUT_NOSCALE_IATM1_dn}
@@ -77,7 +77,7 @@ echo " case4 :downwelling; TAPE7-style input; input: in/MONORTM.IN_IATM0_dn"
 ln -s in/MONORTM.IN_IATM0_dn               MONORTM.IN
 ln -s in/MONORTM_PROF.IN_sav               MONORTM_PROF.IN
 
-time ../monortm_v5.0_linux_pgi_dbl
+time ../monortm_v5.3_linux_pgi_dbl
 
 \rm   MONORTM.IN
 \rm   MONORTM_PROF.IN
@@ -96,7 +96,7 @@ echo " case5 :downwelling; TAPE7-style input with 100 gm-2 liquid cloud; input: 
 ln -s in/MONORTM.IN_IATM0_dn                    MONORTM.IN
 ln -s in/MONORTM_PROF.IN_liquid_cloud           MONORTM_PROF.IN
 
-time ../monortm_v5.0_linux_pgi_dbl
+time ../monortm_v5.3_linux_pgi_dbl
 
 \rm   MONORTM.IN
 \rm   MONORTM_PROF.IN
@@ -114,7 +114,7 @@ echo " case6 :downwelling; user-defined atmosphere with scaled H2O; input: in/MO
 
 ln -s in/MONORTM.IN_SCALE_IATM1_MODEL0_HMOL1_dn        MONORTM.IN
 
-time ../monortm_v5.0_linux_pgi_dbl
+time ../monortm_v5.3_linux_pgi_dbl
 
 \rm   MONORTM.IN
 \rm   TAPE3
