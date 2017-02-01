@@ -94,16 +94,22 @@ CONTAINS
 
 !  HITRAN provides widths for broadening by air; LBLRTM and MONORTM have always treated these widths as foreign
 !  This assumption is valid for most species, but not for N2 or O2. We now adjust the HITRAN widths to obtain
-!  true foreign widths.
+!  true foreign widths. Similar ajdustment is applied is self shift information is available.
          if (mo.eq.7.AND.bufr%iflg(ik).ge.0) then 
             rvmr = 0.21
             alpf(mo,ii) = (alpf(mo,ii)-rvmr*alps(mo,ii))/(1.0-rvmr)
-            deltnu(mo,ii) = (deltnu(mo,ii)-rvmr*brd_mol_shft(mo,mo,ii))/(1.0-rvmr)
+            if (brd_mol_flg(mo,mo,ii).gt.0) then 
+               deltnu(mo,ii) = (deltnu(mo,ii)-rvmr*brd_mol_shft(mo,mo,ii))/(1.0-rvmr)
+            endif
          endif
          if (mo.eq.22.AND.bufr%iflg(ik).ge.0) then 
             rvmr = 0.79
             alpf(mo,ii) = (alpf(mo,ii)-rvmr*alps(mo,ii))/(1.0-rvmr)
-            deltnu(mo,ii) = (deltnu(mo,ii)-rvmr*brd_mol_shft(mo,mo,ii))/(1.0-rvmr)
+! Currently SBS broadening is only code for the first seven HITRAN species
+! When it becomes available for N2, the next three lines should become executable
+            !if (brd_mol_flg(mo,mo,i).gt.0) then 
+            !   deltnu(mo,ii) = (deltnu(mo,ii)-rvmr*brd_mol_shft(mo,mo,ii))/(1.0-rvmr)
+            !endif
          endif
 
       end do
