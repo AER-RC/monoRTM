@@ -293,7 +293,7 @@ RECORD 1.2a   (required if ICNTNM = 6)
  
  
                IFORM --> (1) column amount format flag 
-		         = 1 read PAVE,WKL(M,L),WBROADL(L) in E15.7 format
+		         = 1 read PAVE in E15.7 format
               NLAYRS --> number of layers (maximum of 200)
                 NMOL --> value of highest molecule number used (default = 7; maximum of 35)
                          See Table I for molecule numbers.
@@ -343,7 +343,7 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
  
           (WKL(M,L), M=1, 7), WBROADL(L)
  
-                      (8E10.3)
+                      (8E15.7)
  
         WKL(M,L)--> column densities or mixing ratios for 7 molecular species (molecules/cm**2)
       WBROADL(L)--> column density for broadening gases (molecules/cm**2)
@@ -356,7 +356,7 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
  
           (WKL(M,L), M=8, NMOL)
  
-                (8E10.3)
+                (8E15.7)
  
                 NMOL is set from LINFIL (TAPE3)
                 (NMOL limited to 35 in MONORTM)    
@@ -413,8 +413,7 @@ F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, 
 
           1X,I1    I5,     I5,   F10.2,  15A4
 
-               IFRMX      (1) column amount format flag
-                          =1  read PAVX, XAMNT(M,L), WBROADX(L) in E15.7 format
+               IFRMX      =0: placeholder for compatibility with LBLRTM
               NLAYXS      number of layers (maximum of 200), should be the same as NLAYRS on Record 2.1
                IXMOL      number of cross-sections (maximum of 35), should be the same as IXMOLS on Record 2.2
               SECNTX      user entered scale factor for the column amount for the layers defined by NLAYXS
@@ -440,9 +439,9 @@ RECORD 2.2.3
 
           PAVX,  TAVX,  SECKXS,  ITYX(L),  IPATX,  ALTX(L-1),  PX(L-1),  TX(L-1),  ATLX(L),  PX(L),  TX(L)
 
-          1-10, 11-20,   21-30,    31-33,  34-35,      37-43,    44-51,    52-58,    59-65,  66-73,  74-80
+          1-15, 16-25,   26-35,    36-38,  39-40,      42-48,    49-56,    57-63,    64-70,  71-78,  79-85
 
-         F10.4,  F10.4,    F10.4,     A3,     I2,    1X,F7.2,      F8.3,    F7.2,     F7.2,   F8.3,   F7.2
+         E15.7,  F10.4,    F10.4,     A3,     I2,    1X,F7.2,      F8.3,    F7.2,     F7.2,   F8.3,   F7.2
 
                 PAVX   ave. pressure of layer (millibars) 
                 TAVX   ave. temperature of layer (K)
