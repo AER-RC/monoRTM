@@ -88,15 +88,15 @@ CONTAINS
       REAL, PARAMETER :: cm_per_m=100.
     
       !    Empirical coefficients for the TKC model. 
-      REAL, PARAMETER :: a_1 = 8.169396e+01
-      REAL, PARAMETER :: b_1 = 4.410555e-03
-      REAL, PARAMETER :: c_1 = 1.208992e-13
-      REAL, PARAMETER :: d_1 = 6.768869e+02
-      REAL, PARAMETER :: a_2 = 1.597733e+00
-      REAL, PARAMETER :: b_2 = 1.060228e-02
-      REAL, PARAMETER :: c_2 = 9.982113e-15
-      REAL, PARAMETER :: d_2 = 5.720517e+02
-      REAL, PARAMETER :: t_c = 1.351758e+02
+      REAL, PARAMETER :: a_1 = 8.110808E+01 
+      REAL, PARAMETER :: b_1 = 4.433736E-03 
+      REAL, PARAMETER :: c_1 = 1.301700E-13 
+      REAL, PARAMETER :: d_1 = 6.627126E+02 
+      REAL, PARAMETER :: a_2 = 2.025164E+00 
+      REAL, PARAMETER :: b_2 = 1.072976E-02 
+      REAL, PARAMETER :: c_2 = 1.011945E-14 
+      REAL, PARAMETER :: d_2 = 6.089168E+02 
+      REAL, PARAMETER :: t_c = 1.342433E+02 
 
       ! Local variables
       REAL :: frq
