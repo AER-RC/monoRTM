@@ -25,7 +25,7 @@
       SUBROUTINE CONTNM(JRAD) 
 !                                                                       
       Use lblparams, ONLY: n_absrb, ipts, ipts2
-      USE phys_consts, ONLY: radcn2
+      USE PhysConstants, ONLY: getPhysConst
       IMPLICIT REAL*8           (V) 
 !                                                                       
 !     SUBROUTINE CONTNM CONTAINS THE CONTINUUM DATA                     
@@ -216,6 +216,7 @@
       HVRCNT = '$Revision: 31651 $'
 !                                                                       
       RHOAVE = (PAVE/P0)*(T0/TAVE)                                      
+      CALL getPhysConst(RADCN2=RADCN2)
       XKT = TAVE/RADCN2                                                 
                                                                         
 !     the amagat value is used for the broadenening component for a

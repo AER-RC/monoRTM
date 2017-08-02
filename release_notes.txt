@@ -1,4 +1,15 @@
+Version 5.4
 
+The continuum was updated to MT_CKD_3.2, which has new self continnum
+coefficients in window regions for wavenumbers greater than 2000 cm-1 and updated self
+continuum temperature dependence from 1800-3500 cm-1 (E.J. Mlawer, M.J.
+Alvarado, K.E. Cady-Pereira)
+
+Corrected TKC coeffs in the CloudOptProperties routine.
+
+K.E. Cady-Pereira, August 2017
+
+****************************************************************
 Version 5.3
 
 The continuum has been updated to MT_CKD v3.0, which included modifications
