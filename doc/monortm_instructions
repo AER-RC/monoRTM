@@ -316,7 +316,7 @@ RECORD 1.2a   (required if ICNTNM = 6)
  
  1-10,11-20, 21-30,  31-33,34-35,    37-43,  44-51,  52-58,  59-65,66-73,74-80, 81-95
  
-F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, E15.7
+F10.4,F10.4, F10.4,     A3,   I2,  1X,F7.2,   F8.3,   F7.2,   F7.2, F8.3, F7.2, F7.2
  
                 PAVE -->  average pressure of layer (millibars) 
                           (**If IFORM=1, then PAVE in E15.7 format**)
