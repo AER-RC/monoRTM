@@ -1,0 +1,3 @@
+[submodule "aer_rt_utils_f77"]
+	path = aer_rt_utils_f77
+	url = git@github.com:AER-RC/aer_rt_utils_f77.git
