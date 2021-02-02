@@ -605,10 +605,10 @@
  940	FORMAT (/,'***** NLAYRS = ',I5,' .NE. NLAYXS = ',I5,' *****',/)     
  942	FORMAT (/,'0 SECANTX  =',F13.4,/'0 NLAYXS=',I4,/'0 ISMOLS=',I4,/, &  
         '0',15A4)                                                   
- 974    FORMAT (3f10.4,3x,i2,1x,2(f7.2,f8.3,f7.2),f7.2)
- 9742   FORMAT (3f10.4,3x,i2,1x,22x,1(f7.2,f8.3,f7.2),f7.2)
- 975    FORMAT (e15.7,2f10.4,3x,i2,1x,2(f7.2,f8.3,f7.2),f7.2)
- 9752   FORMAT (e15.7,2f10.4,3x,i2,1x,22x,1(f7.2,f8.3,f7.2),f7.2)
+ 974    FORMAT (3f10.4,3x,i2,1x,2(f7.2,f8.3,f7.2),f7.3)
+ 9742   FORMAT (3f10.4,3x,i2,1x,22x,1(f7.2,f8.3,f7.2),f7.3)
+ 975    FORMAT (e15.7,2f10.4,3x,i2,1x,2(f7.2,f8.3,f7.2),f7.3)
+ 9752   FORMAT (e15.7,2f10.4,3x,i2,1x,22x,1(f7.2,f8.3,f7.2),f7.3)
  978	FORMAT (8E15.7)                                             
  1000	FORMAT ('Modules and versions used in this calculation:',/,/, &
          A15,/,/, &
