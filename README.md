@@ -33,13 +33,12 @@ Currently, the latest release is monoRTM v5.5, and it is recommended that this b
 git checkout tags/v5.5
 ```
 
-No releases before v5.5 are available via GitHub, but they can be requested by emailing <aer_lblrtm@aer.com>. For information on previous releases, please visit the [What's New Wiki page] (https://github.com/AER-RC/monoRTM/wiki/What's-Newhttps://github.com/AER-RC/monoRTM/wiki/What's-New).
+No releases before v5.5 are available via GitHub, but they can be requested by emailing <aer_monortm@aer.com>. For information on previous releases, please visit the [What's New Wiki page] (https://github.com/AER-RC/monoRTM/wiki/What's-New).
 
 Instead of cloning, users can also download a monoRTM [tarball](https://github.com/AER-RC/monoRTM/releases/tag/v5.5) and unpack it:
 
 ```
 tar xvf monortm_v5.5.tar.gz
-Though not necessary, the move to `lnfl` is for consistency with previous release packages and the associated documentation.
 
 ```
 
