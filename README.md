@@ -6,9 +6,7 @@
 1. [Cloning](#cloning)
 2. [Directory Structure](#structure)
 3. [Building monoRTM](#build)
-3. [Running monoRTM](#run)
-
-See the OVERVIEW page for information on the directory structure and contents of the MonoRTM output file. 
+4. [Running monoRTM](#run)
 
 If any build or run issues occur, please [create an issue] (https://github.com/AER-RC/monoRTM/issues)] or contact the [AER-RC Group](https://github.com/AER-RC).
 
