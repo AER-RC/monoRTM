@@ -49,6 +49,7 @@ briefly below:
 README -> This file
 
 build  -> Contains makefiles for MonoRTM for different platforms
+
 run    -> Contains files required to run MonoRTM.
           .  run_monortm_example is a script to run some examples
           .  TAPE3_spectral_lines.dat.0_55.v5.0_fast  contains the spectral line information
@@ -68,9 +69,12 @@ run    -> Contains files required to run MonoRTM.
           -> subdirectory run/out will hold the output from MonoRTM
                 . MONORTM.OUT    
                 . MONORTM.LOG (if LBLATM is ON) - TAPE6 file
-                . TAPE7 (if LBLATM is ON)    
+                . TAPE7 (if LBLATM is ON)  
+                
 src -> contains all source files needed by MonoRTM.
+
 doc -> detailed instructions manual about MonoRTM, in ascii format. 
+
 idl -> tool for creating monortm input from ARM sonde files.
 
 # Building monoRTM <a name="build"></a>
