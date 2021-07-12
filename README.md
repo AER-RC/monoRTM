@@ -143,8 +143,11 @@ The records stored in `MONORTM.OUT` are the following:
 Any comments or questions should be forwarded to Karen Cady-Pereira (aer_monortm@aer.com)
 
 AER , Radiation and Climate Group
+
 131 Hartwell Avenue
-Lexington, MA 02421
-USA
+
+Lexington, MA 02421 USA
+
 Tel: 1 781 761 2216
+
 Fax: 1 781 761 2299
