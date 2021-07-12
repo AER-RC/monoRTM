@@ -102,11 +102,9 @@ run_monortm_examples
 ```
 Note that you may have to modify the executable name in `run_monortm_examples` to match the name of the executable that you have created.
 
-Numerical check
-
+Example inputs and outputs can be found in the [example tarball](https://github.com/AER-RC/monoRTM/files/6804136/monortm_examples.tar.gz).
 ```
-cd run/out
-diff MONORTM.OUT aer_MONORTM.OUT
+
 ```
 
 # Tailoring monoRTM to Specific Needs
