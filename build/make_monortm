@@ -55,7 +55,7 @@ monortm.o: modm.o
 lnfl_mod.o: bufin_sgl.o
 monortm.o modm.o monortm_sub.o: RTMmono.o
 ifeq ($(NETCDF),yes)
-	monortm_sub.o : netcdf_helper_mod.o
+monortm_sub.o: netcdf_helper_mod.o
 endif
 
 INCLUDES:= -I. -I$(FDOTM) 
@@ -90,7 +90,7 @@ OBPATH := $(foreach objt,$(OBSS),$(CDOTO)/$(objt))
 build : buildmain sweep debug
 
 buildmain : $(OBSS)
-	$(FC) $(FCDF) $(FCFLAG) $(LDFLAG) -o ../$(OUTPUT) $(OBPATH)
+	$(FC) $(FCDF) $(FCFLAG) -o ../$(OUTPUT) $(OBPATH) $(LDFLAG)
 
 .PHONY: sweep
 
