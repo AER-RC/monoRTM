@@ -522,9 +522,9 @@
             NLAY,NMOL,ANGLE,IOT,IOD) 
        USE PhysConstants, ONLY: getPhysConst
        USE RTMmono, ONLY: NWNMX
-       USE netcdf_helper_mod
        USE lblparams, ONLY: MXLAY,MXMOL
 #ifdef USENETCDF
+       USE netcdf_helper_mod
        USE netcdf
 #endif
 

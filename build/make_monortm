@@ -37,7 +37,12 @@ FDOTM = ${PRODUCT}_$(VERSION)_$(PLTFRM)_$(FC_TYPE)_$(P_TYPE).mods
 # add to this list. 
 SRCS = CntnmFactors.f90 lblparams.f90 PhysConstants.f90 struct_types.f90 PlanetEarth.f90 \
 contnm.f90 monortm_sub.F90 modm.f90 RTMmono.f90 CloudOptProp.f90 \
-lnfl_mod.f90 monortm.f90 tips_2003.f90 lblatm.f90 lblrtm_sub.f90  bufin_sgl.f90 netcdf_helper_mod.F90
+lnfl_mod.f90 monortm.f90 tips_2003.f90 lblatm.f90 lblrtm_sub.f90  bufin_sgl.f90 
+
+ifeq ($(NETCDF),yes)
+   SRCS += netcdf_helper_mod.F90
+endif
+
 
 # Module dependencies
 monortm.o modm.o monortm_sub.o: CntnmFactors.o 
@@ -49,7 +54,9 @@ modm.o: lnfl_mod.o CloudOptProp.o
 monortm.o: modm.o
 lnfl_mod.o: bufin_sgl.o
 monortm.o modm.o monortm_sub.o: RTMmono.o
-monortm_sub.o : netcdf_helper_mod.o
+ifeq ($(NETCDF),yes)
+	monortm_sub.o : netcdf_helper_mod.o
+endif
 
 INCLUDES:= -I. -I$(FDOTM) 
 
