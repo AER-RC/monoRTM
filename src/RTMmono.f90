@@ -7,7 +7,7 @@ MODULE RTMmono
   !---------------------------------------------------------------
   PUBLIC :: RTM, calctmr 
 
-  INTEGER, parameter :: NWNMX=20000
+  INTEGER, parameter :: NWNMX=80000
 
 CONTAINS
   SUBROUTINE RTM(IOUT,IRT,NWN,WN,NLAY,T,TZ,O, &

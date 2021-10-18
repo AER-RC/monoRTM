@@ -282,7 +282,7 @@ CONTAINS
       USE lnfl_mod, ONLY : NBLM,ISO,XNU0,DELTNU,E,ALPS,ALPF,X,XG,S0,Rmol, &
              brd_mol_flg,brd_mol_tmp,brd_mol_hw,brd_mol_shft,sdep
 
-      PARAMETER (NNM=  39,IIM= 75000,MXBRDMOL=7)
+      PARAMETER (NNM=  39,IIM= 250000,MXBRDMOL=7)
       REAL WK(NMOL),o_by_mol(nmol)
       REAL*8 WN,XNU
       REAL A(4),B(4),TEMPLC(4)
@@ -503,7 +503,7 @@ CONTAINS
                   CALL CHI_FN(deltXNU,CHI)
                   XL3 = VOIGT(deltnuC,HWHM,AD) !VOIGT for 25cm-1 wn
 !           multiply the co2 pedestal contribution by the chi factor
-                  XL3 = XL3*(2.-(deltXNU**2/(deltXNU**2+HWHM**2))) ! co2 pedestal
+                  XL3 = XL3*(2.-(deltXNU**2/(deltnuC**2))) ! co2 pedestal
                   SLS = CHI*(XL1-XL3)
               ENDIF
           ELSE ! line has line coupling
@@ -634,9 +634,10 @@ CONTAINS
                   deltXNU = (WN-Xnu)
                   CALL CHI_FN(deltXNU,CHI)
                   XL3 = SDVOIGT(deltnuC,HWHM,AD, SDEP) !VOIGT for 25cm-1 wn
+                  XL3 = XL3*(2.-(deltXNU**2/(deltnuC**2)))! co2 pedestal
 !           multiply the co2 pedestal contribution by the chi factor
-                  XL3 = XL3*(2.-(deltXNU**2/(deltXNU**2+HWHM**2))) ! co2 pedestal
                   SLS = CHI*(XL1-XL3)
+                  if (xnu.gt.2390.299.and.xnu.lt.2390.301.and.wn.lt.2366.6) print *, wn,hwhm,chi,xl3,xl1,sls
               ENDIF
 
           ELSE ! line has line coupling
@@ -682,21 +683,21 @@ CONTAINS
 
                       IF (XF.EQ.-1.or.XF.EQ.-5) THEN
                           Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
+!                          print *,y1,bip*rp2
                           XP4=XL3* &
-                              (1./((deltnuC)**2+HWHM**2)) * &
-                              (2.-((WN-Xnu)**2/((deltnuC)**2+HWHM**2))) ! co2 impact pedestal
+                              (2.-(WN-Xnu)**2/deltnuC**2) ! co2 impact pedestal
                           YP1=(Y1-1.)* &
-                              (2.-(WN-Xnu)**2/((deltnuC)**2+HWHM**2)) ! line coupling contributions to pedestal
-                          SLS=CHI*(XL1* &
-                              (Y1)-XP4-XL3*(YP1))
+                              (2.-(WN-Xnu)**2/deltnuC**2) ! line coupling contributions to pedestal
+                          SLS=CHI*(XL1*(Y1)-XP4-XL3*(YP1))
+                      !wild experiment
+!                          SLS=CHI*(XL1-XP4+(AIP*(1/HWHM)*RP*(WN-Xnu))*(XL1-XP4))
                       ELSE
                           deltXNU = (WN-Xnu)
                           CALL CHI_FN(deltXNU,CHI)
                           Y1 = 1.
                           Y2 = 1.
                           XP4=XL3* &
-                              (1./((deltnuC)**2+HWHM**2)) * &
-                              (2.-(WN-Xnu)**2/((deltnuC)**2+HWHM**2)) ! co2 impact pedestal
+                              (2.-(WN-Xnu)**2/deltnuC**2) ! co2 impact pedestal
                           SLS = CHI*(XL1-XP4)
                       ENDIF
                   ENDIF ! end test for CO2 line coupling
@@ -739,11 +740,8 @@ CONTAINS
                     Y2=(1.-(AIP*(1/HWHM)*RP*(WN+Xnu))+(BIP*RP2)) ! line coupling for (-) osc
                     Y2P=(1.-(AIP*(1/HWHM)*RP*(deltnuC))+(BIP*RP2)) ! line coupling contributions to (-)pedestal                  
                     SLS = (Y1*(XL1)-Y1P*(XL3)+Y2*(XL2)-Y2P*(XL3))/ HWHM
-                    !SLS = (XL1 + XL2 - (2 * XL3)) 
                ELSE
                     SLS = (Y1*(XL1) - Y1P*(XL3))/ HWHM
-                    !WRITE(*,*) deltXNU, SLS, Y1*(XL1), Y1P*(XL3)
-                    !SLS = (XL1 - XL3) 
                ENDIF
           ELSE !No line coupling
               deltXNU=(WN-Xnu)
@@ -775,7 +773,8 @@ CONTAINS
                   CALL CHI_FN(deltXNU, CHI)
                   XL3=XLORENTZ((deltnuC)/HWHM) !LORENTZ for 25cm-1 wn
 !           multiply the co2 pedestal contribution by the chi factor
-                  XL3=XL3*(2.-(deltXNU**2/(deltXNU**2+HWHM**2))) ! co2 pedestal
+!                  XL3=XL3*(2.-(deltXNU**2/(deltXNU**2+HWHM**2))) ! co2 pedestal
+                  XL3 = XL3*(2.-(deltXNU**2/(deltnuC**2)))! co2 pedestal
                   SLS = CHI*(XL1-XL3) / HWHM
               ENDIF
           ELSE ! line has line coupling
@@ -813,18 +812,19 @@ CONTAINS
                       IF ((XF.EQ.-1).OR.(XF.EQ.-5)) THEN
                           Y1=(1.+(AIP*(1/HWHM)*RP*(WN-Xnu))+(BIP*RP2))
                           XP4=XL3* &
-                              (1./((deltnuC)**2+HWHM**2)) * &
-                              (2.-((WN-Xnu)**2/((deltnuC)**2+HWHM**2))) ! co2 impact pedestal
+                          !    (1./((deltnuC)**2+HWHM**2)) * &
+                          !    (2.-((WN-Xnu)**2/((deltnuC)**2+HWHM**2))) ! co2 impact pedestal
+                              (2.-(WN-Xnu)**2/deltnuC**2) ! co2 impact pedestal
                           YP1=(Y1-1.)* &
-                              (2.-(WN-Xnu)**2/((deltnuC)**2+HWHM**2))
+                              (2.-(WN-Xnu)**2/deltnuC**2)
                           SLS=CHI*(XL1* &
                               (Y1)-XP4-XL3*(YP1))/HWHM
                       ELSE
                           Y1 = 1.
                           Y2 = 1.
                           XP4=XL3* &
-                              (1./((deltnuC)**2+HWHM**2)) * &
-                              (2.-((WN-Xnu)**2/((deltnuC)**2+HWHM**2))) ! co2 impact pedestal
+                            !  (1./((deltnuC)**2+HWHM**2)) * &
+                              (2.-((WN-Xnu)**2/deltnuC**2)) ! co2 impact pedestal
                           SLS = CHI*(XL1 - XP4) / HWHM
                       ENDIF
                   ENDIF ! end test for CO2 line coupling
