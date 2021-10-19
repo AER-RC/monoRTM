@@ -1,3 +1,12 @@
+Version 5.5
+
+The continuum was updated to MT_CKD_3.5, which includes improvements in the water vapor
+continuum from the microwave through the far-infrared (E. Mlawer, V. Payne, J. Mascio, D.
+Turner), and a bug fix in the O2 A-Band continuum (E. Mlawer, J. Mascio, E. Magee)
+
+K.E. Cady-Pereira, October 2021
+****************************************************************
+
 Version 5.4
 
 The continuum was updated to MT_CKD_3.2, which has new self continnum
