@@ -1,6 +1,6 @@
 Version 5.6
 
-A number of errors in the CO2 line coupling calculation were fixed (E. Mlawer, K.Cady-Pereira)
+A number of errors in the CO2 line calculation were fixed (E. Mlawer, K.Cady-Pereira)
 
 ****************************************************************
 Version 5.5
