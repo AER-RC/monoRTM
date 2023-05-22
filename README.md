@@ -27,18 +27,18 @@ git submodule update
 
 in the `monoRTM` directory.
 
-Currently, the latest release is monoRTM v5.5, and it is recommended that this be the version that users clone and checkout (rather than the `master` branch). To do this, one needs to simply checkout the `v5.5` tag:
+Currently, the latest release is monoRTM v5.6, and it is recommended that this be the version that users clone and checkout (rather than the `master` branch). To do this, one needs to simply checkout the `v5.6` tag:
 
 ```
-git checkout tags/v5.5
+git checkout tags/v5.6
 ```
 
-No releases before v5.5 are available via GitHub, but they can be requested by emailing <aer_monortm@aer.com>. For information on previous releases, please visit the [What's New Wiki page](https://github.com/AER-RC/monoRTM/wiki/What's-New).
+No releases before v5.6 are available via GitHub, but they can be requested by emailing <aer_monortm@aer.com>. For information on previous releases, please visit the [What's New Wiki page](https://github.com/AER-RC/monoRTM/wiki/What's-New).
 
-Instead of cloning, users can also download a monoRTM [tarball](https://github.com/AER-RC/monoRTM/releases/tag/v5.5) and unpack it:
+Instead of cloning, users can also download a monoRTM [tarball](https://github.com/AER-RC/monoRTM/releases/tag/v5.6) and unpack it:
 
 ```
-tar xvf monortm_v5.5.tar.gz
+tar xvf monortm_v5.6.tar.gz
 ```
 
 # Directory Structure <a name="structure"></a>
